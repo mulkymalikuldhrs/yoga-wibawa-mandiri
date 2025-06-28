@@ -138,12 +138,16 @@ const ChatBot = () => {
           {/* Chat Header */}
           <div className="bg-ywm-red text-white p-4 rounded-t-lg flex items-center justify-between">
             <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center">
-                <Bot className="text-ywm-red" size={20} />
+              <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center overflow-hidden">
+                <img 
+                  src="/lovable-uploads/5f8e0e82-2031-4a9f-b848-f05d23c37cf2.png" 
+                  alt="YWM Assistant"
+                  className="w-full h-full object-cover"
+                />
               </div>
               <div>
-                <h3 className="font-semibold">Customer Service</h3>
-                <p className="text-sm text-gray-200">PT. Yoga Wibawa Mandiri</p>
+                <h3 className="font-semibold">YWM Assistant</h3>
+                <p className="text-sm text-gray-200">Customer Service AI</p>
               </div>
             </div>
             <button
@@ -170,10 +174,18 @@ const ChatBot = () => {
                 >
                   <div className="flex items-start space-x-2">
                     {message.sender === 'bot' && (
-                      <Bot size={16} className="text-ywm-red mt-1 flex-shrink-0" />
+                      <div className="w-6 h-6 rounded-full overflow-hidden flex-shrink-0 mt-1">
+                        <img 
+                          src="/lovable-uploads/5f8e0e82-2031-4a9f-b848-f05d23c37cf2.png" 
+                          alt="YWM Bot"
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
                     )}
                     {message.sender === 'user' && (
-                      <User size={16} className="text-white mt-1 flex-shrink-0" />
+                      <div className="w-6 h-6 bg-white rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                        <User size={14} className="text-ywm-red" />
+                      </div>
                     )}
                     <div>
                       <p className="text-sm whitespace-pre-line">{message.text}</p>
@@ -196,7 +208,13 @@ const ChatBot = () => {
               <div className="flex justify-start">
                 <div className="bg-gray-100 p-3 rounded-lg rounded-bl-none max-w-[80%]">
                   <div className="flex items-center space-x-2">
-                    <Bot size={16} className="text-ywm-red" />
+                    <div className="w-6 h-6 rounded-full overflow-hidden flex-shrink-0">
+                      <img 
+                        src="/lovable-uploads/5f8e0e82-2031-4a9f-b848-f05d23c37cf2.png" 
+                        alt="YWM Bot"
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
                     <div className="flex space-x-1">
                       <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
                       <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{animationDelay: '0.1s'}}></div>
