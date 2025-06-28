@@ -138,16 +138,16 @@ const ChatBot = () => {
           {/* Chat Header */}
           <div className="bg-ywm-red text-white p-4 rounded-t-lg flex items-center justify-between">
             <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center overflow-hidden">
+              <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center overflow-hidden border-2 border-white">
                 <img 
-                  src="/lovable-uploads/5f8e0e82-2031-4a9f-b848-f05d23c37cf2.png" 
-                  alt="YWM Assistant"
+                  src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80" 
+                  alt="Customer Service Representative"
                   className="w-full h-full object-cover"
                 />
               </div>
               <div>
-                <h3 className="font-semibold">YWM Assistant</h3>
-                <p className="text-sm text-gray-200">Customer Service AI</p>
+                <h3 className="font-semibold">Andi Pratama</h3>
+                <p className="text-sm text-gray-200">Customer Service</p>
               </div>
             </div>
             <button
@@ -174,10 +174,10 @@ const ChatBot = () => {
                 >
                   <div className="flex items-start space-x-2">
                     {message.sender === 'bot' && (
-                      <div className="w-6 h-6 rounded-full overflow-hidden flex-shrink-0 mt-1">
+                      <div className="w-6 h-6 rounded-full overflow-hidden flex-shrink-0 mt-1 border border-gray-300">
                         <img 
-                          src="/lovable-uploads/5f8e0e82-2031-4a9f-b848-f05d23c37cf2.png" 
-                          alt="YWM Bot"
+                          src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80" 
+                          alt="Customer Service"
                           className="w-full h-full object-cover"
                         />
                       </div>
@@ -208,10 +208,10 @@ const ChatBot = () => {
               <div className="flex justify-start">
                 <div className="bg-gray-100 p-3 rounded-lg rounded-bl-none max-w-[80%]">
                   <div className="flex items-center space-x-2">
-                    <div className="w-6 h-6 rounded-full overflow-hidden flex-shrink-0">
+                    <div className="w-6 h-6 rounded-full overflow-hidden flex-shrink-0 border border-gray-300">
                       <img 
-                        src="/lovable-uploads/5f8e0e82-2031-4a9f-b848-f05d23c37cf2.png" 
-                        alt="YWM Bot"
+                        src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80" 
+                        alt="Customer Service"
                         className="w-full h-full object-cover"
                       />
                     </div>
