@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { MessageCircle, X, Send, Bot, User } from 'lucide-react';
+import { MessageCircle, X, Send, Bot, User, Cpu, Zap, Settings, Headphones, Monitor, Smartphone, Wifi, Database } from 'lucide-react';
 
 interface Message {
   id: string;
@@ -8,10 +8,11 @@ interface Message {
   timestamp: Date;
 }
 
-interface BotAvatar {
+interface BotIcon {
   id: string;
   name: string;
-  avatar: string;
+  icon: React.ComponentType<{ size?: number; className?: string }>;
+  color: string;
   style: string;
 }
 
@@ -29,68 +30,83 @@ const ChatBot = () => {
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  // Array of different bot avatars
-  const botAvatars: BotAvatar[] = [
+  // Array of different bot icons
+  const botIcons: BotIcon[] = [
     {
       id: '1',
       name: 'Customer Service',
-      avatar: 'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80',
-      style: 'Friendly Robot'
+      icon: Bot,
+      color: 'text-blue-600',
+      style: 'Classic Bot'
     },
     {
       id: '2',
       name: 'Customer Service',
-      avatar: 'https://images.unsplash.com/photo-1518709268805-4e9042af2176?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80',
-      style: 'Modern Bot'
+      icon: Cpu,
+      color: 'text-purple-600',
+      style: 'AI Processor'
     },
     {
       id: '3',
       name: 'Customer Service',
-      avatar: 'https://images.unsplash.com/photo-1507146426996-ef05306b995a?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80',
-      style: 'Tech Assistant'
+      icon: Zap,
+      color: 'text-yellow-600',
+      style: 'Quick Assistant'
     },
     {
       id: '4',
       name: 'Customer Service',
-      avatar: 'https://images.unsplash.com/photo-1526378722484-bd91ca387e72?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80',
-      style: 'Digital Helper'
+      icon: Settings,
+      color: 'text-gray-600',
+      style: 'Tech Support'
     },
     {
       id: '5',
       name: 'Customer Service',
-      avatar: 'https://images.unsplash.com/photo-1555255707-c07966088b7b?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80',
-      style: 'AI Assistant'
+      icon: Headphones,
+      color: 'text-green-600',
+      style: 'Support Agent'
     },
     {
       id: '6',
       name: 'Customer Service',
-      avatar: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80',
-      style: 'Smart Bot'
+      icon: Monitor,
+      color: 'text-indigo-600',
+      style: 'Digital Helper'
     },
     {
       id: '7',
       name: 'Customer Service',
-      avatar: 'https://images.unsplash.com/photo-1563207153-f403bf289096?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80',
-      style: 'Virtual Agent'
+      icon: Smartphone,
+      color: 'text-pink-600',
+      style: 'Mobile Assistant'
     },
     {
       id: '8',
       name: 'Customer Service',
-      avatar: 'https://images.unsplash.com/photo-1535378917042-10a22c95931a?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80',
-      style: 'Cyber Assistant'
+      icon: Wifi,
+      color: 'text-cyan-600',
+      style: 'Connected Bot'
+    },
+    {
+      id: '9',
+      name: 'Customer Service',
+      icon: Database,
+      color: 'text-orange-600',
+      style: 'Data Assistant'
     }
   ];
 
-  // State for current bot avatar
-  const [currentBot, setCurrentBot] = useState<BotAvatar>(botAvatars[0]);
+  // State for current bot icon
+  const [currentBot, setCurrentBot] = useState<BotIcon>(botIcons[0]);
 
-  // Function to get random bot avatar
+  // Function to get random bot icon
   const getRandomBot = () => {
-    const randomIndex = Math.floor(Math.random() * botAvatars.length);
-    return botAvatars[randomIndex];
+    const randomIndex = Math.floor(Math.random() * botIcons.length);
+    return botIcons[randomIndex];
   };
 
-  // Change bot avatar every 30 seconds when chat is open
+  // Change bot icon every 30 seconds when chat is open
   useEffect(() => {
     if (!isOpen) return;
 
@@ -101,16 +117,16 @@ const ChatBot = () => {
     return () => clearInterval(interval);
   }, [isOpen]);
 
-  // Change bot avatar when chat opens
+  // Change bot icon when chat opens
   useEffect(() => {
     if (isOpen) {
       setCurrentBot(getRandomBot());
     }
   }, [isOpen]);
 
-  // Change bot avatar on each bot response
+  // Change bot icon on each bot response
   const changeBotOnResponse = () => {
-    // 60% chance to change bot avatar on response
+    // 60% chance to change bot icon on response
     if (Math.random() < 0.6) {
       setCurrentBot(getRandomBot());
     }
@@ -198,7 +214,7 @@ const ChatBot = () => {
 
     // Simulate typing delay
     setTimeout(() => {
-      // Change bot avatar before responding (60% chance)
+      // Change bot icon before responding (60% chance)
       changeBotOnResponse();
       
       const botResponse: Message = {
@@ -220,6 +236,8 @@ const ChatBot = () => {
     }
   };
 
+  const CurrentBotIcon = currentBot.icon;
+
   return (
     <>
       {/* Floating Chat Button */}
@@ -240,11 +258,10 @@ const ChatBot = () => {
           {/* Chat Header */}
           <div className="bg-ywm-red text-white p-4 rounded-t-lg flex items-center justify-between">
             <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center overflow-hidden border-2 border-white transition-all duration-500">
-                <img 
-                  src={currentBot.avatar}
-                  alt="Customer Service Bot"
-                  className="w-full h-full object-cover transition-all duration-500"
+              <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center transition-all duration-500">
+                <CurrentBotIcon 
+                  size={24} 
+                  className={`${currentBot.color} transition-all duration-500`}
                 />
               </div>
               <div>
@@ -276,11 +293,10 @@ const ChatBot = () => {
                 >
                   <div className="flex items-start space-x-2">
                     {message.sender === 'bot' && (
-                      <div className="w-6 h-6 rounded-full overflow-hidden flex-shrink-0 mt-1 border border-gray-300 transition-all duration-500">
-                        <img 
-                          src={currentBot.avatar}
-                          alt="Customer Service Bot"
-                          className="w-full h-full object-cover transition-all duration-500"
+                      <div className="w-6 h-6 bg-white rounded-full flex items-center justify-center flex-shrink-0 mt-1 border border-gray-300 transition-all duration-500">
+                        <CurrentBotIcon 
+                          size={14} 
+                          className={`${currentBot.color} transition-all duration-500`}
                         />
                       </div>
                     )}
@@ -310,11 +326,10 @@ const ChatBot = () => {
               <div className="flex justify-start">
                 <div className="bg-gray-100 p-3 rounded-lg rounded-bl-none max-w-[80%]">
                   <div className="flex items-center space-x-2">
-                    <div className="w-6 h-6 rounded-full overflow-hidden flex-shrink-0 border border-gray-300 transition-all duration-500">
-                      <img 
-                        src={currentBot.avatar}
-                        alt="Customer Service Bot"
-                        className="w-full h-full object-cover transition-all duration-500"
+                    <div className="w-6 h-6 bg-white rounded-full flex items-center justify-center flex-shrink-0 border border-gray-300 transition-all duration-500">
+                      <CurrentBotIcon 
+                        size={14} 
+                        className={`${currentBot.color} transition-all duration-500`}
                       />
                     </div>
                     <div className="flex space-x-1">
