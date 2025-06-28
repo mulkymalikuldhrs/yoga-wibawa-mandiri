@@ -8,11 +8,11 @@ interface Message {
   timestamp: Date;
 }
 
-interface CustomerServiceAgent {
+interface BotAvatar {
   id: string;
   name: string;
   avatar: string;
-  title: string;
+  style: string;
 }
 
 const ChatBot = () => {
@@ -20,7 +20,7 @@ const ChatBot = () => {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
-      text: 'Halo! Saya adalah asisten virtual PT. Yoga Wibawa Mandiri. Ada yang bisa saya bantu hari ini?',
+      text: 'Halo! Saya adalah Customer Service Bot PT. Yoga Wibawa Mandiri. Ada yang bisa saya bantu hari ini?',
       sender: 'bot',
       timestamp: new Date()
     }
@@ -29,90 +29,90 @@ const ChatBot = () => {
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  // Array of customer service agents with different photos
-  const customerServiceAgents: CustomerServiceAgent[] = [
+  // Array of different bot avatars
+  const botAvatars: BotAvatar[] = [
     {
       id: '1',
-      name: 'Andi Pratama',
-      avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80',
-      title: 'Customer Service'
+      name: 'Customer Service',
+      avatar: 'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80',
+      style: 'Friendly Robot'
     },
     {
       id: '2',
-      name: 'Sari Dewi',
-      avatar: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80',
-      title: 'Customer Support'
+      name: 'Customer Service',
+      avatar: 'https://images.unsplash.com/photo-1518709268805-4e9042af2176?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80',
+      style: 'Modern Bot'
     },
     {
       id: '3',
-      name: 'Budi Santoso',
-      avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80',
-      title: 'Technical Support'
+      name: 'Customer Service',
+      avatar: 'https://images.unsplash.com/photo-1507146426996-ef05306b995a?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80',
+      style: 'Tech Assistant'
     },
     {
       id: '4',
-      name: 'Maya Indira',
-      avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80',
-      title: 'Sales Representative'
+      name: 'Customer Service',
+      avatar: 'https://images.unsplash.com/photo-1526378722484-bd91ca387e72?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80',
+      style: 'Digital Helper'
     },
     {
       id: '5',
-      name: 'Rizki Hakim',
-      avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80',
-      title: 'Product Specialist'
+      name: 'Customer Service',
+      avatar: 'https://images.unsplash.com/photo-1555255707-c07966088b7b?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80',
+      style: 'AI Assistant'
     },
     {
       id: '6',
-      name: 'Lina Sari',
-      avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80',
-      title: 'Customer Care'
+      name: 'Customer Service',
+      avatar: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80',
+      style: 'Smart Bot'
     },
     {
       id: '7',
-      name: 'Doni Kurniawan',
-      avatar: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80',
-      title: 'Service Advisor'
+      name: 'Customer Service',
+      avatar: 'https://images.unsplash.com/photo-1563207153-f403bf289096?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80',
+      style: 'Virtual Agent'
     },
     {
       id: '8',
-      name: 'Fitri Rahayu',
-      avatar: 'https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80',
-      title: 'Help Desk'
+      name: 'Customer Service',
+      avatar: 'https://images.unsplash.com/photo-1535378917042-10a22c95931a?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80',
+      style: 'Cyber Assistant'
     }
   ];
 
-  // State for current agent
-  const [currentAgent, setCurrentAgent] = useState<CustomerServiceAgent>(customerServiceAgents[0]);
+  // State for current bot avatar
+  const [currentBot, setCurrentBot] = useState<BotAvatar>(botAvatars[0]);
 
-  // Function to get random agent
-  const getRandomAgent = () => {
-    const randomIndex = Math.floor(Math.random() * customerServiceAgents.length);
-    return customerServiceAgents[randomIndex];
+  // Function to get random bot avatar
+  const getRandomBot = () => {
+    const randomIndex = Math.floor(Math.random() * botAvatars.length);
+    return botAvatars[randomIndex];
   };
 
-  // Change agent every 30 seconds when chat is open
+  // Change bot avatar every 30 seconds when chat is open
   useEffect(() => {
     if (!isOpen) return;
 
     const interval = setInterval(() => {
-      setCurrentAgent(getRandomAgent());
+      setCurrentBot(getRandomBot());
     }, 30000); // Change every 30 seconds
 
     return () => clearInterval(interval);
   }, [isOpen]);
 
-  // Change agent when chat opens
+  // Change bot avatar when chat opens
   useEffect(() => {
     if (isOpen) {
-      setCurrentAgent(getRandomAgent());
+      setCurrentBot(getRandomBot());
     }
   }, [isOpen]);
 
-  // Change agent on each bot response
-  const changeAgentOnResponse = () => {
-    // 70% chance to change agent on response
-    if (Math.random() < 0.7) {
-      setCurrentAgent(getRandomAgent());
+  // Change bot avatar on each bot response
+  const changeBotOnResponse = () => {
+    // 60% chance to change bot avatar on response
+    if (Math.random() < 0.6) {
+      setCurrentBot(getRandomBot());
     }
   };
 
@@ -130,7 +130,7 @@ const ChatBot = () => {
     
     // Greeting responses
     if (message.includes('halo') || message.includes('hai') || message.includes('hello')) {
-      return `Halo! Saya ${currentAgent.name} dari tim ${currentAgent.title} PT. Yoga Wibawa Mandiri. Saya siap membantu Anda dengan informasi tentang produk semen dan layanan kami.`;
+      return 'Halo! Saya Customer Service Bot PT. Yoga Wibawa Mandiri. Saya siap membantu Anda dengan informasi tentang produk semen dan layanan kami 24/7.';
     }
     
     // Product information
@@ -173,13 +173,13 @@ const ChatBot = () => {
       return 'Kami terbuka untuk kemitraan bisnis! Silakan hubungi tim business development kami untuk membahas peluang kerja sama yang saling menguntungkan.';
     }
     
-    // Agent introduction
-    if (message.includes('siapa') || message.includes('nama')) {
-      return `Saya ${currentAgent.name}, ${currentAgent.title} di PT. Yoga Wibawa Mandiri. Saya siap membantu Anda dengan segala kebutuhan informasi tentang produk dan layanan kami.`;
+    // Bot information
+    if (message.includes('siapa') || message.includes('nama') || message.includes('bot')) {
+      return 'Saya adalah Customer Service Bot PT. Yoga Wibawa Mandiri. Saya adalah asisten virtual yang siap membantu Anda 24/7 dengan informasi tentang produk dan layanan kami.';
     }
     
     // Default response
-    return `Terima kasih atas pertanyaan Anda. Saya ${currentAgent.name} siap membantu lebih lanjut. Untuk informasi detail, silakan hubungi customer service kami di +62 651 123456 atau kunjungi halaman kontak di website ini.`;
+    return 'Terima kasih atas pertanyaan Anda. Sebagai Customer Service Bot, saya siap membantu lebih lanjut. Untuk informasi detail, silakan hubungi customer service kami di +62 651 123456 atau kunjungi halaman kontak di website ini.';
   };
 
   const handleSendMessage = async () => {
@@ -198,8 +198,8 @@ const ChatBot = () => {
 
     // Simulate typing delay
     setTimeout(() => {
-      // Change agent before responding (70% chance)
-      changeAgentOnResponse();
+      // Change bot avatar before responding (60% chance)
+      changeBotOnResponse();
       
       const botResponse: Message = {
         id: (Date.now() + 1).toString(),
@@ -242,14 +242,14 @@ const ChatBot = () => {
             <div className="flex items-center space-x-3">
               <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center overflow-hidden border-2 border-white transition-all duration-500">
                 <img 
-                  src={currentAgent.avatar}
-                  alt={`${currentAgent.name} - ${currentAgent.title}`}
+                  src={currentBot.avatar}
+                  alt="Customer Service Bot"
                   className="w-full h-full object-cover transition-all duration-500"
                 />
               </div>
               <div>
-                <h3 className="font-semibold transition-all duration-500">{currentAgent.name}</h3>
-                <p className="text-sm text-gray-200 transition-all duration-500">{currentAgent.title}</p>
+                <h3 className="font-semibold transition-all duration-500">Customer Service</h3>
+                <p className="text-sm text-gray-200 transition-all duration-500">Bot Assistant • Online 24/7</p>
               </div>
             </div>
             <button
@@ -278,8 +278,8 @@ const ChatBot = () => {
                     {message.sender === 'bot' && (
                       <div className="w-6 h-6 rounded-full overflow-hidden flex-shrink-0 mt-1 border border-gray-300 transition-all duration-500">
                         <img 
-                          src={currentAgent.avatar}
-                          alt={currentAgent.name}
+                          src={currentBot.avatar}
+                          alt="Customer Service Bot"
                           className="w-full h-full object-cover transition-all duration-500"
                         />
                       </div>
@@ -312,8 +312,8 @@ const ChatBot = () => {
                   <div className="flex items-center space-x-2">
                     <div className="w-6 h-6 rounded-full overflow-hidden flex-shrink-0 border border-gray-300 transition-all duration-500">
                       <img 
-                        src={currentAgent.avatar}
-                        alt={currentAgent.name}
+                        src={currentBot.avatar}
+                        alt="Customer Service Bot"
                         className="w-full h-full object-cover transition-all duration-500"
                       />
                     </div>
@@ -349,7 +349,7 @@ const ChatBot = () => {
               </button>
             </div>
             <p className="text-xs text-gray-500 mt-2 text-center">
-              Powered by JS Puter AI • Respons otomatis 24/7
+              Powered by PT. Yoga Wibawa Mandiri • Bot Assistant 24/7
             </p>
           </div>
         </div>
