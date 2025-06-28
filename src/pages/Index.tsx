@@ -1,7 +1,6 @@
-
 import Layout from '@/components/Layout';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Factory, Truck, Award, Users } from 'lucide-react';
+import { ArrowRight, Factory, Truck, Award, Users, Bot, Zap } from 'lucide-react';
 
 const Index = () => {
   return (
@@ -21,10 +20,18 @@ const Index = () => {
           <h1 className="text-5xl md:text-7xl font-bold mb-6 leading-tight">
             PT. Yoga Wibawa <span className="text-yellow-400">Mandiri</span>
           </h1>
-          <p className="text-xl md:text-2xl mb-8 max-w-3xl mx-auto leading-relaxed">
+          <p className="text-xl md:text-2xl mb-4 max-w-3xl mx-auto leading-relaxed">
             Pengantongan Semen Padang Terpercaya di Lhokseumawe
             <br />dengan Teknologi Modern dan Kualitas Terjamin
           </p>
+          
+          {/* AI Badge */}
+          <div className="inline-flex items-center space-x-2 bg-gradient-to-r from-blue-600 to-purple-600 px-4 py-2 rounded-full mb-8">
+            <Bot size={20} />
+            <span className="text-sm font-medium">AI-Powered Website | JS Puter AI</span>
+            <Zap size={16} className="text-yellow-300" />
+          </div>
+          
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link 
               to="/layanan" 
@@ -32,6 +39,13 @@ const Index = () => {
             >
               Lihat Layanan Kami
               <ArrowRight className="ml-2" size={20} />
+            </Link>
+            <Link 
+              to="/dashboard" 
+              className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-8 py-4 rounded-lg font-semibold text-lg transition-all transform hover:scale-105 flex items-center justify-center"
+            >
+              <Bot className="mr-2" size={20} />
+              AI Dashboard
             </Link>
             <Link 
               to="/kontak" 
@@ -69,11 +83,11 @@ const Index = () => {
               <p className="text-gray-600">Sertifikat Kualitas</p>
             </div>
             <div className="animate-fade-in">
-              <div className="w-16 h-16 bg-ywm-red rounded-full flex items-center justify-center mx-auto mb-4">
-                <Users className="text-white" size={32} />
+              <div className="w-16 h-16 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Bot className="text-white" size={32} />
               </div>
-              <h3 className="text-3xl font-bold text-ywm-dark mb-2">200+</h3>
-              <p className="text-gray-600">Karyawan</p>
+              <h3 className="text-3xl font-bold text-ywm-dark mb-2">AI</h3>
+              <p className="text-gray-600">Customer Service</p>
             </div>
           </div>
         </div>
@@ -96,6 +110,14 @@ const Index = () => {
                 Dengan komitmen terhadap kualitas dan pelayanan prima, kami melayani kebutuhan 
                 konstruksi di seluruh wilayah dengan distribusi yang efisien dan tepat waktu.
               </p>
+              
+              {/* Developer Credit */}
+              <div className="bg-gradient-to-r from-blue-50 to-purple-50 p-4 rounded-lg mb-6 border-l-4 border-blue-500">
+                <p className="text-sm text-gray-600 mb-1">Website AI-Powered ini dikembangkan oleh:</p>
+                <p className="font-semibold text-ywm-dark">Mulky Malikul Dhaher</p>
+                <p className="text-sm text-blue-600">Technical Engineer - PT. Yoga Wibawa Mandiri</p>
+              </div>
+              
               <Link 
                 to="/tentang" 
                 className="inline-flex items-center bg-ywm-red text-white px-6 py-3 rounded-lg font-semibold hover:bg-red-700 transition-colors"
@@ -152,13 +174,13 @@ const Index = () => {
             </div>
             
             <div className="text-center p-8 rounded-lg shadow-lg hover:shadow-xl transition-shadow animate-fade-in">
-              <div className="w-20 h-20 bg-ywm-red rounded-full flex items-center justify-center mx-auto mb-6">
-                <Award className="text-white" size={40} />
+              <div className="w-20 h-20 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-6">
+                <Bot className="text-white" size={40} />
               </div>
-              <h3 className="text-xl font-semibold text-ywm-dark mb-4">Jaminan Kualitas</h3>
+              <h3 className="text-xl font-semibold text-ywm-dark mb-4">AI Customer Service</h3>
               <p className="text-gray-600 leading-relaxed">
-                Standar kualitas internasional dengan sertifikasi ISO dan kontrol kualitas 
-                ketat pada setiap tahap produksi.
+                Layanan pelanggan 24/7 dengan teknologi AI lokal yang memberikan respons 
+                cepat dan akurat untuk semua pertanyaan Anda.
               </p>
             </div>
           </div>

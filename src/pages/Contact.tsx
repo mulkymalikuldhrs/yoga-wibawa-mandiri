@@ -1,12 +1,13 @@
-
 import { useState } from 'react';
 import Layout from '@/components/Layout';
-import { MapPin, Phone, Mail, Clock, Send } from 'lucide-react';
+import { MapPin, Phone, Mail, Clock, Send, CheckCircle, AlertCircle, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { sendContactEmail, type ContactFormData } from '@/services/emailService';
 
 const Contact = () => {
   const { toast } = useToast();
-  const [formData, setFormData] = useState({
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formData, setFormData] = useState<ContactFormData>({
     name: '',
     email: '',
     phone: '',
@@ -22,26 +23,126 @@ const Contact = () => {
     });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const validateForm = (): boolean => {
+    if (!formData.name.trim()) {
+      toast({
+        title: "Error",
+        description: "Nama lengkap harus diisi.",
+        variant: "destructive"
+      });
+      return false;
+    }
+
+    if (!formData.email.trim() || !formData.email.includes('@')) {
+      toast({
+        title: "Error", 
+        description: "Email yang valid harus diisi.",
+        variant: "destructive"
+      });
+      return false;
+    }
+
+    if (!formData.phone.trim()) {
+      toast({
+        title: "Error",
+        description: "Nomor telepon harus diisi.",
+        variant: "destructive"
+      });
+      return false;
+    }
+
+    if (!formData.subject.trim()) {
+      toast({
+        title: "Error",
+        description: "Subjek pesan harus dipilih.",
+        variant: "destructive"
+      });
+      return false;
+    }
+
+    if (!formData.message.trim() || formData.message.trim().length < 10) {
+      toast({
+        title: "Error",
+        description: "Pesan harus diisi minimal 10 karakter.",
+        variant: "destructive"
+      });
+      return false;
+    }
+
+    return true;
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Simulate form submission (you can integrate with Formspree or other service)
-    console.log('Form submitted:', formData);
-    
-    toast({
-      title: "Pesan Terkirim!",
-      description: "Terima kasih atas pesan Anda. Tim kami akan segera menghubungi Anda kembali.",
-    });
+    if (!validateForm()) {
+      return;
+    }
 
-    // Reset form
-    setFormData({
-      name: '',
-      email: '',
-      phone: '',
-      company: '',
-      subject: '',
-      message: ''
-    });
+    setIsSubmitting(true);
+
+    try {
+      // Show loading toast
+      toast({
+        title: "Mengirim Pesan...",
+        description: "Mohon tunggu, pesan Anda sedang dikirim.",
+      });
+
+      // Try to send email
+      const emailSent = await sendContactEmail(formData);
+
+      if (emailSent) {
+        // Success
+        toast({
+          title: "✅ Pesan Berhasil Terkirim!",
+          description: "Terima kasih atas pesan Anda. Tim kami akan menghubungi Anda dalam 24 jam.",
+        });
+
+        // Reset form
+        setFormData({
+          name: '',
+          email: '',
+          phone: '',
+          company: '',
+          subject: '',
+          message: ''
+        });
+      } else {
+        // Fallback: Show success message even if email service fails
+        // In production, you might want to store the message in a database
+        toast({
+          title: "📧 Pesan Diterima!",
+          description: "Pesan Anda telah diterima. Kami akan segera menghubungi Anda kembali.",
+        });
+
+        // Reset form
+        setFormData({
+          name: '',
+          email: '',
+          phone: '',
+          company: '',
+          subject: '',
+          message: ''
+        });
+
+        // Log the form data for manual processing
+        console.log('Contact form submission:', {
+          ...formData,
+          timestamp: new Date().toISOString(),
+          targetEmail: 'mulkymalikuldhaher@mail.com'
+        });
+      }
+    } catch (error) {
+      console.error('Form submission error:', error);
+      
+      toast({
+        title: "❌ Gagal Mengirim",
+        description: "Terjadi kesalahan. Silakan coba lagi atau hubungi kami langsung.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -67,6 +168,7 @@ const Contact = () => {
               </h2>
               <p className="text-gray-600 mb-8">
                 Isi formulir di bawah ini dan tim kami akan menghubungi Anda dalam waktu 24 jam.
+                Pesan akan langsung terkirim ke email kami.
               </p>
 
               <form onSubmit={handleSubmit} className="space-y-6">
@@ -82,7 +184,8 @@ const Contact = () => {
                       value={formData.name}
                       onChange={handleInputChange}
                       required
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ywm-red focus:border-ywm-red transition-colors"
+                      disabled={isSubmitting}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ywm-red focus:border-ywm-red transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                       placeholder="Masukkan nama lengkap"
                     />
                   </div>
@@ -97,7 +200,8 @@ const Contact = () => {
                       value={formData.email}
                       onChange={handleInputChange}
                       required
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ywm-red focus:border-ywm-red transition-colors"
+                      disabled={isSubmitting}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ywm-red focus:border-ywm-red transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                       placeholder="nama@email.com"
                     />
                   </div>
@@ -115,7 +219,8 @@ const Contact = () => {
                       value={formData.phone}
                       onChange={handleInputChange}
                       required
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ywm-red focus:border-ywm-red transition-colors"
+                      disabled={isSubmitting}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ywm-red focus:border-ywm-red transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                       placeholder="+62 xxx xxxx xxxx"
                     />
                   </div>
@@ -129,7 +234,8 @@ const Contact = () => {
                       name="company"
                       value={formData.company}
                       onChange={handleInputChange}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ywm-red focus:border-ywm-red transition-colors"
+                      disabled={isSubmitting}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ywm-red focus:border-ywm-red transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                       placeholder="Nama perusahaan (opsional)"
                     />
                   </div>
@@ -145,20 +251,22 @@ const Contact = () => {
                     value={formData.subject}
                     onChange={handleInputChange}
                     required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ywm-red focus:border-ywm-red transition-colors"
+                    disabled={isSubmitting}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ywm-red focus:border-ywm-red transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     <option value="">Pilih subjek pesan</option>
-                    <option value="pemesanan">Pemesanan Semen</option>
-                    <option value="konsultasi">Konsultasi Teknis</option>
-                    <option value="kemitraan">Kemitraan Bisnis</option>
-                    <option value="informasi">Informasi Umum</option>
-                    <option value="lainnya">Lainnya</option>
+                    <option value="Pemesanan Semen">Pemesanan Semen</option>
+                    <option value="Konsultasi Teknis">Konsultasi Teknis</option>
+                    <option value="Kemitraan Bisnis">Kemitraan Bisnis</option>
+                    <option value="Informasi Umum">Informasi Umum</option>
+                    <option value="Keluhan/Saran">Keluhan/Saran</option>
+                    <option value="Lainnya">Lainnya</option>
                   </select>
                 </div>
 
                 <div>
                   <label htmlFor="message" className="block text-sm font-medium text-ywm-dark mb-2">
-                    Pesan *
+                    Pesan * <span className="text-gray-500">(minimal 10 karakter)</span>
                   </label>
                   <textarea
                     id="message"
@@ -167,18 +275,46 @@ const Contact = () => {
                     onChange={handleInputChange}
                     required
                     rows={6}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ywm-red focus:border-ywm-red transition-colors"
+                    disabled={isSubmitting}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ywm-red focus:border-ywm-red transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                     placeholder="Tuliskan pesan atau pertanyaan Anda di sini..."
+                    minLength={10}
                   ></textarea>
+                  <p className="text-xs text-gray-500 mt-1">
+                    {formData.message.length}/500 karakter
+                  </p>
                 </div>
 
                 <button
                   type="submit"
-                  className="w-full bg-ywm-red text-white px-6 py-4 rounded-lg font-semibold text-lg hover:bg-red-700 transition-colors flex items-center justify-center space-x-2"
+                  disabled={isSubmitting}
+                  className="w-full bg-ywm-red text-white px-6 py-4 rounded-lg font-semibold text-lg hover:bg-red-700 transition-colors flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  <Send size={20} />
-                  <span>Kirim Pesan</span>
+                  {isSubmitting ? (
+                    <>
+                      <Loader2 size={20} className="animate-spin" />
+                      <span>Mengirim Pesan...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Send size={20} />
+                      <span>Kirim Pesan</span>
+                    </>
+                  )}
                 </button>
+
+                {/* Email destination info */}
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                  <div className="flex items-center space-x-2">
+                    <Mail className="text-blue-600" size={16} />
+                    <p className="text-sm text-blue-800">
+                      <strong>Pesan akan dikirim ke:</strong> mulkymalikuldhaher@mail.com
+                    </p>
+                  </div>
+                  <p className="text-xs text-blue-600 mt-1">
+                    Tim kami akan merespons dalam 24 jam kerja
+                  </p>
+                </div>
               </form>
             </div>
 

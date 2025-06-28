@@ -1,6 +1,5 @@
-
 import { Link } from 'react-router-dom';
-import { MapPin, Phone, Mail, Clock, Facebook, Instagram, Linkedin } from 'lucide-react';
+import { MapPin, Phone, Mail, Clock, Facebook, Instagram, Linkedin, Code } from 'lucide-react';
 
 const Footer = () => {
   const navigationItems = [
@@ -44,6 +43,15 @@ const Footer = () => {
               <span className="text-gray-300 text-sm font-medium">Mitra Resmi Semen Padang</span>
             </div>
 
+            {/* AI Powered Badge */}
+            <div className="flex items-center space-x-3 mb-6 p-3 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg">
+              <Code className="text-white" size={20} />
+              <div>
+                <p className="text-white font-semibold text-sm">AI-Powered Website</p>
+                <p className="text-blue-100 text-xs">JS Puter AI - Local Processing</p>
+              </div>
+            </div>
+
             {/* Social Media */}
             <div className="flex space-x-4">
               <a href="#" className="w-10 h-10 bg-ywm-red rounded-lg flex items-center justify-center hover:bg-red-700 transition-colors">
@@ -72,6 +80,14 @@ const Footer = () => {
                   </Link>
                 </li>
               ))}
+              <li>
+                <Link 
+                  to="/dashboard" 
+                  className="text-blue-400 hover:text-blue-300 hover:pl-2 transition-all duration-300 block font-medium"
+                >
+                  🤖 AI Dashboard
+                </Link>
+              </li>
             </ul>
           </div>
 
@@ -115,11 +131,14 @@ const Footer = () => {
               © 2024 PT. Yoga Wibawa Mandiri. Semua hak cipta dilindungi.
             </p>
             <div className="text-center md:text-right">
-              <p className="text-gray-400 text-xs">
-                Developed by <span className="text-ywm-red font-medium">Mulky Malikul Dhaher</span>
+              <p className="text-gray-400 text-xs mb-1">
+                Developed with ❤️ by <span className="text-ywm-red font-medium">Mulky Malikul Dhaher</span>
               </p>
-              <p className="text-gray-400 text-xs">
-                Engineer of PT. Yoga Wibawa Mandiri
+              <p className="text-gray-400 text-xs mb-1">
+                <span className="text-blue-400">Technical Engineer</span> - PT. Yoga Wibawa Mandiri
+              </p>
+              <p className="text-gray-500 text-xs">
+                🤖 Powered by JS Puter AI | 🚀 React + TypeScript
               </p>
             </div>
           </div>
