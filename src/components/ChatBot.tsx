@@ -8,6 +8,13 @@ interface Message {
   timestamp: Date;
 }
 
+interface CustomerServiceAgent {
+  id: string;
+  name: string;
+  avatar: string;
+  title: string;
+}
+
 const ChatBot = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([
@@ -21,6 +28,93 @@ const ChatBot = () => {
   const [inputMessage, setInputMessage] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // Array of customer service agents with different photos
+  const customerServiceAgents: CustomerServiceAgent[] = [
+    {
+      id: '1',
+      name: 'Andi Pratama',
+      avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80',
+      title: 'Customer Service'
+    },
+    {
+      id: '2',
+      name: 'Sari Dewi',
+      avatar: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80',
+      title: 'Customer Support'
+    },
+    {
+      id: '3',
+      name: 'Budi Santoso',
+      avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80',
+      title: 'Technical Support'
+    },
+    {
+      id: '4',
+      name: 'Maya Indira',
+      avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80',
+      title: 'Sales Representative'
+    },
+    {
+      id: '5',
+      name: 'Rizki Hakim',
+      avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80',
+      title: 'Product Specialist'
+    },
+    {
+      id: '6',
+      name: 'Lina Sari',
+      avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80',
+      title: 'Customer Care'
+    },
+    {
+      id: '7',
+      name: 'Doni Kurniawan',
+      avatar: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80',
+      title: 'Service Advisor'
+    },
+    {
+      id: '8',
+      name: 'Fitri Rahayu',
+      avatar: 'https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80',
+      title: 'Help Desk'
+    }
+  ];
+
+  // State for current agent
+  const [currentAgent, setCurrentAgent] = useState<CustomerServiceAgent>(customerServiceAgents[0]);
+
+  // Function to get random agent
+  const getRandomAgent = () => {
+    const randomIndex = Math.floor(Math.random() * customerServiceAgents.length);
+    return customerServiceAgents[randomIndex];
+  };
+
+  // Change agent every 30 seconds when chat is open
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const interval = setInterval(() => {
+      setCurrentAgent(getRandomAgent());
+    }, 30000); // Change every 30 seconds
+
+    return () => clearInterval(interval);
+  }, [isOpen]);
+
+  // Change agent when chat opens
+  useEffect(() => {
+    if (isOpen) {
+      setCurrentAgent(getRandomAgent());
+    }
+  }, [isOpen]);
+
+  // Change agent on each bot response
+  const changeAgentOnResponse = () => {
+    // 70% chance to change agent on response
+    if (Math.random() < 0.7) {
+      setCurrentAgent(getRandomAgent());
+    }
+  };
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -36,7 +130,7 @@ const ChatBot = () => {
     
     // Greeting responses
     if (message.includes('halo') || message.includes('hai') || message.includes('hello')) {
-      return 'Halo! Selamat datang di PT. Yoga Wibawa Mandiri. Saya siap membantu Anda dengan informasi tentang produk semen dan layanan kami.';
+      return `Halo! Saya ${currentAgent.name} dari tim ${currentAgent.title} PT. Yoga Wibawa Mandiri. Saya siap membantu Anda dengan informasi tentang produk semen dan layanan kami.`;
     }
     
     // Product information
@@ -79,8 +173,13 @@ const ChatBot = () => {
       return 'Kami terbuka untuk kemitraan bisnis! Silakan hubungi tim business development kami untuk membahas peluang kerja sama yang saling menguntungkan.';
     }
     
+    // Agent introduction
+    if (message.includes('siapa') || message.includes('nama')) {
+      return `Saya ${currentAgent.name}, ${currentAgent.title} di PT. Yoga Wibawa Mandiri. Saya siap membantu Anda dengan segala kebutuhan informasi tentang produk dan layanan kami.`;
+    }
+    
     // Default response
-    return 'Terima kasih atas pertanyaan Anda. Untuk informasi lebih detail, silakan hubungi customer service kami di +62 651 123456 atau kunjungi halaman kontak di website ini.';
+    return `Terima kasih atas pertanyaan Anda. Saya ${currentAgent.name} siap membantu lebih lanjut. Untuk informasi detail, silakan hubungi customer service kami di +62 651 123456 atau kunjungi halaman kontak di website ini.`;
   };
 
   const handleSendMessage = async () => {
@@ -99,6 +198,9 @@ const ChatBot = () => {
 
     // Simulate typing delay
     setTimeout(() => {
+      // Change agent before responding (70% chance)
+      changeAgentOnResponse();
+      
       const botResponse: Message = {
         id: (Date.now() + 1).toString(),
         text: getResponse(inputMessage),
@@ -138,16 +240,16 @@ const ChatBot = () => {
           {/* Chat Header */}
           <div className="bg-ywm-red text-white p-4 rounded-t-lg flex items-center justify-between">
             <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center overflow-hidden border-2 border-white">
+              <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center overflow-hidden border-2 border-white transition-all duration-500">
                 <img 
-                  src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80" 
-                  alt="Customer Service Representative"
-                  className="w-full h-full object-cover"
+                  src={currentAgent.avatar}
+                  alt={`${currentAgent.name} - ${currentAgent.title}`}
+                  className="w-full h-full object-cover transition-all duration-500"
                 />
               </div>
               <div>
-                <h3 className="font-semibold">Andi Pratama</h3>
-                <p className="text-sm text-gray-200">Customer Service</p>
+                <h3 className="font-semibold transition-all duration-500">{currentAgent.name}</h3>
+                <p className="text-sm text-gray-200 transition-all duration-500">{currentAgent.title}</p>
               </div>
             </div>
             <button
@@ -174,11 +276,11 @@ const ChatBot = () => {
                 >
                   <div className="flex items-start space-x-2">
                     {message.sender === 'bot' && (
-                      <div className="w-6 h-6 rounded-full overflow-hidden flex-shrink-0 mt-1 border border-gray-300">
+                      <div className="w-6 h-6 rounded-full overflow-hidden flex-shrink-0 mt-1 border border-gray-300 transition-all duration-500">
                         <img 
-                          src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80" 
-                          alt="Customer Service"
-                          className="w-full h-full object-cover"
+                          src={currentAgent.avatar}
+                          alt={currentAgent.name}
+                          className="w-full h-full object-cover transition-all duration-500"
                         />
                       </div>
                     )}
@@ -208,11 +310,11 @@ const ChatBot = () => {
               <div className="flex justify-start">
                 <div className="bg-gray-100 p-3 rounded-lg rounded-bl-none max-w-[80%]">
                   <div className="flex items-center space-x-2">
-                    <div className="w-6 h-6 rounded-full overflow-hidden flex-shrink-0 border border-gray-300">
+                    <div className="w-6 h-6 rounded-full overflow-hidden flex-shrink-0 border border-gray-300 transition-all duration-500">
                       <img 
-                        src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80" 
-                        alt="Customer Service"
-                        className="w-full h-full object-cover"
+                        src={currentAgent.avatar}
+                        alt={currentAgent.name}
+                        className="w-full h-full object-cover transition-all duration-500"
                       />
                     </div>
                     <div className="flex space-x-1">
