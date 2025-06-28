@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { MessageCircle, X, Send, Bot, User, Cpu, Zap, Settings, Headphones, Monitor, Smartphone, Wifi, Database } from 'lucide-react';
+import { MessageCircle, X, Send, Bot, User, Cpu, Zap, Settings, Headphones, Monitor, Smartphone, Wifi, Database, Phone } from 'lucide-react';
 
 interface Message {
   id: string;
@@ -21,7 +21,7 @@ const ChatBot = () => {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
-      text: 'Halo! Saya adalah Customer Service Bot PT. Yoga Wibawa Mandiri. Ada yang bisa saya bantu hari ini?',
+      text: 'Halo! Saya adalah Customer Service Bot PT. Yoga Wibawa Mandiri. Ada yang bisa saya bantu hari ini? Untuk komunikasi langsung, Anda dapat menghubungi kami di +62 823-0443-3145.',
       sender: 'bot',
       timestamp: new Date()
     }
@@ -140,62 +140,67 @@ const ChatBot = () => {
     scrollToBottom();
   }, [messages]);
 
-  // Knowledge base untuk chatbot
+  // Knowledge base untuk chatbot dengan nomor telepon pengantongan
   const getResponse = (userMessage: string): string => {
     const message = userMessage.toLowerCase();
     
     // Greeting responses
     if (message.includes('halo') || message.includes('hai') || message.includes('hello')) {
-      return 'Halo! Saya Customer Service Bot PT. Yoga Wibawa Mandiri. Saya siap membantu Anda dengan informasi tentang produk semen dan layanan kami 24/7.';
+      return 'Halo! Saya Customer Service Bot PT. Yoga Wibawa Mandiri. Saya siap membantu Anda dengan informasi tentang produk semen dan layanan kami 24/7.\n\n📞 Untuk komunikasi langsung dengan tim pengantongan kami, silakan hubungi: +62 823-0443-3145';
+    }
+    
+    // Contact/communication requests
+    if (message.includes('hubungi') || message.includes('kontak') || message.includes('telepon') || message.includes('bicara') || message.includes('komunikasi') || message.includes('call')) {
+      return '📞 Untuk memulai komunikasi langsung dengan tim kami, silakan hubungi:\n\n🏭 **Tim Pengantongan**: +62 823-0443-3145\n📧 **Email**: info@ywm.co.id\n\nTim kami siap melayani Anda untuk konsultasi, pemesanan, dan informasi detail tentang produk semen kami.';
     }
     
     // Product information
     if (message.includes('semen') || message.includes('produk')) {
-      return 'Kami menyediakan semen berkualitas tinggi dari Semen Padang dengan kapasitas produksi hingga 500 ton per hari. Tersedia dalam kemasan 40kg dan 50kg dengan standar SNI 15-2049.';
+      return 'Kami menyediakan semen berkualitas tinggi dari Semen Padang dengan kapasitas produksi hingga 500 ton per hari. Tersedia dalam kemasan 40kg dan 50kg dengan standar SNI 15-2049.\n\n📞 Untuk informasi detail dan pemesanan, hubungi: +62 823-0443-3145';
     }
     
     // Location information
     if (message.includes('lokasi') || message.includes('alamat') || message.includes('dimana')) {
-      return 'Pabrik kami berlokasi di Pelabuhan Krueng Geukueh, Lhokseumawe, Aceh. Kantor pusat di Medan, Sumatera Utara. Lokasi strategis untuk distribusi ke seluruh Aceh dan Sumut.';
-    }
-    
-    // Contact information
-    if (message.includes('kontak') || message.includes('telepon') || message.includes('hubungi')) {
-      return 'Anda dapat menghubungi kami di:\n📞 Pabrik: +62 651 123456\n📞 Kantor: +62 61 456789\n📧 Email: info@ywm.co.id\nJam operasional: Senin-Jumat 08:00-17:00 WIB';
+      return 'Pabrik kami berlokasi di Pelabuhan Krueng Geukueh, Lhokseumawe, Aceh. Kantor pusat di Medan, Sumatera Utara. Lokasi strategis untuk distribusi ke seluruh Aceh dan Sumut.\n\n📞 Untuk kunjungan atau informasi lokasi detail: +62 823-0443-3145';
     }
     
     // Pricing information
-    if (message.includes('harga') || message.includes('tarif') || message.includes('biaya')) {
-      return 'Untuk informasi harga terbaru dan penawaran khusus, silakan hubungi tim sales kami di +62 651 123456 atau kirim email ke sales@ywm.co.id. Harga dapat bervariasi tergantung volume dan lokasi pengiriman.';
+    if (message.includes('harga') || message.includes('tarif') || message.includes('biaya') || message.includes('pesan') || message.includes('order')) {
+      return 'Untuk informasi harga terbaru, penawaran khusus, dan pemesanan:\n\n📞 **Hubungi langsung**: +62 823-0443-3145\n📧 **Email**: sales@ywm.co.id\n\nHarga dapat bervariasi tergantung volume dan lokasi pengiriman. Tim kami akan memberikan penawaran terbaik untuk kebutuhan Anda.';
     }
     
     // Distribution information
     if (message.includes('distribusi') || message.includes('pengiriman') || message.includes('kirim')) {
-      return 'Kami melayani distribusi ke seluruh Aceh dan Sumatera Utara dengan armada truck yang handal. Pengiriman tepat waktu dengan sistem tracking. Area distribusi meliputi 50+ kota.';
+      return 'Kami melayani distribusi ke seluruh Aceh dan Sumatera Utara dengan armada truck yang handal. Pengiriman tepat waktu dengan sistem tracking. Area distribusi meliputi 50+ kota.\n\n📞 Untuk jadwal pengiriman: +62 823-0443-3145';
     }
     
     // Quality information
     if (message.includes('kualitas') || message.includes('standar') || message.includes('sertifikat')) {
-      return 'Produk kami memiliki sertifikat ISO 9001:2015 dan memenuhi standar SNI 15-2049. Setiap batch produksi melalui quality control ketat di laboratorium in-house kami.';
+      return 'Produk kami memiliki sertifikat ISO 9001:2015 dan memenuhi standar SNI 15-2049. Setiap batch produksi melalui quality control ketat di laboratorium in-house kami.\n\n📞 Untuk informasi teknis detail: +62 823-0443-3145';
     }
     
     // Capacity information
     if (message.includes('kapasitas') || message.includes('produksi')) {
-      return 'Kapasitas produksi kami mencapai 500 ton per hari dengan mesin pengantongan otomatis. Operasional 24/7 untuk memenuhi permintaan pasar yang tinggi.';
+      return 'Kapasitas produksi kami mencapai 500 ton per hari dengan mesin pengantongan otomatis. Operasional 24/7 untuk memenuhi permintaan pasar yang tinggi.\n\n📞 Untuk diskusi kapasitas dan jadwal produksi: +62 823-0443-3145';
     }
     
     // Partnership information
     if (message.includes('kemitraan') || message.includes('mitra') || message.includes('kerja sama')) {
-      return 'Kami terbuka untuk kemitraan bisnis! Silakan hubungi tim business development kami untuk membahas peluang kerja sama yang saling menguntungkan.';
+      return 'Kami terbuka untuk kemitraan bisnis! Silakan hubungi tim business development kami untuk membahas peluang kerja sama yang saling menguntungkan.\n\n📞 **Hubungi**: +62 823-0443-3145\n📧 **Email**: partnership@ywm.co.id';
     }
     
     // Bot information
     if (message.includes('siapa') || message.includes('nama') || message.includes('bot')) {
-      return 'Saya adalah Customer Service Bot PT. Yoga Wibawa Mandiri. Saya adalah asisten virtual yang siap membantu Anda 24/7 dengan informasi tentang produk dan layanan kami.';
+      return 'Saya adalah Customer Service Bot PT. Yoga Wibawa Mandiri. Saya adalah asisten virtual yang siap membantu Anda 24/7 dengan informasi tentang produk dan layanan kami.\n\n📞 Untuk berbicara dengan tim manusia: +62 823-0443-3145';
+    }
+    
+    // Help or assistance requests
+    if (message.includes('bantuan') || message.includes('help') || message.includes('tolong') || message.includes('butuh')) {
+      return 'Saya siap membantu Anda! Untuk bantuan lebih lanjut dan komunikasi langsung dengan tim ahli kami:\n\n📞 **Hubungi sekarang**: +62 823-0443-3145\n📧 **Email**: info@ywm.co.id\n\nTim kami tersedia untuk konsultasi, pemesanan, dan semua kebutuhan Anda terkait produk semen.';
     }
     
     // Default response
-    return 'Terima kasih atas pertanyaan Anda. Sebagai Customer Service Bot, saya siap membantu lebih lanjut. Untuk informasi detail, silakan hubungi customer service kami di +62 651 123456 atau kunjungi halaman kontak di website ini.';
+    return 'Terima kasih atas pertanyaan Anda. Sebagai Customer Service Bot, saya siap membantu lebih lanjut.\n\n📞 **Untuk komunikasi langsung dan bantuan detail, silakan hubungi**: +62 823-0443-3145\n📧 **Email**: info@ywm.co.id\n\nTim pengantongan kami siap melayani Anda dengan profesional dan responsif.';
   };
 
   const handleSendMessage = async () => {
@@ -236,6 +241,11 @@ const ChatBot = () => {
     }
   };
 
+  // Function to handle phone number click
+  const handlePhoneClick = () => {
+    window.open('tel:+6282304433145', '_self');
+  };
+
   const CurrentBotIcon = currentBot.icon;
 
   return (
@@ -269,11 +279,32 @@ const ChatBot = () => {
                 <p className="text-sm text-gray-200 transition-all duration-500">Bot Assistant • Online 24/7</p>
               </div>
             </div>
+            <div className="flex items-center space-x-2">
+              {/* Quick Call Button */}
+              <button
+                onClick={handlePhoneClick}
+                className="bg-green-500 hover:bg-green-600 p-2 rounded-full transition-colors"
+                title="Hubungi +62 823-0443-3145"
+              >
+                <Phone size={16} />
+              </button>
+              <button
+                onClick={() => setIsOpen(false)}
+                className="text-white hover:text-gray-200 transition-colors"
+              >
+                <X size={20} />
+              </button>
+            </div>
+          </div>
+
+          {/* Quick Action Bar */}
+          <div className="bg-gray-50 px-4 py-2 border-b border-gray-200">
             <button
-              onClick={() => setIsOpen(false)}
-              className="text-white hover:text-gray-200 transition-colors"
+              onClick={handlePhoneClick}
+              className="w-full bg-green-500 hover:bg-green-600 text-white py-2 px-3 rounded-lg text-sm font-medium flex items-center justify-center space-x-2 transition-colors"
             >
-              <X size={20} />
+              <Phone size={16} />
+              <span>Hubungi: +62 823-0443-3145</span>
             </button>
           </div>
 
@@ -363,9 +394,18 @@ const ChatBot = () => {
                 <Send size={20} />
               </button>
             </div>
-            <p className="text-xs text-gray-500 mt-2 text-center">
-              Powered by PT. Yoga Wibawa Mandiri • Bot Assistant 24/7
-            </p>
+            <div className="flex items-center justify-between mt-2">
+              <p className="text-xs text-gray-500">
+                Powered by PT. Yoga Wibawa Mandiri
+              </p>
+              <button
+                onClick={handlePhoneClick}
+                className="text-xs text-green-600 hover:text-green-800 font-medium flex items-center space-x-1"
+              >
+                <Phone size={12} />
+                <span>+62 823-0443-3145</span>
+              </button>
+            </div>
           </div>
         </div>
       )}
