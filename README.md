@@ -1,4 +1,4 @@
-# PT. Yoga Wibawa Mandiri - AI-Powered Website
+# PT. Yoga Wibawa Mandiri - AI-Powered Website (Dalam Pengembangan)
 
 **Pengantongan Semen Padang Lhokseumawe dengan Teknologi AI Modern**
 
@@ -255,7 +255,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 Untuk pertanyaan teknis atau support:
 - **Developer**: Mulky Malikul Dhaher
-- **Email**: mulky@ywm.co.id
+- **Email**: mulkymalikuldhaher@mail.com
 - **Phone**: +62 xxx xxxx xxxx
 
 Untuk informasi bisnis:
