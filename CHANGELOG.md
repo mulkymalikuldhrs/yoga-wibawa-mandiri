@@ -1,18 +1,26 @@
-# Changelog
+# Changelog — yoga-wibawa-mandiri
 
 All notable changes to this project will be documented in this file.
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
-and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
-
-## [Unreleased]
+## [1.1.0] - 2026-03-04
 
 ### Added
-- Initial documentation standardization
-- Standard README.md with contributor guidelines, contact, and disclaimers
-- CONTRIBUTING.md for community onboarding
-- LICENSE (MIT)
+- Trilingual README (EN/ID/CN) with disclaimer
+- CONTRIBUTING.md with trilingual content and disclaimer
+- CODE_OF_CONDUCT.md with disclaimer
+- SECURITY.md with disclaimer
+- MIT License (2026)
+- GitHub issue templates (bug report, feature request, question)
+- Pull request template with disclaimer
+- FUNDING.yml
+- Deleted stale branch: mentat-5/comprehensive-update
 
----
+## [1.0.0] - Initial Release
 
-> Maintained by **Mulky Malikul Dhaher** | [mulkymalikuldhaher@email.com](mailto:mulkymalikuldhaher@email.com)
+### Added
+- Full-stack CMS with React 18 and TypeScript
+- Supabase backend integration
+- Responsive design with Tailwind CSS
+- Shadcn/UI component library
+- Interactive maps and gallery
+- Contact management system
