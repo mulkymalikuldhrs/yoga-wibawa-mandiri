@@ -1,50 +1,50 @@
-# Contributing to This Project
+# Contributing to yoga-wibawa-mandiri
 
-First off, thanks for taking the time to contribute! 🎉
+Thank you for your interest in contributing to **yoga-wibawa-mandiri**! We welcome contributions from the community.
 
-The following is a set of guidelines for contributing to this project. These are mostly guidelines, not rules. Use your best judgment, and feel free to propose changes to this document in a pull request.
+## 🇬🇧 English
 
-## How Can I Contribute?
+### How to Contribute
+1. **Fork** the repository
+2. Create a **feature branch** (`git checkout -b feature/amazing-feature`)
+3. **Commit** your changes (`git commit -m 'Add amazing feature'`)
+4. **Push** to the branch (`git push origin feature/amazing-feature`)
+5. Open a **Pull Request**
 
-### Report Bugs
-
-- Use the GitHub Issues section to report bugs
-- Include as much detail as possible: OS, version, steps to reproduce
-- Use a clear and descriptive title
-
-### Suggest Enhancements
-
-- Open a GitHub Issue with the tag `enhancement`
-- Describe the enhancement in detail
-- Explain why this enhancement would be useful
-
-### Pull Requests
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Make your changes
-4. Commit your changes (`git commit -m 'Add amazing feature'`)
-5. Push to the branch (`git push origin feature/amazing-feature`)
-6. Open a Pull Request
-
-## Development Process
-
-1. **Clone** the repository
-2. Create a **branch** for your feature/fix
-3. **Test** your changes thoroughly
-4. **Document** any new features
-5. Submit a **Pull Request**
-
-## Code Style
-
-- Follow the existing code style in the repository
+### Guidelines
+- Follow the existing code style
 - Write clear, descriptive commit messages
-- Add comments for complex logic
-- Keep functions small and focused
+- Add tests for new features
+- Update documentation as needed
+- Be respectful and constructive in discussions
 
-## Community
+## 🇮🇩 Bahasa Indonesia
 
-Be respectful and constructive. We're all here to learn and build together.
+### Cara Berkontribusi
+1. **Fork** repositori ini
+2. Buat **branch fitur** (`git checkout -b feature/amazing-feature`)
+3. **Commit** perubahan Anda (`git commit -m 'Tambah fitur baru'`)
+4. **Push** ke branch (`git push origin feature/amazing-feature`)
+5. Buka **Pull Request**
+
+## 🇨🇳 中文
+
+### 如何贡献
+1. **Fork** 本仓库
+2. 创建**特性分支** (`git checkout -b feature/amazing-feature`)
+3. **提交**您的更改 (`git commit -m 'Add amazing feature'`)
+4. **推送**到分支 (`git push origin feature/amazing-feature`)
+5. 发起 **Pull Request**
+
+---
+
+## ⚠️ Disclaimer
+
+**For Education Purpose Only.** All content, code, and documentation provided in this repository are intended solely for educational and research purposes. Nothing in this repository constitutes financial, investment, legal, or professional advice. The authors and contributors assume no responsibility or liability for any losses, damages, or consequences arising from the use of this software or information provided herein.
+
+**Hanya untuk Tujuan Pendidikan.** Semua konten, kode, dan dokumentasi dalam repositori ini hanya ditujukan untuk tujuan pendidikan dan penelitian. Penulis dan kontributor tidak bertanggung jawab atas risiko atau kerugian apa pun yang timbul dari penggunaan perangkat lunak atau informasi yang disediakan.
+
+**仅用于教育目的。** 本仓库中的所有内容、代码和文档仅用于教育和研究目的。作者和贡献者对因使用本软件或提供的信息而造成的任何损失、损害或后果不承担任何责任。
 
 ---
 
@@ -52,8 +52,4 @@ Be respectful and constructive. We're all here to learn and build together.
 
 **Mulky Malikul Dhaher** — [mulkymalikuldhaher@email.com](mailto:mulkymalikuldhaher@email.com)
 
-GitHub: [https://github.com/mulkymalikuldhrs](https://github.com/mulkymalikuldhrs)
-
----
-
-> This project is for **Education Purpose** only. **Risiko apapun tidak kita tanggung.** (We are not responsible for any risks or damages.)
+GitHub: https://github.com/mulkymalikuldhrs
