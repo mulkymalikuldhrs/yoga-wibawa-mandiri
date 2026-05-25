@@ -867,17 +867,8 @@ YWM.Modules.team = {
         const memberList = document.getElementById('team-member-list');
         if (memberList) memberList.innerHTML = this._renderTeamMemberList();
 
-        // Re-attach delegated event listeners (checkin area)
-        if (checkinArea) {
-            checkinArea.addEventListener('click', (e) => {
-                const btn = e.target.closest('[data-action]');
-                if (!btn) return;
-                const action = btn.getAttribute('data-action');
-                const empId = btn.getAttribute('data-emp');
-                if (action === 'checkin') this._handleCheckin(empId);
-                else if (action === 'checkout') this._handleCheckout(empId);
-            });
-        }
+        // Note: click delegation for check-in/out is set up once in init()
+        // on #team-checkin-area, so no listener re-attachment needed here.
     },
 
     // ============================================================

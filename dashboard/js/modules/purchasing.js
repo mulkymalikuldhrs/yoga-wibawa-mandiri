@@ -619,8 +619,8 @@ YWM.Modules.purchasing = {
                 if (parsed) {
                     const saved = await this._savePO(parsed);
                     this._showToast('PO berhasil dibuat: ' + saved.poNumber, 'success');
-                    if (window.YWM && window.YWM.App && typeof YWM.App.loadModule === 'function') {
-                        await YWM.App.loadModule('purchasing');
+                    if (YWM.App && typeof YWM.App.refreshCurrentModule === 'function') {
+                        await YWM.App.refreshCurrentModule();
                     }
                     return saved;
                 }
@@ -645,8 +645,8 @@ Output JSON saja:
                     const parsed = JSON.parse(match[0]);
                     const saved = await this._savePO(parsed);
                     this._showToast('PO dibuat via AI: ' + saved.poNumber, 'success');
-                    if (window.YWM && window.YWM.App && typeof YWM.App.loadModule === 'function') {
-                        await YWM.App.loadModule('purchasing');
+                    if (YWM.App && typeof YWM.App.refreshCurrentModule === 'function') {
+                        await YWM.App.refreshCurrentModule();
                     }
                     return saved;
                 }
@@ -772,12 +772,12 @@ Output JSON saja:
         document.querySelectorAll('.po-btn-del-sup').forEach(btn => {
             btn.addEventListener('click', async () => {
                 const id = btn.dataset.id;
-                if (confirm('Yakin ingin menghapus supplier ' + id + '?')) {
+                if (await YWM.UI.confirm('Yakin ingin menghapus supplier ' + id + '?')) {
                     try {
                         await self._deleteSupplier(id);
                         self._showToast('Supplier dihapus', 'success');
-                        if (window.YWM && window.YWM.App && typeof YWM.App.loadModule === 'function') {
-                            await YWM.App.loadModule('purchasing');
+                        if (YWM.App && typeof YWM.App.refreshCurrentModule === 'function') {
+                            await YWM.App.refreshCurrentModule();
                         }
                     } catch (err) {
                         self._showToast('Gagal: ' + err.message, 'error');
@@ -893,8 +893,8 @@ Output JSON saja:
                         const saved = await self._savePO(poData);
                         self._showToast('PO berhasil dibuat: ' + saved.poNumber, 'success');
                         self._closeModal();
-                        if (window.YWM && window.YWM.App && typeof YWM.App.loadModule === 'function') {
-                            await YWM.App.loadModule('purchasing');
+                        if (YWM.App && typeof YWM.App.refreshCurrentModule === 'function') {
+                            await YWM.App.refreshCurrentModule();
                         }
                     } catch (err) {
                         self._showToast('Gagal membuat PO: ' + err.message, 'error');
@@ -916,8 +916,8 @@ Output JSON saja:
                         await self._updatePOStatus(po.poNumber, 'Sent');
                         self._showToast('PO berhasil dikirim', 'success');
                         self._closeModal();
-                        if (window.YWM && window.YWM.App && typeof YWM.App.loadModule === 'function') {
-                            await YWM.App.loadModule('purchasing');
+                        if (YWM.App && typeof YWM.App.refreshCurrentModule === 'function') {
+                            await YWM.App.refreshCurrentModule();
                         }
                     } catch (err) {
                         self._showToast('Gagal: ' + err.message, 'error');
@@ -932,8 +932,8 @@ Output JSON saja:
                         await self._updatePOStatus(po.poNumber, 'Received');
                         self._showToast('Barang diterima', 'success');
                         self._closeModal();
-                        if (window.YWM && window.YWM.App && typeof YWM.App.loadModule === 'function') {
-                            await YWM.App.loadModule('purchasing');
+                        if (YWM.App && typeof YWM.App.refreshCurrentModule === 'function') {
+                            await YWM.App.refreshCurrentModule();
                         }
                     } catch (err) {
                         self._showToast('Gagal: ' + err.message, 'error');
@@ -944,13 +944,13 @@ Output JSON saja:
             const cancelBtn = document.getElementById('po-detail-cancel');
             if (cancelBtn) {
                 cancelBtn.addEventListener('click', async () => {
-                    if (confirm('Yakin ingin membatalkan PO ' + po.poNumber + '?')) {
+                    if (await YWM.UI.confirm('Yakin ingin membatalkan PO ' + po.poNumber + '?')) {
                         try {
                             await self._updatePOStatus(po.poNumber, 'Cancelled');
                             self._showToast('PO dibatalkan', 'warning');
                             self._closeModal();
-                            if (window.YWM && window.YWM.App && typeof YWM.App.loadModule === 'function') {
-                                await YWM.App.loadModule('purchasing');
+                            if (YWM.App && typeof YWM.App.refreshCurrentModule === 'function') {
+                                await YWM.App.refreshCurrentModule();
                             }
                         } catch (err) {
                             self._showToast('Gagal: ' + err.message, 'error');
@@ -978,8 +978,8 @@ Output JSON saja:
                         await self._saveSupplier(data, isEdit);
                         self._showToast(isEdit ? 'Supplier diupdate' : 'Supplier ditambahkan', 'success');
                         self._closeModal();
-                        if (window.YWM && window.YWM.App && typeof YWM.App.loadModule === 'function') {
-                            await YWM.App.loadModule('purchasing');
+                        if (YWM.App && typeof YWM.App.refreshCurrentModule === 'function') {
+                            await YWM.App.refreshCurrentModule();
                         }
                     } catch (err) {
                         self._showToast('Gagal: ' + err.message, 'error');

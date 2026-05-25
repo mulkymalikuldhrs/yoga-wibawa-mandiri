@@ -50,9 +50,6 @@ const PuterInit = {
                 }
             }
 
-            // Setup event listener koneksi
-            this.setupConnectionListeners();
-
             this.initialized = true;
             console.log('[PuterInit] Inisialisasi selesai');
 
@@ -64,7 +61,6 @@ const PuterInit = {
             return this.user;
         } catch (error) {
             console.error('[PuterInit] Gagal inisialisasi:', error);
-            this.setupConnectionListeners();
             this.user = { username: 'Guest', isGuest: true };
             this.initialized = true;
 
@@ -98,29 +94,6 @@ const PuterInit = {
                     reject(new Error('Timeout menunggu Puter.js'));
                 }
             }, 200);
-        });
-    },
-
-    /**
-     * Setup listener untuk status koneksi online/offline
-     */
-    setupConnectionListeners() {
-        window.addEventListener('online', () => {
-            this.online = true;
-            window.dispatchEvent(new CustomEvent('connection-change', {
-                detail: { online: true }
-            }));
-            this.updateStatusBar();
-            console.log('[PuterInit] Koneksi kembali online');
-        });
-
-        window.addEventListener('offline', () => {
-            this.online = false;
-            window.dispatchEvent(new CustomEvent('connection-change', {
-                detail: { online: false }
-            }));
-            this.updateStatusBar();
-            console.log('[PuterInit] Koneksi terputus');
         });
     },
 

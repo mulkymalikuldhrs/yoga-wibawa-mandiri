@@ -1024,12 +1024,13 @@
          * Tambahkan entri audit trail.
          * Menyimpan log per hari (key: ywm:audit:log:{YYYY-MM-DD}).
          *
-         * @param {string} action — Jenis aksi (create/update/delete/view/dll.)
          * @param {string} module — Nama modul terkait
+         * @param {string} action — Jenis aksi (create/update/delete/view/dll.)
          * @param {string|Object} details — Detail aksi
+         * @param {...*} extra — Argumen tambahan (oldValue, newValue, dll.) yang disertakan di entry
          * @returns {Promise<boolean>} — true jika berhasil
          */
-        async addAuditLog(action, module, details) {
+        async addAuditLog(module, action, details = {}, ...extra) {
             try {
                 const now = new Date();
                 const dateKey = now.toISOString().split('T')[0]; // YYYY-MM-DD
@@ -1058,11 +1059,22 @@
                 const entry = {
                     id: now.getTime() + '-' + Math.random().toString(36).substring(2, 8),
                     timestamp: now.toISOString(),
-                    action: action,
                     module: module,
+                    action: action,
                     details: typeof details === 'string' ? details : JSON.stringify(details),
                     user: username
                 };
+
+                // Sertakan argumen tambahan (oldValue, newValue, dll.) jika ada
+                if (extra.length > 0) {
+                    entry.oldValue = extra[0] ?? null;
+                }
+                if (extra.length > 1) {
+                    entry.newValue = extra[1] ?? null;
+                }
+                if (extra.length > 2) {
+                    entry.extra = extra.slice(2);
+                }
 
                 // Tambahkan ke awal array (terbaru duluan)
                 logs.unshift(entry);

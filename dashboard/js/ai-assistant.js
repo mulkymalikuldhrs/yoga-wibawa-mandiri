@@ -451,7 +451,7 @@
     } else {
       response = await puter.ai.chat(messages, {
         model: state.selectedModel
-      );
+      });
     }
 
     const text = typeof response === 'string' ? response : 
@@ -821,7 +821,7 @@
     try {
       const config = getChatConfig();
       if (typeof puter !== 'undefined' && puter.kv) {
-        await puter.kv.del(config.historyKey);
+        await YWM.Data.delete(config.historyKey);
       }
     } catch (error) {
       console.warn('[AI Assistant] Gagal menghapus riwayat dari KV:', error.message);

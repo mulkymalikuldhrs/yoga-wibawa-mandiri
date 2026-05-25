@@ -692,12 +692,12 @@ Output HANYA JSON, tanpa penjelasan.`;
             btn.addEventListener('click', async (e) => {
                 e.stopPropagation();
                 const id = btn.dataset.id;
-                if (confirm('Yakin ingin menghapus dokumen ' + id + '?')) {
+                if (await YWM.UI.confirm('Yakin ingin menghapus dokumen ' + id + '?')) {
                     try {
                         await self._deleteDocument(id);
                         self._showToast('Dokumen dihapus', 'success');
-                        if (window.YWM && window.YWM.App && typeof YWM.App.loadModule === 'function') {
-                            await YWM.App.loadModule('documents');
+                        if (YWM.App && typeof YWM.App.refreshCurrentModule === 'function') {
+                            await YWM.App.refreshCurrentModule();
                         }
                     } catch (err) {
                         self._showToast('Gagal: ' + err.message, 'error');
@@ -792,12 +792,12 @@ Output HANYA JSON, tanpa penjelasan.`;
         document.querySelectorAll('.doc-btn-del').forEach(btn => {
             btn.addEventListener('click', async (e) => {
                 e.stopPropagation();
-                if (confirm('Yakin ingin menghapus dokumen ' + btn.dataset.id + '?')) {
+                if (await YWM.UI.confirm('Yakin ingin menghapus dokumen ' + btn.dataset.id + '?')) {
                     try {
                         await self._deleteDocument(btn.dataset.id);
                         self._showToast('Dokumen dihapus', 'success');
-                        if (window.YWM && window.YWM.App && typeof YWM.App.loadModule === 'function') {
-                            await YWM.App.loadModule('documents');
+                        if (YWM.App && typeof YWM.App.refreshCurrentModule === 'function') {
+                            await YWM.App.refreshCurrentModule();
                         }
                     } catch (err) {
                         self._showToast('Gagal: ' + err.message, 'error');
@@ -902,8 +902,8 @@ Output HANYA JSON, tanpa penjelasan.`;
 
                         self._showToast('Dokumen berhasil diupload: ' + doc.id, 'success');
                         self._closeModal();
-                        if (window.YWM && window.YWM.App && typeof YWM.App.loadModule === 'function') {
-                            await YWM.App.loadModule('documents');
+                        if (YWM.App && typeof YWM.App.refreshCurrentModule === 'function') {
+                            await YWM.App.refreshCurrentModule();
                         }
                     } catch (err) {
                         self._showToast('Gagal upload: ' + err.message, 'error');
@@ -1042,8 +1042,8 @@ Output HANYA JSON, tanpa penjelasan.`;
 
                         self._showToast('Dokumen OCR disimpan: ' + doc.id, 'success');
                         self._closeModal();
-                        if (window.YWM && window.YWM.App && typeof YWM.App.loadModule === 'function') {
-                            await YWM.App.loadModule('documents');
+                        if (YWM.App && typeof YWM.App.refreshCurrentModule === 'function') {
+                            await YWM.App.refreshCurrentModule();
                         }
                     } catch (err) {
                         self._showToast('Gagal menyimpan: ' + err.message, 'error');
@@ -1127,8 +1127,8 @@ Output HANYA JSON, tanpa penjelasan.`;
             const ocrResult = await self._runOCR(id, fileData);
             self._showToast('OCR selesai untuk ' + id, 'success');
 
-            if (window.YWM && window.YWM.App && typeof YWM.App.loadModule === 'function') {
-                await YWM.App.loadModule('documents');
+            if (YWM.App && typeof YWM.App.refreshCurrentModule === 'function') {
+                await YWM.App.refreshCurrentModule();
             }
         } catch (err) {
             self._showToast('Gagal OCR: ' + err.message, 'error');

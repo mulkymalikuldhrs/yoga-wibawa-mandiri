@@ -754,14 +754,14 @@ YWM.Modules.settings = {
         if (!user) return;
 
         // Konfirmasi
-        if (!confirm(`Yakin ingin menghapus user "${user.username}"?`)) return;
+        if (!(await YWM.UI.confirm(`Yakin ingin menghapus user "${user.username}"?`))) return;
 
         this._state.users = this._state.users.filter(u => u.id !== userId);
 
         // Hapus role dari KV
         try {
             if (typeof puter !== 'undefined' && puter.kv) {
-                await puter.kv.del(`ywm:auth:role:${user.username}`);
+                await YWM.Data.delete(`ywm:auth:role:${user.username}`);
             }
         } catch (e) { /* abaikan */ }
 
@@ -1045,7 +1045,7 @@ YWM.Modules.settings = {
             }
 
             // Konfirmasi import
-            if (!confirm(`Import data dari "${file.name}"?\n\nVersi: ${data.version}\nExport pada: ${data.exportedAt}\nOleh: ${data.exportedBy || '-'}\n\nPERHATIAN: Data yang ada mungkin akan ditimpa.`)) {
+            if (!(await YWM.UI.confirm(`Import data dari "${file.name}"?\n\nVersi: ${data.version}\nExport pada: ${data.exportedAt}\nOleh: ${data.exportedBy || '-'}\n\nPERHATIAN: Data yang ada mungkin akan ditimpa.`))) {
                 return;
             }
 
@@ -1096,7 +1096,7 @@ YWM.Modules.settings = {
      * Bersihkan cache lokal
      */
     async _clearCache() {
-        if (!confirm('Bersihkan semua data cache lokal?\n\nData di Puter KV tidak akan terpengaruh.')) return;
+        if (!(await YWM.UI.confirm('Bersihkan semua data cache lokal?\n\nData di Puter KV tidak akan terpengaruh.'))) return;
 
         try {
             // Hapus localStorage terkait YWM

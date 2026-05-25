@@ -91,7 +91,7 @@ if (!window.YWM.Data) {
         async del(key) {
             try {
                 if (typeof puter === 'undefined' || !puter.kv) return false;
-                await puter.kv.del(key);
+                await puter.kv.delete(key);
                 return true;
             } catch (e) {
                 console.warn('[YWM.Data.del] Gagal hapus key:', key, e.message);
@@ -330,7 +330,7 @@ async function deleteItem(kode) {
         if (!kode) return false;
 
         // Konfirmasi hapus
-        if (!confirm(`Hapus item ${kode}? Tindakan ini tidak dapat dibatalkan.`)) return false;
+        if (!(await YWM.UI.confirm(`Hapus item ${kode}? Tindakan ini tidak dapat dibatalkan.`))) return false;
 
         // Hapus dari KV
         await YWM.Data.del(SP_KV_PREFIX + kode);

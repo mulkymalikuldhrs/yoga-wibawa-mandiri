@@ -308,8 +308,9 @@ window.YWM.Modules = window.YWM.Modules || {};
         var now = new Date();
         var userName = 'Pengguna';
         try {
-            var session = YWM.Auth && YWM.Auth.getSession ? YWM.Auth.getSession() : null;
-            if (session && session.name) userName = session.name;
+            if (YWM.PuterInit && YWM.PuterInit.user && YWM.PuterInit.user.username) {
+                userName = YWM.PuterInit.user.username;
+            }
         } catch (_) { /* keep default */ }
 
         var greet = greeting(now.getHours());
@@ -581,8 +582,8 @@ window.YWM.Modules = window.YWM.Modules || {};
                         'kpi-team': 'hr'
                     };
                     var target = moduleMap[kpiId];
-                    if (target && YWM.navigate) {
-                        YWM.navigate(target);
+                    if (target && YWM.App && YWM.App.navigateTo) {
+                        YWM.App.navigateTo(target);
                     }
                     return;
                 }
@@ -591,8 +592,8 @@ window.YWM.Modules = window.YWM.Modules || {};
                 var actionBtn = e.target.closest('[data-navigate]');
                 if (actionBtn) {
                     var mod = actionBtn.getAttribute('data-navigate');
-                    if (YWM.navigate) {
-                        YWM.navigate(mod);
+                    if (YWM.App && YWM.App.navigateTo) {
+                        YWM.App.navigateTo(mod);
                     }
                     return;
                 }

@@ -60,7 +60,7 @@ if (!window.YWM.Data) {
         async del(key) {
             try {
                 if (typeof puter === 'undefined' || !puter.kv) return false;
-                await puter.kv.del(key);
+                await puter.kv.delete(key);
                 return true;
             } catch (e) {
                 console.warn('[YWM.Data.del] Gagal hapus key:', key, e.message);
@@ -329,7 +329,7 @@ async function saveProductionEntry(entryData) {
  */
 async function deleteShiftEntry(date, shift) {
     try {
-        if (!confirm(`Hapus data shift ${shift} tanggal ${date}?`)) return false;
+        if (!(await YWM.UI.confirm(`Hapus data shift ${shift} tanggal ${date}?`))) return false;
 
         let dailyData = await YWM.Data.get(PROD_KV_PREFIX + date);
         if (!dailyData) return false;

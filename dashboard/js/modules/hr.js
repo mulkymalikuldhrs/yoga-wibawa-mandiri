@@ -709,8 +709,8 @@ YWM.Modules.hr = {
                 if (parsed) {
                     const saved = await this._saveEmployee(parsed);
                     this._showToast('Karyawan berhasil ditambahkan: ' + saved.nama, 'success');
-                    if (window.YWM && window.YWM.App && typeof YWM.App.loadModule === 'function') {
-                        await YWM.App.loadModule('hr');
+                    if (YWM.App && typeof YWM.App.refreshCurrentModule === 'function') {
+                        await YWM.App.refreshCurrentModule();
                     }
                     return saved;
                 }
@@ -742,8 +742,8 @@ Output JSON saja:
                     const parsed = JSON.parse(match[0]);
                     const saved = await this._saveEmployee(parsed);
                     this._showToast('Karyawan ditambahkan via AI: ' + saved.nama, 'success');
-                    if (window.YWM && window.YWM.App && typeof YWM.App.loadModule === 'function') {
-                        await YWM.App.loadModule('hr');
+                    if (YWM.App && typeof YWM.App.refreshCurrentModule === 'function') {
+                        await YWM.App.refreshCurrentModule();
                     }
                     return saved;
                 }
@@ -858,12 +858,12 @@ Output JSON saja:
         document.querySelectorAll('.hr-btn-del').forEach(btn => {
             btn.addEventListener('click', async () => {
                 const id = btn.dataset.id;
-                if (confirm('Yakin ingin menghapus karyawan ' + id + '?')) {
+                if (await YWM.UI.confirm('Yakin ingin menghapus karyawan ' + id + '?')) {
                     try {
                         await self._deleteEmployee(id);
                         self._showToast('Karyawan ' + id + ' berhasil dihapus', 'success');
-                        if (window.YWM && window.YWM.App && typeof YWM.App.loadModule === 'function') {
-                            await YWM.App.loadModule('hr');
+                        if (YWM.App && typeof YWM.App.refreshCurrentModule === 'function') {
+                            await YWM.App.refreshCurrentModule();
                         }
                     } catch (err) {
                         self._showToast('Gagal menghapus: ' + err.message, 'error');
@@ -911,8 +911,8 @@ Output JSON saja:
                 try {
                     await self._updateLeaveStatus(btn.dataset.id, 'Disetujui');
                     self._showToast('Pengajuan disetujui', 'success');
-                    if (window.YWM && window.YWM.App && typeof YWM.App.loadModule === 'function') {
-                        await YWM.App.loadModule('hr');
+                    if (YWM.App && typeof YWM.App.refreshCurrentModule === 'function') {
+                        await YWM.App.refreshCurrentModule();
                     }
                 } catch (err) {
                     self._showToast('Gagal: ' + err.message, 'error');
@@ -924,8 +924,8 @@ Output JSON saja:
                 try {
                     await self._updateLeaveStatus(btn.dataset.id, 'Ditolak');
                     self._showToast('Pengajuan ditolak', 'warning');
-                    if (window.YWM && window.YWM.App && typeof YWM.App.loadModule === 'function') {
-                        await YWM.App.loadModule('hr');
+                    if (YWM.App && typeof YWM.App.refreshCurrentModule === 'function') {
+                        await YWM.App.refreshCurrentModule();
                     }
                 } catch (err) {
                     self._showToast('Gagal: ' + err.message, 'error');
@@ -981,8 +981,8 @@ Output JSON saja:
                             const overlay = document.getElementById('modal-overlay');
                             if (overlay) overlay.classList.add('hidden');
                         }
-                        if (window.YWM && window.YWM.App && typeof YWM.App.loadModule === 'function') {
-                            await YWM.App.loadModule('hr');
+                        if (YWM.App && typeof YWM.App.refreshCurrentModule === 'function') {
+                            await YWM.App.refreshCurrentModule();
                         }
                     } catch (err) {
                         self._showToast('Gagal menyimpan: ' + err.message, 'error');
@@ -1031,8 +1031,8 @@ Output JSON saja:
                             const overlay = document.getElementById('modal-overlay');
                             if (overlay) overlay.classList.add('hidden');
                         }
-                        if (window.YWM && window.YWM.App && typeof YWM.App.loadModule === 'function') {
-                            await YWM.App.loadModule('hr');
+                        if (YWM.App && typeof YWM.App.refreshCurrentModule === 'function') {
+                            await YWM.App.refreshCurrentModule();
                         }
                     } catch (err) {
                         self._showToast('Gagal mengajukan: ' + err.message, 'error');
