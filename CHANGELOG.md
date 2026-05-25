@@ -7,6 +7,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [5.0.0] - 2026-05-26 — AI Agent Upgrade & Code Quality
+
+### Added
+- **AI Agent System v2.0** — Upgraded AI from chatbot to autonomous agent
+  - Action detection: AI parses natural language into executable actions
+  - 10 agent actions: create_wo, update_wo, add_spare_part, check_stock, log_team_activity, create_po, check_overdue_wo, generate_report, check_production_anomaly, run_workflow
+  - 4 autonomous workflows: low_stock_auto_order, overdue_wo_escalation, production_anomaly_alert, daily_checkup
+  - Proactive monitoring: Periodic background checks (every 5 minutes)
+  - Smart notifications: Proactive alerts for critical events
+  - Confirmation flow: Write actions require user confirmation before execution
+  - Audit trail: All agent actions logged to KV Store
+  - Fallback keyword parsing when AI unavailable
+- **Comprehensive PRD.md** — Full Product Requirements Document
+- **ESLint integration** — Fixed all TypeScript/React lint errors (0 errors, 9 warnings)
+- **Code quality improvements** — Syntax validation passed for all 25 JS files
+
+### Changed
+- Updated all documentation to reflect v5.0.0 status
+- ROADMAP.md aligned with actual implementation status (Phase 1-4 complete)
+- ARCHITECTURE.md updated for vanilla JS dashboard architecture
+- Version bump from 4.1.0 to 5.0.0
+
+### Fixed
+- ESLint errors: command.tsx empty interface, textarea.tsx empty interface, tailwind.config.ts require import
+- GitHub Pages deployment verified (root index.html redirects to dashboard/)
+
+---
+
 ## [4.1.0] - 2025-05-25
 
 ### Fixed

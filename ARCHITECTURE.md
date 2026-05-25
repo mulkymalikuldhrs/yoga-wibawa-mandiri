@@ -1,7 +1,7 @@
 # 🏗️ ARSITEKTUR SISTEM — PT Yoga Wibawa Mandiri AI Dashboard
 
 > **Dokumen Arsitektur Sistem** — Arsitektur lengkap dashboard operasional berbasis Puter.js
-> **Versi:** 3.0.0 | **Terakhir Diperbarui:** 2026-03-05
+> **Versi:** 5.0.0 | **Terakhir Diperbarui:** 2026-05-26
 > **Arsitek:** Mulky Malikul Dhaher | mulkymalikuldhaher@email.com
 
 ---
@@ -33,8 +33,8 @@ PT YWM AI Dashboard adalah platform operasional komprehensif yang dibangun di at
 │  │                    Frontend (Browser)                          │  │
 │  │                                                               │  │
 │  │  ┌─────────────┐  ┌──────────────┐  ┌──────────────────────┐ │  │
-│  │  │  React 18.3  │  │  Vite 5.4    │  │  Tailwind CSS 3.4   │ │  │
-│  │  │  TypeScript  │  │  (Build/HMR) │  │  + Shadcn/UI        │ │  │
+│  │  │  Vanilla     │  │  Puter.js    │  │  Custom Glassmorphic │ │  │
+│  │  │  HTML/CSS/JS │  │  SDK         │  │  CSS                  │ │  │
 │  │  └──────┬───────┘  └──────┬───────┘  └──────────┬──────────┘ │  │
 │  │         │                  │                      │            │  │
 │  │         └──────────────────┼──────────────────────┘            │  │
@@ -196,6 +196,46 @@ yoga-wibawa-mandiri/
 ├── components.json                       # Shadcn/UI configuration
 ├── postcss.config.js                     # PostCSS configuration
 └── eslint.config.js                      # ESLint configuration
+│
+├── dashboard/                            # Dashboard (Vanilla HTML + CSS + JS + Puter.js)
+│   ├── index.html                        # Dashboard shell (sidebar + header + AI panel)
+│   ├── css/
+│   │   ├── glassmorphic.css              # Design system (frosted glass, colors, variables)
+│   │   ├── dashboard-layout.css          # Main layout grid
+│   │   ├── sidebar.css                   # Sidebar navigation styles
+│   │   ├── cards.css                     # Card component styles
+│   │   ├── ai-panel.css                  # AI assistant panel styles
+│   │   └── responsive.css                # Mobile responsive breakpoints
+│   ├── js/
+│   │   ├── puter-init.js                 # Puter.js initialization & auth
+│   │   ├── ai-config.js                  # AI prompts, model config, agent config
+│   │   ├── ai-assistant.js               # AI chat + autonomous agent system
+│   │   ├── voice-handler.js              # Speech-to-text input
+│   │   ├── ocr-handler.js                # Document OCR processing
+│   │   ├── smart-input.js                # Natural language data input parsing
+│   │   ├── report-generator.js           # Auto report generation
+│   │   ├── utils/
+│   │   │   ├── formatters.js             # Number/date/currency formatters
+│   │   │   └── validators.js             # Input validation utilities
+│   │   └── modules/
+│   │       ├── app.js                    # Core: YWM.App (router), YWM.UI (toast/modal), YWM.Data (KV CRUD)
+│   │       ├── home.js                   # KPI overview, quick actions
+│   │       ├── spareparts.js             # Inventory management
+│   │       ├── production.js             # Production tracking
+│   │       ├── maintenance.js            # Work orders
+│   │       ├── team.js                   # Team activity
+│   │       ├── quality.js                # QC batch testing
+│   │       ├── safety.js                 # HSE incidents
+│   │       ├── finance.js                # Transaction tracking
+│   │       ├── hr.js                     # Employee management
+│   │       ├── purchasing.js             # Purchase orders
+│   │       ├── documents.js              # Document OCR
+│   │       ├── reports.js                # Report generation
+│   │       ├── notifications.js          # Alert system
+│   │       ├── analytics.js              # KPI analytics
+│   │       └── settings.js               # App configuration
+│   └── assets/
+│       └── favicon.svg
 ```
 
 ---
@@ -465,6 +505,131 @@ AI Services Architecture:
 │       │  puter.kv.set('ywm:doc:meta:DOC-001', JSON)             │
 │       └── Simpan hasil OCR: ywm:doc:ocr:DOC-001                  │
 └──────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## 6.3 Arsitektur AI Agent
+
+AI Agent adalah sistem otonom yang mampu mendeteksi aksi dari input pengguna, mengeksekusi operasi di dashboard secara otomatis, dan menjalankan pemantauan proaktif terhadap data operasional.
+
+### 6.3.1 Pipeline Deteksi Aksi Agent
+
+```
+┌──────────────────────────────────────────────────────────────────┐
+│                AI Agent Action Detection Pipeline                 │
+│                                                                  │
+│  Input Pengguna (Teks / Suara)                                   │
+│       │                                                          │
+│       ▼                                                          │
+│  1. Keyword Match                                                │
+│     ├── Pencarian kata kunci di input pengguna                   │
+│     ├── Contoh: "tambah spare part", "buat work order"           │
+│     └── Jika match → lanjut ke tahap 2                          │
+│                                                                  │
+│  2. AI Parse                                                     │
+│     ├── Kirim input ke Puter AI (GPT-4o-mini)                    │
+│     ├── AI mengekstrak parameter dari input natural language     │
+│     ├── AI mengidentifikasi aksi yang diminta                    │
+│     └── Mengembalikan JSON: { action, params }                   │
+│                                                                  │
+│  3. Execute                                                      │
+│     ├── Validasi parameter sesuai schema aksi                    │
+│     ├── Eksekusi aksi via YWM.Data (KV CRUD)                    │
+│     ├── Update UI secara real-time                               │
+│     └── Log audit trail untuk setiap aksi                        │
+│                                                                  │
+│  4. Confirm                                                      │
+│     ├── Tampilkan hasil aksi ke pengguna                         │
+│     └── Konfirmasi sukses/gagal dengan toast notification        │
+└──────────────────────────────────────────────────────────────────┘
+```
+
+### 6.3.2 Daftar Aksi Agent (10 Aksi)
+
+| # | Aksi | Keyword Pemicu | Parameter | KV Prefix Terpengaruh |
+|---|------|---------------|-----------|----------------------|
+| 1 | **add_sparepart** | "tambah spare part", "stok baru" | `{ nama, kode, stok, min_stok, kategori, lokasi }` | `ywm:sparepart:` |
+| 2 | **create_workorder** | "buat work order", "maintenance baru" | `{ judul, mesin, tipe, prioritas, deskripsi }` | `ywm:maintenance:` |
+| 3 | **log_production** | "catat produksi", "input produksi" | `{ tanggal, shift, produk, jumlah, target }` | `ywm:production:` |
+| 4 | **report_incident** | "lapor insiden", "kecelakaan", "near miss" | `{ tanggal, lokasi, severity, deskripsi, corrective }` | `ywm:hse:` |
+| 5 | **add_transaction** | "tambah transaksi", "catat keuangan" | `{ tipe, jumlah, kategori, deskripsi, tanggal }` | `ywm:finance:` |
+| 6 | **add_employee** | "tambah karyawan", "data karyawan baru" | `{ nama, nik, jabatan, departemen, mulai_kerja }` | `ywm:hr:` |
+| 7 | **create_purchase_order** | "buat PO", "purchase order" | `{ supplier, items: [{kode, nama, qty}], catatan }` | `ywm:purchasing:` |
+| 8 | **qc_batch_test** | "uji batch", "quality check" | `{ batch_id, produk, parameter, hasil, status }` | `ywm:qc:` |
+| 9 | **generate_report** | "buat laporan", "generate report" | `{ tipe, periode, modul, format }` | `ywm:doc:` / `ywm:analytics:` |
+| 10 | **update_settings** | "ubah pengaturan", "update config" | `{ key, value }` | `ywm:settings:` |
+
+### 6.3.3 Workflow Otonom (4 Workflow)
+
+| # | Workflow | Trigger | Langkah Eksekusi |
+|---|----------|---------|-------------------|
+| 1 | **Reorder Alert** | Stok spare part ≤ minimum | ① Baca stok terkini → ② Buat notifikasi → ③ Buat draft PO → ④ Kirim alert ke manager |
+| 2 | **WO Overdue Monitor** | Work order melewati deadline | ① Scan WO aktif → ② Identifikasi yang overdue → ③ Eskalasi ke supervisor → ④ Update status WO |
+| 3 | **Production Deviation** | Realisasi produksi < 90% target | ① Baca data produksi harian → ② Bandingkan dengan target → ③ Buat laporan deviasi → ④ Notifikasi manager produksi |
+| 4 | **Daily Summary** | Setiap akhir hari (18:00) | ① Agregasi data semua modul → ② Buat ringkasan harian → ③ Simpan ke KV → ④ Kirim notifikasi ringkasan |
+
+### 6.3.4 Sistem Pemantauan Proaktif
+
+```
+┌──────────────────────────────────────────────────────────────────┐
+│              Proactive Monitoring System                          │
+│                                                                  │
+│  ┌─────────────────────────────────────────────────────────┐    │
+│  │  Monitoring Loop (setiap 5 menit)                        │    │
+│  │                                                          │    │
+│  │  1. Baca KPI terkini dari KV Store                      │    │
+│  │  2. Evaluasi threshold per modul:                        │    │
+│  │     ├── Spare part: stok < min_stok?                     │    │
+│  │     ├── Maintenance: WO overdue?                         │    │
+│  │     ├── Production: deviasi dari target?                 │    │
+│  │     ├── HSE: insiden baru/tidak tertutup?                │    │
+│  │     └── Finance: budget overrun?                         │    │
+│  │  3. Jika threshold terpicu → jalankan workflow otonom    │    │
+│  │  4. Log hasil pemantauan ke audit trail                  │    │
+│  └─────────────────────────────────────────────────────────┘    │
+│                                                                  │
+│  Threshold Configuration (disimpan di ywm:settings:monitoring):  │
+│  {                                                               │
+│    "sparepart_reorder_pct": 20,   // % stok vs min             │
+│    "wo_overdue_hours": 24,        // jam setelah deadline       │
+│    "production_deviation_pct": 10, // % deviasi dari target     │
+│    "hse_unresolved_hours": 48,    // jam insiden belum resolved │
+│    "finance_budget_pct": 90       // % penggunaan budget        │
+│  }                                                               │
+└──────────────────────────────────────────────────────────────────┘
+```
+
+### 6.3.5 Audit Trail untuk Aksi Agent
+
+Setiap aksi yang dilakukan oleh AI Agent dicatat di audit trail:
+
+```
+Key Pattern: ywm:audit:agent:{timestamp}
+
+Contoh data audit:
+{
+  "timestamp": "2026-05-26T10:30:00.000Z",
+  "action": "add_sparepart",
+  "trigger": "user_input",           // user_input | proactive | workflow
+  "user_input": "tambah spare part bearing 6205 stok 50",
+  "parsed_params": {
+    "nama": "Bearing 6205",
+    "kode": "SP-BRG-6205",
+    "stok": 50,
+    "min_stok": 10,
+    "kategori": "Bearing",
+    "lokasi": "Gudang A-3"
+  },
+  "result": "success",               // success | failed | partial
+  "affected_keys": [
+    "ywm:sparepart:item:SP-BRG-6205",
+    "ywm:sparepart:index:all"
+  ],
+  "execution_time_ms": 245,
+  "user": "admin",
+  "session_id": "sess_abc123"
+}
 ```
 
 ---

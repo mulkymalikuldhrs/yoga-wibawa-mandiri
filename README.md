@@ -3,7 +3,8 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Puter.js](https://img.shields.io/badge/Powered%20by-Puter.js-00d4ff)](https://puter.com/)
 [![Zero Server](https://img.shields.io/badge/Architecture-Zero%20Server-green)](https://puter.com/)
-[![AI Powered](https://img.shields.io/badge/AI-GPT--4o%20%7C%20Claude%20%7C%20Gemini-blue)](https://puter.com/)
+[![AI Agent](https://img.shields.io/badge/AI-Agent%20%7C%20GPT--4o%20%7C%20Claude%20%7C%20Gemini-blue)](https://puter.com/)
+[![Version](https://img.shields.io/badge/Version-5.0.0-brightgreen)](CHANGELOG.md)
 
 ---
 
@@ -16,7 +17,8 @@ PT. Yoga Wibawa Mandiri is a trusted cement packaging company strategically loca
 | Component | Description | Status |
 |-----------|-------------|--------|
 | **Corporate Website** | Public-facing website (profile, services, gallery, contact) | ✅ Live |
-| **AI Dashboard** | 15-module operational dashboard with Puter.js | ✅ Built |
+| **AI Dashboard** | 15-module operational dashboard with Puter.js | ✅ Live |
+| **AI Agent** | Autonomous agent — 10 actions, 4 workflows, proactive monitoring | ✅ Active |
 | **Glassmorphic UI** | Frosted glass design system | ✅ Complete |
 
 ### Dashboard — 15 Modules
@@ -44,7 +46,7 @@ PT. Yoga Wibawa Mandiri is a trusted cement packaging company strategically loca
 - **Dashboard:** Vanilla HTML + CSS + JS + Puter.js (zero dependencies)
 - **Website:** React 18.3 + TypeScript 5.5 + Vite 5.4 + Tailwind CSS + Shadcn/UI
 - **Backend:** Puter.js Cloud OS (KV Store + FS + Auth + AI)
-- **AI:** Puter AI (GPT-4o-mini, Claude 3.5, Gemini, DeepSeek, 500+ models)
+- **AI Agent:** Autonomous agent with 10 actions, 4 workflows, proactive monitoring (Puter AI: GPT-4o-mini, Claude 3.5, Gemini, DeepSeek)
 - **Data:** Puter KV Store (key-value with structured prefixes) + Puter FS (cloud storage)
 - **Design:** Glassmorphic Frosted UI (backdrop-filter blur, rgba backgrounds, glow accents)
 - **Deployment:** Puter Hosting / GitHub Pages / Vercel (free, zero config)
@@ -69,7 +71,8 @@ npx serve .
 
 | Document | Description |
 |----------|-------------|
-| [ARCHITECTURE.md](ARCHITECTURE.md) | Puter.js architecture, data flow, security model |
+| [PRD.md](PRD.md) | Product Requirements Document — fitur, arsitektur, roadmap |
+| [ARCHITECTURE.md](ARCHITECTURE.md) | Puter.js architecture, data flow, AI Agent, security model |
 | [TODO.md](TODO.md) | Master task list across 6 phases |
 | [ROADMAP.md](ROADMAP.md) | Development roadmap per phase |
 | [CHANGELOG.md](CHANGELOG.md) | Version history |
@@ -86,7 +89,8 @@ PT. Yoga Wibawa Mandiri adalah perusahaan pengantongan Semen Padang terpercaya y
 | Komponen | Deskripsi | Status |
 |----------|-----------|--------|
 | **Website Korporat** | Website publik (profil, layanan, galeri, kontak) | ✅ Aktif |
-| **AI Dashboard** | Dashboard operasional 15 modul dengan Puter.js | ✅ Dibangun |
+| **AI Dashboard** | Dashboard operasional 15 modul dengan Puter.js | ✅ Aktif |
+| **AI Agent** | Agent otonom — 10 aksi, 4 workflow, pemantauan proaktif | ✅ Aktif |
 | **Glassmorphic UI** | Sistem desain frosted glass | ✅ Selesai |
 
 ---
