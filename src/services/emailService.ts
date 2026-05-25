@@ -1,9 +1,9 @@
 import emailjs from '@emailjs/browser';
 
-// EmailJS configuration
-const EMAILJS_SERVICE_ID = 'service_ywm_contact';
-const EMAILJS_TEMPLATE_ID = 'template_ywm_contact';
-const EMAILJS_PUBLIC_KEY = 'YOUR_EMAILJS_PUBLIC_KEY'; // This will be configured
+// EmailJS configuration - use environment variables
+const EMAILJS_SERVICE_ID = import.meta.env.VITE_EMAILJS_SERVICE_ID || '';
+const EMAILJS_TEMPLATE_ID = import.meta.env.VITE_EMAILJS_TEMPLATE_ID || '';
+const EMAILJS_PUBLIC_KEY = import.meta.env.VITE_EMAILJS_PUBLIC_KEY || '';
 
 export interface ContactFormData {
   name: string;
@@ -59,7 +59,7 @@ export const sendContactEmail = async (formData: ContactFormData): Promise<boole
 // Alternative method using Formspree (backup option)
 export const sendContactEmailFormspree = async (formData: ContactFormData): Promise<boolean> => {
   try {
-    const response = await fetch('https://formspree.io/f/YOUR_FORMSPREE_ID', {
+    const response = await fetch(import.meta.env.VITE_FORMSPREE_ENDPOINT || 'https://formspree.io/f/YOUR_FORMSPREE_ID', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
