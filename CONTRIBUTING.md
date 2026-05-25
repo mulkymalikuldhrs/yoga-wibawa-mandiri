@@ -16,15 +16,16 @@ Thank you for your interest in contributing! We welcome contributions from the c
 
 ### Development Guidelines
 
-- **Code Style:** Follow existing TypeScript/React patterns in the codebase
-- **Components:** Use Shadcn/UI components whenever possible
-- **Styling:** Use Tailwind CSS utility classes, avoid custom CSS
-- **State:** Use Zustand for global state, TanStack Query for server state
-- **Types:** All new features must have proper TypeScript types
-- **Forms:** Use React Hook Form + Zod for form validation
-- **Timestamps:** Never set timestamps client-side; use Supabase defaults/triggers
-- **RLS:** All new tables must have Row Level Security policies
-- **Audit:** All data mutations must be captured by audit trail triggers
+- **Code Style:** Follow existing patterns (JS for dashboard, TS/React for website)
+- **Dashboard Modules:** Use `YWM.Modules.{name} = { title, render(), init() }` pattern
+- **Styling:** Use glassmorphic CSS classes (`.glass`, `.btn-accent`, `.badge-*`, etc.)
+- **Data:** Use `YWM.Data.get/set/setWithTimestamp/addAuditLog` for all data operations
+- **AI:** Use `puter.ai.chat()` for AI operations, `puter.ai.img2txt()` for OCR
+- **KV Keys:** Follow `ywm:{module}:{entity}:{id}` naming pattern
+- **Timestamps:** Always use `YWM.Data.setWithTimestamp()` for data mutations
+- **Audit:** All data mutations must be logged via `YWM.Data.addAuditLog()`
+- **Error Handling:** All async operations must use try/catch with user-friendly toast
+- **Comments:** Write comments in Indonesian (Bahasa Indonesia)
 
 ### Branch Naming Convention
 
@@ -74,15 +75,16 @@ test(produksi): add unit tests for production calculations
 
 ### Panduan Pengembangan
 
-- **Gaya Kode:** Ikuti pola TypeScript/React yang sudah ada
-- **Komponen:** Gunakan komponen Shadcn/UI jika tersedia
-- **Styling:** Gunakan kelas utility Tailwind CSS, hindari CSS custom
-- **State:** Gunakan Zustand untuk state global, TanStack Query untuk server state
-- **Tipe:** Semua fitur baru harus memiliki tipe TypeScript yang tepat
-- **Form:** Gunakan React Hook Form + Zod untuk validasi form
-- **Timestamp:** Jangan set timestamp di client; gunakan default/trigger Supabase
-- **RLS:** Semua tabel baru harus memiliki Row Level Security policies
-- **Audit:** Semua mutasi data harus ditangkap oleh audit trail triggers
+- **Gaya Kode:** Ikuti pola yang sudah ada (JS untuk dashboard, TS/React untuk website)
+- **Modul Dashboard:** Gunakan pola `YWM.Modules.{name} = { title, render(), init() }`
+- **Styling:** Gunakan kelas CSS glassmorphic (`.glass`, `.btn-accent`, `.badge-*`, dll.)
+- **Data:** Gunakan `YWM.Data.get/set/setWithTimestamp/addAuditLog` untuk semua operasi data
+- **AI:** Gunakan `puter.ai.chat()` untuk operasi AI, `puter.ai.img2txt()` untuk OCR
+- **KV Keys:** Ikuti pola penamaan `ywm:{module}:{entity}:{id}`
+- **Timestamp:** Selalu gunakan `YWM.Data.setWithTimestamp()` untuk mutasi data
+- **Audit:** Semua mutasi data harus dicatat via `YWM.Data.addAuditLog()`
+- **Error Handling:** Semua operasi async harus menggunakan try/catch dengan toast user-friendly
+- **Komentar:** Tulis komentar dalam Bahasa Indonesia
 
 ---
 

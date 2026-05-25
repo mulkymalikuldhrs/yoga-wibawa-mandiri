@@ -1,86 +1,93 @@
-# 🏢 PT. Yoga Wibawa Mandiri — Digital Platform
+# 🏢 PT. Yoga Wibawa Mandiri — Digital Platform & AI Dashboard
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![React](https://img.shields.io/badge/React-18.3-blue)](https://reactjs.org/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.5-blue)](https://www.typescriptlang.org/)
-[![Vite](https://img.shields.io/badge/Vite-5.4-646CFF)](https://vitejs.dev/)
-[![Supabase](https://img.shields.io/badge/Supabase-PostgreSQL-3ECF8E)](https://supabase.com/)
+[![Puter.js](https://img.shields.io/badge/Powered%20by-Puter.js-00d4ff)](https://puter.com/)
+[![Zero Server](https://img.shields.io/badge/Architecture-Zero%20Server-green)](https://puter.com/)
+[![AI Powered](https://img.shields.io/badge/AI-GPT--4o%20%7C%20Claude%20%7C%20Gemini-blue)](https://puter.com/)
 
 ---
 
 ## 🇬🇧 English
 
-PT. Yoga Wibawa Mandiri is a trusted cement packaging company strategically located at Pelabuhan Krueng Geukueh, Lhokseumawe, Aceh. This repository contains the complete digital platform including corporate website and comprehensive technical dashboard.
+PT. Yoga Wibawa Mandiri is a trusted cement packaging company strategically located at Pelabuhan Krueng Geukueh, Lhokseumawe, Aceh. This repository contains the complete digital platform including corporate website and a **comprehensive AI-powered technical dashboard** built on **Puter.js** (zero server, zero backend, zero API keys).
 
 ### Platform Components
 
 | Component | Description | Status |
 |-----------|-------------|--------|
 | **Corporate Website** | Public-facing website (profile, services, gallery, contact) | ✅ Live |
-| **Technical Dashboard** | Comprehensive operational management system | 🚧 In Development |
-| **Shared UI Library** | Reusable components between website & dashboard | 🚧 In Development |
+| **AI Dashboard** | 15-module operational dashboard with Puter.js | ✅ Built |
+| **Glassmorphic UI** | Frosted glass design system | ✅ Complete |
 
-### Dashboard Modules (12 Pillars)
+### Dashboard — 15 Modules
 
-| # | Module | Description |
-|---|--------|-------------|
-| 1 | Inventaris Spare Part | Stock management, reorder alerts, part-mesin mapping |
-| 2 | Kegiatan Tim | Team activity tracking, performance metrics |
-| 3 | Auto Timestamp & Audit Trail | Server-side immutable timestamps, change logging |
-| 4 | Produksi & Operasional | Production tracking, curah receiving, distribution |
-| 5 | Maintenance Management | Work orders, preventive/corrective/predictive |
-| 6 | Quality Control | Batch testing, SNI compliance, trend analysis |
-| 7 | AI Customer Service | WhatsApp chatbot, auto-responses, escalation |
-| 8 | Real-Time Dashboard | Live KPIs, machine status, GPS tracking |
-| 9 | Predictive Analytics | Demand forecast, predictive maintenance |
-| 10 | Digital Twin & IoT | Sensor monitoring, 3D visualization |
-| 11 | ESG & Sustainability | Emission tracking, energy consumption, compliance |
-| 12 | Smart Marketing & CRM | Customer pipeline, segmentation, market intelligence |
+| # | Module | Description | KV Prefix |
+|---|--------|-------------|----------|
+| 1 | Beranda | KPI overview, quick actions, alerts | — |
+| 2 | Spare Parts | Stock management, reorder alerts, part-mesin mapping | `ywm:sparepart:` |
+| 3 | Produksi | Daily production, curah receiving, OEE | `ywm:production:` |
+| 4 | Maintenance | Work orders, preventive/corrective/predictive | `ywm:maintenance:` |
+| 5 | Tim & Aktivitas | Activity tracking, check-in/out, performance | `ywm:team:` |
+| 6 | Quality Control | Batch testing, SNI compliance, trend analysis | `ywm:qc:` |
+| 7 | Safety / HSE | Incident reporting, safety inspection, K3 | `ywm:hse:` |
+| 8 | Keuangan | Transaction tracking, budget, cost per zak | `ywm:finance:` |
+| 9 | HR & Payroll | Employee management, attendance, payroll | `ywm:hr:` |
+| 10 | Purchasing | Purchase orders, supplier directory | `ywm:purchasing:` |
+| 11 | Dokumen & OCR | Upload, OCR scanning, AI extraction | `ywm:doc:` |
+| 12 | Laporan | Auto-generated reports, AI summaries | `ywm:report:` |
+| 13 | Notifikasi | Alert system, voice notifications | `ywm:notification:` |
+| 14 | Analytics | KPI trends, AI forecasting, charts | `ywm:analytics:` |
+| 15 | Pengaturan | App config, user roles, data management | `ywm:settings:` |
 
 ### Tech Stack
 
-- **Frontend:** React 18.3 + TypeScript 5.5 + Vite 5.4 + Tailwind CSS 3.4 + Shadcn/UI
-- **State:** Zustand + TanStack Query 5
-- **Backend:** Supabase (PostgreSQL, Auth, Realtime, Storage, Edge Functions)
-- **Charts:** Recharts + TanStack Table
-- **Deployment:** Vercel + GitHub Actions
-- **IoT:** MQTT (Mosquitto) — Future
-- **AI:** Python + FastAPI — Future
+- **Dashboard:** Vanilla HTML + CSS + JS + Puter.js (zero dependencies)
+- **Website:** React 18.3 + TypeScript 5.5 + Vite 5.4 + Tailwind CSS + Shadcn/UI
+- **Backend:** Puter.js Cloud OS (KV Store + FS + Auth + AI)
+- **AI:** Puter AI (GPT-4o-mini, Claude 3.5, Gemini, DeepSeek, 500+ models)
+- **Data:** Puter KV Store (key-value with structured prefixes) + Puter FS (cloud storage)
+- **Design:** Glassmorphic Frosted UI (backdrop-filter blur, rgba backgrounds, glow accents)
+- **Deployment:** Puter Hosting / GitHub Pages / Vercel (free, zero config)
 
 ### Quick Start
 
 ```bash
+# Clone the repository
 git clone https://github.com/mulkymalikuldhrs/yoga-wibawa-mandiri.git
 cd yoga-wibawa-mandiri
-pnpm install
-cp .env.example .env.local
-pnpm dev
+
+# Open dashboard directly in browser (no build needed!)
+open dashboard/index.html
+
+# Or serve locally
+npx serve .
 ```
+
+> **No npm install needed for the dashboard!** Just open `dashboard/index.html` in a browser. Puter.js loads from CDN.
 
 ### Documentation
 
 | Document | Description |
 |----------|-------------|
-| [ARCHITECTURE.md](docs/ARCHITECTURE.md) | System architecture, monorepo structure, RBAC, security |
-| [TODO.md](TODO.md) | Master task list with 83 tasks across 6 phases |
-| [DATA_BLUEPRINT.md](docs/DATA_BLUEPRINT.md) | Database schema, 17 core tables, relationships |
-| [API_REFERENCE.md](docs/API_REFERENCE.md) | Supabase SDK patterns, Edge Functions, RLS |
-| [DEPLOYMENT.md](docs/DEPLOYMENT.md) | Environment setup, Vercel, Supabase config |
+| [ARCHITECTURE.md](ARCHITECTURE.md) | Puter.js architecture, data flow, security model |
+| [TODO.md](TODO.md) | Master task list across 6 phases |
+| [ROADMAP.md](ROADMAP.md) | Development roadmap per phase |
 | [CHANGELOG.md](CHANGELOG.md) | Version history |
+| [CONTRIBUTING.md](CONTRIBUTING.md) | Contributing guidelines |
 
 ---
 
 ## 🇮🇩 Bahasa Indonesia
 
-PT. Yoga Wibawa Mandiri adalah perusahaan pengantongan Semen Padang terpercaya yang berlokasi strategis di Pelabuhan Krueng Geukueh, Lhokseumawe, Aceh. Repositori ini berisi platform digital lengkap termasuk website korporat dan dashboard teknis komprehensif.
+PT. Yoga Wibawa Mandiri adalah perusahaan pengantongan Semen Padang terpercaya yang berlokasi strategis di Pelabuhan Krueng Geukueh, Lhokseumawe, Aceh. Repositori ini berisi platform digital lengkap termasuk website korporat dan **dashboard teknis AI komprehensif** berbasis **Puter.js** (zero server, zero backend, zero API key).
 
 ### Komponen Platform
 
 | Komponen | Deskripsi | Status |
 |----------|-----------|--------|
 | **Website Korporat** | Website publik (profil, layanan, galeri, kontak) | ✅ Aktif |
-| **Dashboard Teknis** | Sistem manajemen operasional komprehensif | 🚧 Dalam Pengembangan |
-| **Shared UI Library** | Komponen yang digunakan bersama | 🚧 Dalam Pengembangan |
+| **AI Dashboard** | Dashboard operasional 15 modul dengan Puter.js | ✅ Dibangun |
+| **Glassmorphic UI** | Sistem desain frosted glass | ✅ Selesai |
 
 ---
 
