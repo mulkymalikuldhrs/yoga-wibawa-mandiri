@@ -12,6 +12,7 @@
 
     <!-- CSS -->
     <link rel="stylesheet" href="css/glassmorphic.css">
+    <link rel="stylesheet" href="css/dashboard-layout.css">
     <link rel="stylesheet" href="css/sidebar.css">
     <link rel="stylesheet" href="css/cards.css">
     <link rel="stylesheet" href="css/ai-panel.css">
@@ -249,10 +250,10 @@
                     <h4>AI Assistant YWM</h4>
                     <p>Tanyakan apa saja tentang operasional PT Yoga Wibawa Mandiri. Saya bisa membantu input data, analisis, generate laporan, dan lainnya.</p>
                     <div class="ai-quick-actions">
-                        <button class="btn btn-sm glass" onclick="YWM.AIPanel.quickAction('Bagaimana status produksi hari ini?')">Status Produksi</button>
-                        <button class="btn btn-sm glass" onclick="YWM.AIPanel.quickAction('Tampilkan spare part yang stoknya rendah')">Stok Rendah</button>
-                        <button class="btn btn-sm glass" onclick="YWM.AIPanel.quickAction('Generate laporan maintenance minggu ini')">Laporan Maintenance</button>
-                        <button class="btn btn-sm glass" onclick="YWM.AIPanel.quickAction('Ada work order yang overdue?')">WO Overdue</button>
+                        <button class="btn btn-sm glass" onclick="YWM.App.quickAI('Bagaimana status produksi hari ini?')">Status Produksi</button>
+                        <button class="btn btn-sm glass" onclick="YWM.App.quickAI('Tampilkan spare part yang stoknya rendah')">Stok Rendah</button>
+                        <button class="btn btn-sm glass" onclick="YWM.App.quickAI('Generate laporan maintenance minggu ini')">Laporan Maintenance</button>
+                        <button class="btn btn-sm glass" onclick="YWM.App.quickAI('Ada work order yang overdue?')">WO Overdue</button>
                     </div>
                 </div>
             </div>

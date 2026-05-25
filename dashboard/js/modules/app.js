@@ -41,13 +41,17 @@
         spareparts: 'Spare Parts',
         production: 'Produksi',
         maintenance: 'Maintenance',
-        team: 'Tim Kerja',
+        team: 'Tim & Aktivitas',
+        quality: 'Quality Control',
         qc: 'Quality Control',
-        hse: 'HSE',
-        hr: 'SDM',
+        safety: 'Safety / HSE',
+        hse: 'Safety / HSE',
         finance: 'Keuangan',
-        documents: 'Dokumen',
-        analytics: 'Analitik',
+        hr: 'HR & Payroll',
+        purchasing: 'Purchasing',
+        documents: 'Dokumen & OCR',
+        reports: 'Laporan',
+        analytics: 'Analytics',
         notifications: 'Notifikasi',
         settings: 'Pengaturan'
     };
@@ -331,7 +335,7 @@
          * @private
          */
         _updateBreadcrumb(moduleName) {
-            const breadcrumb = document.getElementById('breadcrumb-text');
+            const breadcrumb = document.getElementById('breadcrumb-current');
             if (breadcrumb) {
                 const title = this._getModuleTitle(moduleName);
                 breadcrumb.textContent = title;
@@ -394,7 +398,7 @@
             });
 
             // --- AI Panel Toggle ---
-            const aiToggle = document.getElementById('ai-panel-toggle');
+            const aiToggle = document.getElementById('ai-toggle-btn');
             if (aiToggle) {
                 aiToggle.addEventListener('click', () => {
                     this._toggleAIPanel();
@@ -416,7 +420,7 @@
             });
 
             // --- Mobile Menu Toggle ---
-            const mobileToggle = document.getElementById('mobile-menu-toggle');
+            const mobileToggle = document.getElementById('mobile-menu-btn');
             if (mobileToggle) {
                 mobileToggle.addEventListener('click', () => {
                     this._toggleMobileMenu();
@@ -424,7 +428,7 @@
             }
 
             // --- Notification Button ---
-            const notifBtn = document.getElementById('notification-btn');
+            const notifBtn = document.getElementById('notif-btn');
             if (notifBtn) {
                 notifBtn.addEventListener('click', () => {
                     this.navigateTo('notifications');
@@ -453,13 +457,13 @@
             const aiPanel = document.getElementById('ai-panel');
             if (!aiPanel) return;
 
-            const isOpen = aiPanel.classList.contains('open');
-            if (isOpen) {
-                aiPanel.classList.remove('open');
-                aiPanel.setAttribute('aria-hidden', 'true');
-            } else {
-                aiPanel.classList.add('open');
+            const isHidden = aiPanel.classList.contains('hidden');
+            if (isHidden) {
+                aiPanel.classList.remove('hidden');
                 aiPanel.setAttribute('aria-hidden', 'false');
+            } else {
+                aiPanel.classList.add('hidden');
+                aiPanel.setAttribute('aria-hidden', 'true');
             }
         },
 
@@ -532,15 +536,21 @@
          * @private
          */
         _updateConnectionStatus(online) {
-            const statusDot = document.getElementById('connection-status');
+            const statusDot = document.getElementById('connection-status-dot');
+            const statusText = document.getElementById('connection-status-text');
+            const headerDot = document.getElementById('status-dot');
+            const headerText = document.getElementById('status-connection');
             if (statusDot) {
-                if (online) {
-                    statusDot.className = 'status-dot online';
-                    statusDot.title = 'Online — Terhubung ke Puter.js';
-                } else {
-                    statusDot.className = 'status-dot offline';
-                    statusDot.title = 'Offline — Koneksi terputus';
-                }
+                statusDot.className = online ? 'status-dot online' : 'status-dot offline';
+            }
+            if (statusText) {
+                statusText.textContent = online ? 'Terhubung' : 'Offline';
+            }
+            if (headerDot) {
+                headerDot.className = online ? 'status-dot online' : 'status-dot offline';
+            }
+            if (headerText) {
+                headerText.textContent = online ? 'Online' : 'Offline';
             }
         },
 
@@ -550,7 +560,7 @@
          */
         _startClock() {
             const updateClock = () => {
-                const clockEl = document.getElementById('status-clock');
+                const clockEl = document.getElementById('status-time');
                 if (clockEl) {
                     const now = new Date();
                     const options = {
@@ -1068,6 +1078,60 @@
                 console.error('[YWM.Data] Gagal menambahkan audit log:', err);
                 return false;
             }
+        }
+    };
+
+    // =========================================================================
+    // Alias & Compatibility Shims
+    // =========================================================================
+
+    // Alias: YWM.navigate → YWM.App.navigateTo
+    YWM.navigate = function(moduleName) {
+        return YWM.App.navigateTo(moduleName);
+    };
+
+    // Alias: YWM.Data.del → YWM.Data.delete
+    YWM.Data.del = function(key) {
+        return YWM.Data.delete(key);
+    };
+
+    // Auth namespace
+    YWM.Auth = {
+        async getSession() {
+            try {
+                if (typeof puter !== 'undefined' && puter.auth) {
+                    const user = await puter.auth.getUser();
+                    return { user, isAuthenticated: !!user };
+                }
+            } catch (e) {
+                // Not authenticated
+            }
+            return { user: { username: 'Guest', isGuest: true }, isAuthenticated: false };
+        },
+        async getUser() {
+            try {
+                if (typeof puter !== 'undefined' && puter.auth) {
+                    return await puter.auth.getUser();
+                }
+            } catch (e) {}
+            return { username: 'Guest', isGuest: true };
+        }
+    };
+
+    // Quick AI helper for sidebar buttons
+    YWM.App.quickAI = function(message) {
+        const aiPanel = document.getElementById('ai-panel');
+        const aiInput = document.getElementById('ai-chat-input');
+        if (aiPanel) {
+            aiPanel.classList.remove('hidden');
+            aiPanel.classList.remove('collapsed');
+        }
+        if (aiInput) {
+            aiInput.value = message;
+            aiInput.focus();
+            // Trigger send
+            const sendBtn = document.getElementById('ai-send-btn');
+            if (sendBtn) sendBtn.click();
         }
     };
 
