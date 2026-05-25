@@ -97,7 +97,7 @@ PT. Yoga Wibawa Mandiri adalah perusahaan pengantongan Semen Padang terpercaya y
 
 **Hanya untuk Tujuan Pendidikan.** Semua konten, kode, dan dokumentasi dalam repositori ini hanya ditujukan untuk tujuan pendidikan dan penelitian. Penulis dan kontributor tidak bertanggung jawab atas risiko atau kerugian apa pun yang timbul dari penggunaan perangkat lunak atau informasi yang disediakan.
 
-**Risiko apapun tidak kita tanggung.**
+**仅用于教育目的。** 本仓库中的所有内容、代码和文档仅用于教育和研究目的。作者和贡献者对因使用本软件或提供的信息而造成的任何损失、损害或后果不承担任何责任。
 
 ---
 

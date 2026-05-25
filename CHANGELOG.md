@@ -7,6 +7,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [4.1.0] - 2025-05-25
+
+### Fixed
+- Added educational disclaimer to analytics demo data generation
+- Fixed README trilingual disclaimer — added proper Chinese translation
+- Deleted stale branch: mentat-5/comprehensive-update
+
+### Disclaimer
+- **EN**: For Education Purpose Only. We assume no responsibility for any risks or damages.
+- **ID**: Hanya untuk Tujuan Edukasi. Kami tidak bertanggung jawab atas risiko atau kerugian apapun.
+- **CN**: 仅供教育目的。我们对任何风险或损害不承担责任。
+
+### Contributing
+- Contributors welcome! See [CONTRIBUTING.md](./CONTRIBUTING.md) for guidelines.
+- Contact: Mulky Malikul Dhaher | mulkymalikuldhaher@email.com
+
+---
+
 ## [4.0.0] - 2026-05-25 — Complete Dashboard Build
 
 ### Added

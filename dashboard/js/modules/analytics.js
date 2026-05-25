@@ -239,6 +239,13 @@ YWM.Modules.analytics = {
      * @returns {Object} Data analytics
      */
     _generateDemoData() {
+        // ⚠️ EDUCATIONAL PLACEHOLDER DATA
+        // This function generates sample data when no real KV data is available.
+        // All values are for demonstration purposes only and do NOT represent
+        // actual production, financial, or maintenance figures.
+        // In production, data should come from Puter KV Store entries.
+        console.warn('[Analytics] ⚠️ Using educational placeholder data — connect Puter KV for real data');
+
         const data = {
             production: {
                 oee: [],
