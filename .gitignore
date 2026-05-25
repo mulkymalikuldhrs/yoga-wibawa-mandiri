@@ -1,25 +1,41 @@
+# Dependencies
+node_modules/
+bun.lockb
+package-lock.json
+
+# Build output
+dist/
+build/
+.vite/
+
+# Environment
+.env
+.env.puter
+.env.local
+.env.*.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
 # Logs
-logs
 *.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-pnpm-debug.log*
-lerna-debug.log*
 
-node_modules
-dist
-dist-ssr
-*.local
+# Agent context
+/agent-ctx/
 
-# Editor directories and files
-.vscode/*
-!.vscode/extensions.json
-.idea
-.DS_Store
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
-.env
+# Cache
+.cache/
+.parcel-cache/
+.eslintcache

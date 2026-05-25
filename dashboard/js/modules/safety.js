@@ -611,8 +611,8 @@ YWM.Modules.safety = {
                     <div style="flex:1;">
                         <div style="font-size:0.82rem;color:var(--text-primary);margin-bottom:2px;">${a.action}</div>
                         <div style="font-size:0.7rem;color:var(--text-muted);">
-                            ${a.id} · ${a.tipe} · ${formatTanggal(a.tanggal, 'short')}
-                            ${a.due_date ? ' · Due: ' + formatTanggal(a.due_date, 'short') : ''}
+                            ${a.id} · ${a.tipe} · ${typeof formatTanggal === 'function' ? formatTanggal(a.tanggal, 'short') : a.tanggal}
+                            ${a.due_date ? ' · Due: ' + (typeof formatTanggal === 'function' ? formatTanggal(a.due_date, 'short') : a.due_date) : ''}
                         </div>
                     </div>
                     <span class="badge ${statusBadge(a.status)}">${a.status}</span>
@@ -669,7 +669,7 @@ YWM.Modules.safety = {
                     ${filtered.slice(0, 25).map(i => `
                     <tr>
                         <td style="font-weight:600;font-size:0.8rem;">${i.incident_id || '-'}</td>
-                        <td>${i.tanggal ? formatTanggal(i.tanggal, 'short') : '-'}</td>
+                        <td>${i.tanggal ? (typeof formatTanggal === 'function' ? formatTanggal(i.tanggal, 'short') : i.tanggal) : '-'}</td>
                         <td>${tipeIcon(i.tipe)} ${i.tipe || '-'}</td>
                         <td><span class="badge ${severityBadge(i.severity)}">${i.severity || '-'}</span></td>
                         <td style="max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${i.lokasi || '-'}</td>

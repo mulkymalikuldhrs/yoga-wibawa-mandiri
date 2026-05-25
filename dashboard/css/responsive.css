@@ -3,79 +3,17 @@
    Adaptasi tampilan untuk berbagai ukuran layar
    ============================================ */
 
-/* --- Header --- */
-.main-header {
-  position: fixed;
-  top: 0;
-  left: var(--sidebar-width);
-  right: var(--ai-panel-width);
-  height: var(--header-height);
-  background: rgba(15, 12, 41, 0.6);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border-bottom: 1px solid var(--glass-border);
-  display: flex;
-  align-items: center;
-  padding: 0 24px;
-  gap: 16px;
-  z-index: 80;
-  transition: left var(--transition-normal), right var(--transition-normal);
+/* --- Header Utility States --- */
+.header.full-right,
+.content-area.full-right,
+.statusbar.full-right {
+  margin-right: 0;
 }
 
-.main-header.full-right {
-  right: 0;
-}
-
-.main-header.full-left {
-  left: 0;
-}
-
-/* --- Main Content Area --- */
-.main-content {
-  position: fixed;
-  top: var(--header-height);
-  left: var(--sidebar-width);
-  right: var(--ai-panel-width);
-  bottom: var(--statusbar-height);
-  overflow-y: auto;
-  padding: 24px;
-  transition: left var(--transition-normal), right var(--transition-normal);
-}
-
-.main-content.full-right {
-  right: 0;
-}
-
-.main-content.full-left {
-  left: 0;
-}
-
-/* --- Status Bar --- */
-.status-bar {
-  position: fixed;
-  bottom: 0;
-  left: var(--sidebar-width);
-  right: var(--ai-panel-width);
-  height: var(--statusbar-height);
-  background: rgba(15, 12, 41, 0.7);
-  backdrop-filter: blur(20px);
-  border-top: 1px solid var(--glass-border);
-  display: flex;
-  align-items: center;
-  padding: 0 24px;
-  font-size: 0.7rem;
-  color: var(--text-muted);
-  gap: 20px;
-  z-index: 80;
-  transition: left var(--transition-normal), right var(--transition-normal);
-}
-
-.status-bar.full-right {
-  right: 0;
-}
-
-.status-bar.full-left {
-  left: 0;
+.header.full-left,
+.content-area.full-left,
+.statusbar.full-left {
+  margin-left: 0;
 }
 
 /* --- Responsive Breakpoints --- */
@@ -96,7 +34,6 @@
 /* Tablet kecil (768px - 1023px) */
 @media (max-width: 1023px) {
   :root {
-    --sidebar-width: 0px;
     --ai-panel-width: 300px;
   }
 
@@ -111,19 +48,6 @@
 
   .sidebar-toggle {
     display: flex;
-  }
-
-  .main-header {
-    left: 0;
-    padding-left: 60px;
-  }
-
-  .main-content {
-    left: 0;
-  }
-
-  .status-bar {
-    left: 0;
   }
 
   .cards-grid {
@@ -151,19 +75,6 @@
 
   .ai-panel.collapsed {
     transform: translateX(100%);
-  }
-
-  .main-header {
-    right: 0;
-  }
-
-  .main-content {
-    right: 0;
-    padding: 16px;
-  }
-
-  .status-bar {
-    right: 0;
   }
 
   .cards-grid {
@@ -215,7 +126,7 @@
 
 /* Mobile kecil (di bawah 480px) */
 @media (max-width: 479px) {
-  .main-content {
+  .content-area {
     padding: 12px;
   }
 

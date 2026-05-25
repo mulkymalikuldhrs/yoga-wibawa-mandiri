@@ -272,7 +272,7 @@ YWM.Modules.finance = {
             const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
             const month = d.getMonth();
             const year = d.getFullYear();
-            const label = formatTanggal(d, 'short').replace(/\s\d{4}$/, '');
+            const label = (typeof formatTanggal === 'function' ? formatTanggal(d, 'short') : d.toLocaleDateString('id-ID')).replace(/\s\d{4}$/, '');
 
             const monthTrx = transactions.filter(t => {
                 const td = new Date(t.tanggal);
@@ -413,11 +413,11 @@ YWM.Modules.finance = {
             <!-- ── KPI ROW ── -->
             <div class="card-stats" style="grid-template-columns:repeat(4,1fr);margin-bottom:20px;">
                 <div class="stat-item">
-                    <div class="stat-value text-success" id="fin-kpi-revenue">${formatRupiah(kpi.revenue, true)}</div>
+                    <div class="stat-value text-success" id="fin-kpi-revenue">${typeof formatRupiah === 'function' ? formatRupiah(kpi.revenue, true) : 'Rp ' + kpi.revenue.toLocaleString('id-ID')}</div>
                     <div class="stat-label">Revenue Bulan Ini</div>
                 </div>
                 <div class="stat-item">
-                    <div class="stat-value text-error" id="fin-kpi-expenses">${formatRupiah(kpi.expenses, true)}</div>
+                    <div class="stat-value text-error" id="fin-kpi-expenses">${typeof formatRupiah === 'function' ? formatRupiah(kpi.expenses, true) : 'Rp ' + kpi.expenses.toLocaleString('id-ID')}</div>
                     <div class="stat-label">Total Pengeluaran</div>
                 </div>
                 <div class="stat-item">
@@ -425,7 +425,7 @@ YWM.Modules.finance = {
                     <div class="stat-label">Margin</div>
                 </div>
                 <div class="stat-item">
-                    <div class="stat-value" id="fin-kpi-cost-zak">${formatRupiah(kpi.costPerZak, true)}/zak</div>
+                    <div class="stat-value" id="fin-kpi-cost-zak">${typeof formatRupiah === 'function' ? formatRupiah(kpi.costPerZak, true) : 'Rp ' + kpi.costPerZak.toLocaleString('id-ID')}/zak</div>
                     <div class="stat-label">Cost per Zak</div>
                 </div>
             </div>
@@ -557,11 +557,11 @@ YWM.Modules.finance = {
                     return `
                     <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;min-width:50px;">
                         <div style="display:flex;gap:3px;align-items:flex-end;height:150px;width:100%;">
-                            <div style="flex:1;height:${incH}px;background:rgba(0,230,118,0.7);border-radius:3px 3px 0 0;min-height:${incH > 0 ? '3px' : '0'};" title="Pemasukan: ${formatRupiah(m.income)}"></div>
-                            <div style="flex:1;height:${expH}px;background:rgba(255,82,82,0.7);border-radius:3px 3px 0 0;min-height:${expH > 0 ? '3px' : '0'};" title="Pengeluaran: ${formatRupiah(m.expense)}"></div>
+                            <div style="flex:1;height:${incH}px;background:rgba(0,230,118,0.7);border-radius:3px 3px 0 0;min-height:${incH > 0 ? '3px' : '0'};" title="Pemasukan: ${typeof formatRupiah === 'function' ? formatRupiah(m.income) : 'Rp ' + m.income.toLocaleString('id-ID')}"></div>
+                            <div style="flex:1;height:${expH}px;background:rgba(255,82,82,0.7);border-radius:3px 3px 0 0;min-height:${expH > 0 ? '3px' : '0'};" title="Pengeluaran: ${typeof formatRupiah === 'function' ? formatRupiah(m.expense) : 'Rp ' + m.expense.toLocaleString('id-ID')}"></div>
                         </div>
                         <span style="font-size:0.6rem;color:var(--text-muted);">${m.label}</span>
-                        <span style="font-size:0.55rem;color:${m.net >= 0 ? 'var(--status-success)' : 'var(--status-error)'};">${m.net >= 0 ? '+' : ''}${formatAngkaSingkat(m.net)}</span>
+                        <span style="font-size:0.55rem;color:${m.net >= 0 ? 'var(--status-success)' : 'var(--status-error)'};">${m.net >= 0 ? '+' : ''}${typeof formatAngkaSingkat === 'function' ? formatAngkaSingkat(m.net) : m.net.toLocaleString('id-ID')}</span>
                     </div>`;
                 }).join('')}
             </div>
@@ -592,8 +592,8 @@ YWM.Modules.finance = {
                         ${isOver ? '<div style="position:absolute;left:66.7%;top:-2px;height:10px;border-left:1px dashed rgba(255,82,82,0.5);"></div>' : ''}
                     </div>
                     <div style="display:flex;justify-content:space-between;margin-top:3px;">
-                        <span style="font-size:0.62rem;color:var(--text-muted);">Actual: ${formatRupiah(b.actual)}</span>
-                        <span style="font-size:0.62rem;color:var(--text-muted);">Budget: ${formatRupiah(b.budget)}</span>
+                        <span style="font-size:0.62rem;color:var(--text-muted);">Actual: ${typeof formatRupiah === 'function' ? formatRupiah(b.actual) : 'Rp ' + b.actual.toLocaleString('id-ID')}</span>
+                        <span style="font-size:0.62rem;color:var(--text-muted);">Budget: ${typeof formatRupiah === 'function' ? formatRupiah(b.budget) : 'Rp ' + b.budget.toLocaleString('id-ID')}</span>
                     </div>
                 </div>`;
             }).join('')}
@@ -618,8 +618,8 @@ YWM.Modules.finance = {
         return `
         <!-- Ringkasan -->
         <div style="text-align:center;margin-bottom:16px;padding:12px;background:rgba(0,212,255,0.08);border-radius:var(--radius-sm);border:1px solid rgba(0,212,255,0.15);">
-            <div style="font-size:1.4rem;font-weight:700;" class="text-accent">${formatRupiah(costData.totalPerZak)}</div>
-            <div style="font-size:0.7rem;color:var(--text-muted);">Total Cost per Zak (est. ${formatAngka(costData.estimatedZak)} zak/bln)</div>
+            <div style="font-size:1.4rem;font-weight:700;" class="text-accent">${typeof formatRupiah === 'function' ? formatRupiah(costData.totalPerZak) : 'Rp ' + costData.totalPerZak.toLocaleString('id-ID')}</div>
+            <div style="font-size:0.7rem;color:var(--text-muted);">Total Cost per Zak (est. ${typeof formatAngka === 'function' ? formatAngka(costData.estimatedZak) : costData.estimatedZak.toLocaleString('id-ID')} zak/bln)</div>
         </div>
 
         <!-- Breakdown bars -->
@@ -669,11 +669,11 @@ YWM.Modules.finance = {
                     ${transactions.slice(0, 25).map(t => `
                     <tr>
                         <td style="font-weight:600;font-size:0.8rem;">${t.transaction_id || '-'}</td>
-                        <td>${t.tanggal ? formatTanggal(t.tanggal, 'short') : '-'}</td>
+                        <td>${t.tanggal ? (typeof formatTanggal === 'function' ? formatTanggal(t.tanggal, 'short') : t.tanggal) : '-'}</td>
                         <td><span class="badge ${tipeBadge(t.tipe)}">${tipeIcon(t.tipe)} ${t.tipe || '-'}</span></td>
                         <td>${t.kategori || '-'}</td>
                         <td style="text-align:right;font-weight:600;${t.tipe === 'Pemasukan' ? 'color:var(--status-success)' : 'color:var(--status-error)'};">
-                            ${t.tipe === 'Pemasukan' ? '+' : '-'}${formatRupiah(t.jumlah)}
+                            ${t.tipe === 'Pemasukan' ? '+' : '-'}${typeof formatRupiah === 'function' ? formatRupiah(t.jumlah) : 'Rp ' + Number(t.jumlah).toLocaleString('id-ID')}
                         </td>
                         <td style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${t.deskripsi || '-'}</td>
                         <td style="font-size:0.72rem;color:var(--text-muted);">${t.referensi || '-'}</td>
@@ -832,10 +832,10 @@ YWM.Modules.finance = {
             const elExp = document.getElementById('fin-kpi-expenses');
             const elMar = document.getElementById('fin-kpi-margin');
             const elCPZ = document.getElementById('fin-kpi-cost-zak');
-            if (elRev) elRev.textContent = formatRupiah(kpi.revenue, true);
-            if (elExp) elExp.textContent = formatRupiah(kpi.expenses, true);
+            if (elRev) elRev.textContent = typeof formatRupiah === 'function' ? formatRupiah(kpi.revenue, true) : 'Rp ' + kpi.revenue.toLocaleString('id-ID');
+            if (elExp) elExp.textContent = typeof formatRupiah === 'function' ? formatRupiah(kpi.expenses, true) : 'Rp ' + kpi.expenses.toLocaleString('id-ID');
             if (elMar) { elMar.textContent = kpi.margin + '%'; elMar.className = 'stat-value ' + (Number(kpi.margin) >= 15 ? 'text-success' : Number(kpi.margin) >= 5 ? 'text-warning' : 'text-error'); }
-            if (elCPZ) elCPZ.textContent = formatRupiah(kpi.costPerZak, true) + '/zak';
+            if (elCPZ) elCPZ.textContent = (typeof formatRupiah === 'function' ? formatRupiah(kpi.costPerZak, true) : 'Rp ' + kpi.costPerZak.toLocaleString('id-ID')) + '/zak';
 
             // Update chart
             const chartEl = document.getElementById('fin-cashflow-chart');

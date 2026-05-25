@@ -1,16 +1,19 @@
 /**
  * ============================================================
- * AI Config — Konfigurasi dan Prompt untuk YWM AI Assistant
+ * AI Config — Konfigurasi dan Prompt untuk YWM AI Assistant & Agent
  * ============================================================
  * 
  * Modul ini menyimpan semua konfigurasi AI, system prompt,
  * dan template prompt spesifik per modul untuk dashboard
  * PT Yoga Wibawa Mandiri.
  * 
+ * v2.0.0 — Ditambahkan: Konfigurasi AI Agent, definisi aksi,
+ *           workflow otonom, monitoring, dan proactive alerts.
+ * 
  * Digunakan oleh: ai-assistant.js, smart-input.js, 
  *                 ocr-handler.js, report-generator.js
  * 
- * @version 1.0.0
+ * @version 2.0.0
  * @author YWM Development Team
  */
 
@@ -22,7 +25,7 @@
  * System prompt utama untuk AI Assistant YWM
  * Memberikan konteks lengkap tentang perusahaan dan operasional
  */
-const YWM_SYSTEM_PROMPT = `Kamu adalah AI Assistant untuk PT Yoga Wibawa Mandiri (YWM), perusahaan pengantongan Semen Padang yang berlokasi di Pelabuhan Krueng Geukueh, Lhokseumawe, Aceh, Indonesia.
+const YWM_SYSTEM_PROMPT = `Kamu adalah AI Assistant & Agent untuk PT Yoga Wibawa Mandiri (YWM), perusahaan pengantongan Semen Padang yang berlokasi di Pelabuhan Krueng Geukueh, Lhokseumawe, Aceh, Indonesia.
 
 Kamu membantu mengelola:
 - Inventaris spare part mesin pengantongan semen
@@ -55,7 +58,23 @@ Modul Dashboard yang Tersedia:
 9. Distribusi — Pengiriman dan distribusi
 
 Ketika user memberikan input data, parse dan arahkan ke modul yang tepat.
-Gunakan format yang konsisten dan terstruktur.`;
+Gunakan format yang konsisten dan terstruktur.
+
+KEMAMPUAN AGENT:
+Kamu juga bisa MENJALANKAN AKSI secara langsung, bukan hanya menjawab pertanyaan:
+- Membuat Work Order baru untuk maintenance
+- Menambahkan spare part ke inventaris
+- Mencatat kegiatan tim
+- Mengecek stok dan memberikan peringatan
+- Membuat Purchase Order untuk pembelian
+- Menjalankan workflow otomatis
+
+Jika user meminta sesuatu yang memerlukan aksi, respons dengan format JSON aksi:
+\`\`\`action
+{"action": "create_wo", "params": {...}}
+\`\`\`
+
+Atau jika user hanya bertanya, jawab biasa dalam bahasa Indonesia.`;
 
 // ============================================================
 // PROMPT SPESIFIK PER MODUL — Smart Input Parsing
@@ -609,6 +628,118 @@ Format laporan profesional dalam Bahasa Indonesia.`
 };
 
 // ============================================================
+// PROMPT UNTUK AI AGENT — Action Parsing
+// ============================================================
+
+/**
+ * Prompt untuk parsing natural language menjadi aksi agent yang bisa dieksekusi
+ * Digunakan saat agentMode aktif dan user meminta sesuatu yang memerlukan aksi
+ */
+const AGENT_ACTION_PARSE_PROMPT = `Kamu adalah AI Agent untuk dashboard PT Yoga Wibawa Mandiri.
+
+Tugas: Parse permintaan user menjadi aksi yang bisa dieksekusi oleh sistem.
+
+Aksi yang tersedia:
+1. create_wo — Membuat Work Order baru
+   Params: { mesin, judul, deskripsi, tipe("Preventive"|"Corrective"|"Predictive"|"Emergency"), prioritas("Low"|"Medium"|"High"|"Critical"), assigned_to, due_date }
+
+2. update_wo — Update status Work Order
+   Params: { wo_number, status("Open"|"In Progress"|"Completed"|"Cancelled"), completion_notes, actual_cost }
+
+3. add_spare_part — Menambahkan spare part baru ke inventaris
+   Params: { nama_item, kategori("Bearing"|"Belt"|"Seal"|"Filter"|"Elektrikal"|"Mekanikal"|"Lainnya"), stok, min_stok, satuan("Pcs"|"Set"|"Unit"|"m"|"L"|"kg"|"Roll"|"Box"), lokasi_gudang, harga_satuan, part_mesin, catatan }
+
+4. check_stock — Cek stok spare part
+   Params: { nama_item } (opsional, jika kosong cek semua yang stok rendah)
+
+5. log_team_activity — Catat kegiatan tim
+   Params: { karyawan, kegiatan, kategori("Produksi"|"Maintenance"|"Inspeksi"|"Meeting"|"Lainnya"), lembur, catatan }
+
+6. create_po — Buat Purchase Order
+   Params: { item, supplier, jumlah, satuan, harga_satuan }
+
+7. check_overdue_wo — Cek Work Order yang overdue
+   Params: {} (tanpa parameter, cek semua)
+
+8. generate_report — Generate laporan
+   Params: { module, period("harian"|"mingguan"|"bulanan") }
+
+9. check_production_anomaly — Cek anomali produksi
+   Params: {} (tanpa parameter)
+
+10. run_workflow — Jalankan workflow otomatis
+    Params: { workflow_id, params }
+
+Contoh:
+User: "Buat WO untuk packer 2, corrective, prioritas tinggi"
+Output: {"action": "create_wo", "params": {"mesin": "Packer 2", "judul": "Corrective maintenance Packer 2", "tipe": "Corrective", "prioritas": "High"}}
+
+User: "Cek stok bearing"
+Output: {"action": "check_stock", "params": {"nama_item": "bearing"}}
+
+User: "Stok spare part yang rendah apa saja?"
+Output: {"action": "check_stock", "params": {}}
+
+User: "Ada WO yang overdue?"
+Output: {"action": "check_overdue_wo", "params": {}}
+
+Jika permintaan TIDAK memerlukan aksi (hanya pertanyaan biasa), output:
+{"action": "chat", "params": {}}
+
+WAJIB output JSON saja, tanpa penjelasan tambahan.`;
+
+// ============================================================
+// PROMPT UNTUK AI AGENT — Workflow Orchestration
+// ============================================================
+
+/**
+ * Prompt untuk AI Agent dalam merencanakan dan mengeksekusi workflow
+ * Workflow adalah rantai aksi yang dijalankan secara berurutan
+ */
+const AGENT_WORKFLOW_PROMPT = `Kamu adalah workflow orchestrator untuk AI Agent PT Yoga Wibawa Mandiri.
+
+Tugas: Berdasarkan kondisi yang diberikan, tentukan rantai aksi yang perlu dijalankan.
+
+Workflow yang tersedia:
+
+1. "low_stock_auto_order" — Ketika stok spare part rendah, otomatis buat PO
+   Trigger: Stok item ≤ min_stok
+   Steps:
+   a. check_stock → identifikasi item rendah
+   b. create_po → buat PO untuk item tersebut
+
+2. "overdue_wo_escalation" — Ketika ada WO overdue, eskalasi dan buat WO darurat
+   Trigger: Ada WO yang melewati due_date
+   Steps:
+   a. check_overdue_wo → identifikasi WO overdue
+   b. create_wo → buat WO emergency untuk yang critical
+
+3. "production_anomaly_alert" — Ketika ada anomali produksi, alert dan buat WO
+   Trigger: Produksi di bawah 80% target
+   Steps:
+   a. check_production_anomaly → identifikasi anomali
+   b. create_wo → buat WO corrective jika ada mesin bermasalah
+   c. log_team_activity → catat insiden
+
+4. "daily_checkup" — Cek harian rutin
+   Steps:
+   a. check_stock → cek stok rendah
+   b. check_overdue_wo → cek WO overdue
+   c. check_production_anomaly → cek anomali produksi
+
+Berikan output dalam format JSON:
+{
+  "workflow_id": "nama_workflow",
+  "steps": [
+    {"action": "check_stock", "params": {...}},
+    {"action": "create_po", "params": {...}}
+  ],
+  "alert_if": "kondisi yang memerlukan perhatian user"
+}
+
+WAJIB output JSON saja.`;
+
+// ============================================================
 // KONFIGURASI MODEL AI
 // ============================================================
 
@@ -669,11 +800,14 @@ const MODEL_SELECTION_RULES = {
   'module_detection': 'gpt-4o-mini',
   'simple_chat': 'gpt-4o-mini',
   'quick_action': 'gpt-4o-mini',
+  'agent_action_parsing': 'gpt-4o-mini',
+  'agent_check': 'gpt-4o-mini',
   
   // Tugas menengah → model dengan reasoning lebih
   'report_generation': 'claude-3.5-sonnet',
   'data_analysis': 'claude-3.5-sonnet',
   'complex_qa': 'claude-3.5-sonnet',
+  'workflow_orchestration': 'claude-3.5-sonnet',
   
   // OCR dan dokumen → model multimodal
   'ocr_parsing': 'gemini-2.5-flash',
@@ -682,6 +816,261 @@ const MODEL_SELECTION_RULES = {
   // Reasoning kompleks → deepseek
   'complex_reasoning': 'deepseek-chat',
   'technical_analysis': 'deepseek-chat'
+};
+
+// ============================================================
+// KONFIGURASI AI AGENT
+// ============================================================
+
+/**
+ * Konfigurasi untuk AI Agent — mode otonom, monitoring, dan aksi
+ */
+const AGENT_CONFIG = {
+  // Flag untuk mengaktifkan/menonaktifkan mode agent
+  agentMode: true,
+  
+  // Interval pengecekan berkala (ms) — default 5 menit
+  checkIntervalMs: 5 * 60 * 1000,
+  
+  // Apakah scheduled checks aktif
+  scheduledChecksEnabled: true,
+  
+  // Apakah proactive alerts aktif
+  proactiveAlertsEnabled: true,
+  
+  // Maksimal aksi otonom per siklus check (batasi agar tidak berlebihan)
+  maxAutonomousActionsPerCycle: 3,
+  
+  // Apakah agent boleh mengeksekusi aksi tanpa konfirmasi user
+  autoExecuteEnabled: false,
+  
+  // Aksi yang diizinkan tanpa konfirmasi (jika autoExecuteEnabled = false, 
+  // aksi READ_ONLY tidak perlu konfirmasi)
+  readOnlyActions: ['check_stock', 'check_overdue_wo', 'check_production_anomaly', 'generate_report'],
+  
+  // Aksi yang memerlukan konfirmasi user sebelum dieksekusi
+  confirmationRequiredActions: ['create_wo', 'update_wo', 'add_spare_part', 'create_po', 'log_team_activity', 'run_workflow'],
+  
+  // Threshold untuk alert
+  thresholds: {
+    // Stok dianggap rendah jika ≤ min_stok
+    lowStockEnabled: true,
+    // WO dianggap overdue jika melewati due_date
+    overdueWOEnabled: true,
+    // Produksi dianggap anomali jika di bawah persentase target
+    productionAnomalyThreshold: 0.80, // 80% target
+    productionAnomalyEnabled: true
+  },
+  
+  // KV key untuk menyimpan state agent
+  stateKey: 'ywm_agent_state',
+  alertsKey: 'ywm_agent_alerts',
+  auditKey: 'ywm_agent_audit'
+};
+
+/**
+ * Definisi aksi yang bisa dieksekusi oleh AI Agent
+ * Setiap aksi memiliki: id, label, module, handler, params
+ */
+const AGENT_ACTIONS = {
+  create_wo: {
+    id: 'create_wo',
+    label: 'Buat Work Order',
+    description: 'Membuat Work Order baru di modul maintenance',
+    module: 'maintenance',
+    category: 'write',
+    riskLevel: 'medium', // low, medium, high
+    params: {
+      mesin: { type: 'string', required: true, label: 'Mesin', options: ['Packer 1', 'Packer 2', 'Packer 3', 'Conveyor Utama', 'Conveyor Loading', 'Compressor', 'Dust Collector', 'Silo 1', 'Silo 2', 'Silo 3', 'Generator', 'Panel Listrik', 'Forklift 1', 'Forklift 2', 'Lainnya'] },
+      judul: { type: 'string', required: true, label: 'Judul WO' },
+      deskripsi: { type: 'string', required: false, label: 'Deskripsi Masalah' },
+      tipe: { type: 'string', required: true, label: 'Tipe', options: ['Preventive', 'Corrective', 'Predictive', 'Emergency'] },
+      prioritas: { type: 'string', required: true, label: 'Prioritas', options: ['Low', 'Medium', 'High', 'Critical'] },
+      assigned_to: { type: 'string', required: false, label: 'Ditugaskan ke' },
+      due_date: { type: 'date', required: false, label: 'Due Date' }
+    }
+  },
+  
+  update_wo: {
+    id: 'update_wo',
+    label: 'Update Work Order',
+    description: 'Update status Work Order',
+    module: 'maintenance',
+    category: 'write',
+    riskLevel: 'medium',
+    params: {
+      wo_number: { type: 'string', required: true, label: 'Nomor WO' },
+      status: { type: 'string', required: true, label: 'Status', options: ['Open', 'In Progress', 'Completed', 'Cancelled'] },
+      completion_notes: { type: 'string', required: false, label: 'Catatan Penyelesaian' },
+      actual_cost: { type: 'number', required: false, label: 'Biaya Aktual' }
+    }
+  },
+  
+  add_spare_part: {
+    id: 'add_spare_part',
+    label: 'Tambah Spare Part',
+    description: 'Menambahkan spare part baru ke inventaris',
+    module: 'spareparts',
+    category: 'write',
+    riskLevel: 'low',
+    params: {
+      nama_item: { type: 'string', required: true, label: 'Nama Item' },
+      kategori: { type: 'string', required: true, label: 'Kategori', options: ['Bearing', 'Belt', 'Seal', 'Filter', 'Elektrikal', 'Mekanikal', 'Lainnya'] },
+      stok: { type: 'number', required: true, label: 'Stok' },
+      min_stok: { type: 'number', required: false, label: 'Min Stok' },
+      satuan: { type: 'string', required: false, label: 'Satuan', options: ['Pcs', 'Set', 'Unit', 'm', 'L', 'kg', 'Roll', 'Box'] },
+      lokasi_gudang: { type: 'string', required: false, label: 'Lokasi Gudang' },
+      harga_satuan: { type: 'number', required: false, label: 'Harga Satuan' },
+      part_mesin: { type: 'string', required: false, label: 'Part Mesin' },
+      catatan: { type: 'string', required: false, label: 'Catatan' }
+    }
+  },
+  
+  check_stock: {
+    id: 'check_stock',
+    label: 'Cek Stok',
+    description: 'Cek stok spare part, termasuk yang rendah',
+    module: 'spareparts',
+    category: 'read',
+    riskLevel: 'low',
+    params: {
+      nama_item: { type: 'string', required: false, label: 'Nama Item (kosongkan untuk cek semua yang rendah)' }
+    }
+  },
+  
+  log_team_activity: {
+    id: 'log_team_activity',
+    label: 'Catat Kegiatan Tim',
+    description: 'Mencatat kegiatan tim harian',
+    module: 'team',
+    category: 'write',
+    riskLevel: 'low',
+    params: {
+      karyawan: { type: 'string', required: true, label: 'Nama Karyawan' },
+      kegiatan: { type: 'string', required: true, label: 'Deskripsi Kegiatan' },
+      kategori: { type: 'string', required: true, label: 'Kategori', options: ['Produksi', 'Maintenance', 'Inspeksi', 'Meeting', 'Lainnya'] },
+      lembur: { type: 'boolean', required: false, label: 'Lembur' },
+      catatan: { type: 'string', required: false, label: 'Catatan' }
+    }
+  },
+  
+  create_po: {
+    id: 'create_po',
+    label: 'Buat Purchase Order',
+    description: 'Membuat Purchase Order untuk pembelian',
+    module: 'purchasing',
+    category: 'write',
+    riskLevel: 'high',
+    params: {
+      item: { type: 'string', required: true, label: 'Nama Item' },
+      supplier: { type: 'string', required: true, label: 'Supplier' },
+      jumlah: { type: 'number', required: true, label: 'Jumlah' },
+      satuan: { type: 'string', required: false, label: 'Satuan' },
+      harga_satuan: { type: 'number', required: false, label: 'Harga Satuan' }
+    }
+  },
+  
+  check_overdue_wo: {
+    id: 'check_overdue_wo',
+    label: 'Cek WO Overdue',
+    description: 'Cek Work Order yang sudah melewati due date',
+    module: 'maintenance',
+    category: 'read',
+    riskLevel: 'low',
+    params: {}
+  },
+  
+  generate_report: {
+    id: 'generate_report',
+    label: 'Generate Laporan',
+    description: 'Generate laporan untuk modul tertentu',
+    module: 'reports',
+    category: 'read',
+    riskLevel: 'low',
+    params: {
+      module: { type: 'string', required: true, label: 'Modul', options: ['spare-parts', 'team', 'maintenance', 'produksi', 'keuangan', 'hse', 'hr', 'purchasing', 'distribusi'] },
+      period: { type: 'string', required: false, label: 'Periode', options: ['harian', 'mingguan', 'bulanan'] }
+    }
+  },
+  
+  check_production_anomaly: {
+    id: 'check_production_anomaly',
+    label: 'Cek Anomali Produksi',
+    description: 'Cek apakah ada anomali produksi (output di bawah target)',
+    module: 'production',
+    category: 'read',
+    riskLevel: 'low',
+    params: {}
+  },
+  
+  run_workflow: {
+    id: 'run_workflow',
+    label: 'Jalankan Workflow',
+    description: 'Jalankan workflow otomatis (rantai aksi)',
+    module: 'agent',
+    category: 'workflow',
+    riskLevel: 'high',
+    params: {
+      workflow_id: { type: 'string', required: true, label: 'ID Workflow', options: ['low_stock_auto_order', 'overdue_wo_escalation', 'production_anomaly_alert', 'daily_checkup'] },
+      params: { type: 'object', required: false, label: 'Parameter Tambahan' }
+    }
+  }
+};
+
+/**
+ * Definisi workflow yang bisa dijalankan oleh AI Agent
+ * Workflow adalah rantai aksi yang dijalankan berurutan
+ */
+const AGENT_WORKFLOWS = {
+  low_stock_auto_order: {
+    id: 'low_stock_auto_order',
+    label: 'Auto-Order Stok Rendah',
+    description: 'Otomatis buat Purchase Order untuk spare part yang stoknya rendah',
+    trigger: 'low_stock',
+    steps: [
+      { action: 'check_stock', params: {}, description: 'Cek item dengan stok rendah' },
+      { action: 'create_po', params: {}, description: 'Buat PO untuk item rendah', usePreviousResult: true }
+    ],
+    requiresConfirmation: true
+  },
+  
+  overdue_wo_escalation: {
+    id: 'overdue_wo_escalation',
+    label: 'Eskalasi WO Overdue',
+    description: 'Eskalasi dan buat WO darurat untuk WO yang overdue',
+    trigger: 'overdue_wo',
+    steps: [
+      { action: 'check_overdue_wo', params: {}, description: 'Identifikasi WO overdue' },
+      { action: 'create_wo', params: { tipe: 'Emergency', prioritas: 'Critical' }, description: 'Buat WO emergency', usePreviousResult: true }
+    ],
+    requiresConfirmation: true
+  },
+  
+  production_anomaly_alert: {
+    id: 'production_anomaly_alert',
+    label: 'Alert Anomali Produksi',
+    description: 'Alert dan buat WO jika ada anomali produksi',
+    trigger: 'production_anomaly',
+    steps: [
+      { action: 'check_production_anomaly', params: {}, description: 'Cek anomali produksi' },
+      { action: 'create_wo', params: { tipe: 'Corrective' }, description: 'Buat WO corrective jika ada masalah mesin', usePreviousResult: true },
+      { action: 'log_team_activity', params: { kategori: 'Maintenance' }, description: 'Catat insiden', usePreviousResult: true }
+    ],
+    requiresConfirmation: true
+  },
+  
+  daily_checkup: {
+    id: 'daily_checkup',
+    label: 'Cek Harian Rutin',
+    description: 'Pengecekan rutin harian: stok, WO overdue, anomali produksi',
+    trigger: 'scheduled',
+    steps: [
+      { action: 'check_stock', params: {}, description: 'Cek stok spare part rendah' },
+      { action: 'check_overdue_wo', params: {}, description: 'Cek WO overdue' },
+      { action: 'check_production_anomaly', params: {}, description: 'Cek anomali produksi' }
+    ],
+    requiresConfirmation: false // Read-only checks don't need confirmation
+  }
 };
 
 // ============================================================
@@ -702,7 +1091,9 @@ const CACHE_CONFIG = {
     'smart_input_parsing': { ttl: 0, enabled: false },   // Tidak di-cache (input unik)
     'simple_chat': { ttl: 0, enabled: false },            // Tidak di-cache (konteks unik)
     'report_generation': { ttl: 7200, enabled: true },    // 2 jam (data jarang berubah)
-    'ocr_parsing': { ttl: 86400, enabled: true }          // 24 jam (dokumen tidak berubah)
+    'ocr_parsing': { ttl: 86400, enabled: true },         // 24 jam (dokumen tidak berubah)
+    'agent_action_parsing': { ttl: 0, enabled: false },   // Tidak di-cache (konteks unik)
+    'agent_check': { ttl: 300, enabled: true }             // 5 menit (data bisa berubah)
   }
 };
 
@@ -793,6 +1184,22 @@ const CHAT_CONFIG = {
       id: 'rekomendasi_ai',
       label: '🤖 Rekomendasi AI',
       prompt: 'Berdasarkan data terkini, berikan rekomendasi untuk meningkatkan efisiensi operasional'
+    },
+    // --- NEW: Agent Quick Actions ---
+    {
+      id: 'agent_daily_check',
+      label: '🔍 Cek Harian Agent',
+      prompt: 'Jalankan pengecekan harian: cek stok rendah, WO overdue, dan anomali produksi'
+    },
+    {
+      id: 'agent_overdue_wo',
+      label: '🚨 WO Overdue',
+      prompt: 'Cek apakah ada Work Order yang sudah melewati due date'
+    },
+    {
+      id: 'agent_low_stock',
+      label: '📉 Stok Rendah',
+      prompt: 'Cek spare part mana saja yang stoknya rendah atau habis'
     }
   ]
 };
@@ -845,7 +1252,10 @@ const FALLBACK_STRATEGY = {
     'timeout': 'Permintaan AI memakan waktu terlalu lama. Silakan coba lagi.',
     'network': 'Koneksi bermasalah. Periksa jaringan internet Anda.',
     'invalid_response': 'AI memberikan respons yang tidak valid. Silakan coba lagi.',
-    'generic': 'Terjadi kesalahan pada AI. Silakan coba lagi.'
+    'generic': 'Terjadi kesalahan pada AI. Silakan coba lagi.',
+    'action_failed': 'Aksi gagal dijalankan. Silakan coba lagi atau lakukan manual.',
+    'module_not_available': 'Modul yang diperlukan tidak tersedia saat ini.',
+    'confirmation_required': 'Aksi ini memerlukan konfirmasi Anda sebelum dijalankan.'
   }
 };
 
@@ -873,7 +1283,11 @@ const KV_KEYS = {
     'hr': 'ywm_hr',
     'purchasing': 'ywm_purchasing',
     'distribusi': 'ywm_distribusi'
-  }
+  },
+  // NEW: Agent-specific keys
+  agentState: 'ywm_agent_state',
+  agentAlerts: 'ywm_agent_alerts',
+  agentAudit: 'ywm_agent_audit'
 };
 
 // ============================================================
@@ -902,6 +1316,7 @@ function getTemperature(modelId, useCase) {
   // Override temperature untuk use case tertentu
   if (useCase === 'creative_writing') return 0.7;
   if (useCase === 'parsing' || useCase === 'classification') return 0.1;
+  if (useCase === 'agent_action_parsing') return 0.1;
   
   return model.defaultTemp;
 }
@@ -1007,6 +1422,24 @@ async function callWithFallback(aiCallFn, preferredModel) {
   throw lastError || new Error('Semua model AI gagal');
 }
 
+/**
+ * Mendapatkan definisi aksi agent berdasarkan ID
+ * @param {string} actionId - ID aksi
+ * @returns {Object|null} Definisi aksi
+ */
+function getAgentAction(actionId) {
+  return AGENT_ACTIONS[actionId] || null;
+}
+
+/**
+ * Mendapatkan definisi workflow berdasarkan ID
+ * @param {string} workflowId - ID workflow
+ * @returns {Object|null} Definisi workflow
+ */
+function getAgentWorkflow(workflowId) {
+  return AGENT_WORKFLOWS[workflowId] || null;
+}
+
 // ============================================================
 // EXPORTS
 // ============================================================
@@ -1029,6 +1462,13 @@ window.YWMAIConfig = {
   FALLBACK_STRATEGY,
   KV_KEYS,
   
+  // NEW: Agent configuration
+  AGENT_CONFIG,
+  AGENT_ACTIONS,
+  AGENT_WORKFLOWS,
+  AGENT_ACTION_PARSE_PROMPT,
+  AGENT_WORKFLOW_PROMPT,
+  
   // Fungsi utility
   getOptimalModel,
   getTemperature,
@@ -1037,5 +1477,9 @@ window.YWMAIConfig = {
   getErrorMessage,
   getModulePrompt,
   getReportPrompt,
-  callWithFallback
+  callWithFallback,
+  
+  // NEW: Agent utility functions
+  getAgentAction,
+  getAgentWorkflow
 };
