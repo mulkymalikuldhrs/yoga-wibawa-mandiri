@@ -144,8 +144,9 @@ export async function ocrFromImage(file: File): Promise<string> {
     const puter = await waitForPuter();
 
     // First upload the file
-    const uploadResult = await puter.fs.upload('/ywm-temp-ocr/' + file.name, file);
+    const _uploadResult = await puter.fs.upload('/ywm-temp-ocr/' + file.name, file);
     
+    void _uploadResult;
     // Then use AI to read it
     const response = (await puter.ai.chat(
       [

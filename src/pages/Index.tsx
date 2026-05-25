@@ -1,6 +1,6 @@
 import Layout from '@/components/Layout';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Factory, Truck, Award, Users, Bot, Zap } from 'lucide-react';
+import { ArrowRight, Factory, Truck, Award, Bot, Zap } from 'lucide-react';
 
 const Index = () => {
   return (
@@ -13,6 +13,7 @@ const Index = () => {
             src="https://images.unsplash.com/photo-1487958449943-2429e8be8625?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80" 
             alt="Pabrik Semen Modern"
             className="w-full h-full object-cover"
+            loading="lazy"
           />
         </div>
         
@@ -131,6 +132,7 @@ const Index = () => {
                 src="https://images.unsplash.com/photo-1466442929976-97f336a657be?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" 
                 alt="Fasilitas Modern"
                 className="rounded-lg shadow-2xl"
+                loading="lazy"
               />
             </div>
           </div>

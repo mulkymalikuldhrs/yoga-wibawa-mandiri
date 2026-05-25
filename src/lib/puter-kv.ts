@@ -75,7 +75,7 @@ export function generateId(): string {
 // Create a timestamped item with auto-generated ID
 export function createTimestampedItem<T extends Record<string, unknown>>(
   data: Omit<T, 'id' | 'createdAt' | 'updatedAt'>,
-  prefix: keyof typeof KV_PREFIXES
+  _prefix: keyof typeof KV_PREFIXES
 ): T & { id: string; createdAt: string; updatedAt: string } {
   const id = generateId();
   const now = new Date().toISOString();

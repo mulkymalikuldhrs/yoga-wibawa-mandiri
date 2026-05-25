@@ -7,6 +7,40 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [5.1.0] - 2026-05-26 — Production Readiness & Security Hardening
+
+### Added
+- **React Error Boundary** — Global error boundary preventing white screen crashes
+- **React.lazy code splitting** — All 7 routes lazy-loaded for faster initial bundle
+- **GitHub Actions CI/CD** — Auto-deploy workflow on push to main (lint + build + deploy)
+- **Content Security Policy (CSP)** — Meta tags for XSS/clickjacking/injection prevention
+- **Security headers** — X-Content-Type-Options, X-Frame-Options, X-XSS-Protection, Referrer-Policy
+- **Open Graph meta tags** — Social media sharing support
+- **TypeScript strict mode** — Enabled strict, strictNullChecks, noUnusedLocals, noUnusedParameters
+- **Build optimization** — Manual chunks for vendor, ui, charts, query (reduced initial load)
+
+### Fixed
+- **CRITICAL: Root index.html** — Was redirect page, not Vite SPA entry (root cause of GitHub Pages blank)
+- **CRITICAL: Vite base path** — Added `/yoga-wibawa-mandiri/` for correct GitHub Pages deployment
+- **CRITICAL: BrowserRouter basename** — Added for correct routing under GitHub Pages subpath
+- **PII leak in Contact.tsx** — Removed console.log with user data (form name, email, phone)
+- **PII leak in emailService.ts** — Removed console.log with email response data
+- **Deprecated onKeyPress** — Changed to onKeyDown in ChatBot.tsx
+- **use-toast.ts dependency array bug** — Fixed `[state]` to `[]` preventing infinite re-renders
+- **Unused imports** — Removed CheckCircle, AlertCircle, Users, LogOut, X, PanelRightOpen
+- **Unused variable** — Fixed uploadResult prefix with underscore
+- **Image lazy loading** — Added `loading="lazy"` to all content images (About, Services, Gallery, Index)
+- **Footer copyright year** — Changed from hardcoded 2024 to dynamic `new Date().getFullYear()`
+- **package-lock.json** — Removed from .gitignore for reproducible builds
+
+### Changed
+- **ESLint config** — Added no-console (warn), no-var (error), prefer-const (warn), no-explicit-any (warn)
+- **Linter results** — 0 errors, 10 warnings (down from 19 warnings; remaining are shadcn/ui generated)
+- **Build output** — Code-split into 17 chunks with proper manual chunks configuration
+- **docs/ARCHITECTURE.md** — Fixed documentation drift (removed Supabase references, aligned with Puter.js)
+
+---
+
 ## [5.0.0] - 2026-05-26 — AI Agent Upgrade & Code Quality
 
 ### Added

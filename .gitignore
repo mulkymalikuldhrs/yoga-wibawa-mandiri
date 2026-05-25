@@ -1,12 +1,14 @@
 # Dependencies
 node_modules/
-bun.lockb
-package-lock.json
 
 # Build output
 dist/
 build/
 .vite/
+
+# Lock files - KEEP package-lock.json for reproducible builds
+# package-lock.json should be committed
+bun.lockb
 
 # Environment
 .env

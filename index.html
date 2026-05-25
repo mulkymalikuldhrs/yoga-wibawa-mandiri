@@ -1,66 +1,39 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="refresh" content="0;url=dashboard/">
-    <title>PT Yoga Wibawa Mandiri — Dashboard</title>
-    <link rel="icon" type="image/svg+xml" href="dashboard/assets/favicon.svg">
-    <style>
-        body {
-            margin: 0;
-            padding: 0;
-            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #fff;
-        }
-        .loading {
-            text-align: center;
-            animation: fadeIn 0.5s ease;
-        }
-        .loading h1 {
-            font-size: 2rem;
-            margin-bottom: 0.5rem;
-            color: #00d4ff;
-        }
-        .loading p {
-            color: rgba(255,255,255,0.6);
-            font-size: 0.9rem;
-        }
-        .spinner {
-            width: 36px;
-            height: 36px;
-            border: 3px solid rgba(255,255,255,0.1);
-            border-top-color: #00d4ff;
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-            margin: 0 auto 20px;
-        }
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-    </style>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PT Yoga Wibawa Mandiri — Digital Platform</title>
+    <meta name="description" content="PT Yoga Wibawa Mandiri — Platform digital operasional terpadu untuk perusahaan pengantongan Semen Padang di Lhokseumawe, Aceh. AI-Powered Dashboard & Corporate Website." />
+    <meta name="keywords" content="YWM, Yoga Wibawa Mandiri, semen, pengantongan, Lhokseumawe, Aceh, Semen Padang, dashboard, AI" />
+    <meta name="author" content="Mulky Malikul Dhaher" />
+
+    <!-- Security Headers -->
+    <meta http-equiv="X-Content-Type-Options" content="nosniff" />
+    <meta http-equiv="X-Frame-Options" content="SAMEORIGIN" />
+    <meta http-equiv="X-XSS-Protection" content="1; mode=block" />
+    <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://js.puter.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://images.unsplash.com https://*.github.io; connect-src 'self' https://api.puter.com https://*.puter.com; frame-ancestors 'self';" />
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="PT Yoga Wibawa Mandiri — Digital Platform" />
+    <meta property="og:description" content="Platform digital operasional terpadu untuk perusahaan pengantongan Semen Padang" />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="id_ID" />
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+
+    <!-- Puter.js SDK -->
+    <script src="https://js.puter.com/v2/" defer></script>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
 </head>
 <body>
-    <div class="loading">
-        <div class="spinner"></div>
-        <h1>YWM Dashboard</h1>
-        <p>Memuat dashboard PT Yoga Wibawa Mandiri...</p>
-        <p style="font-size:0.75rem; margin-top:1rem;">Jika tidak otomatis redirect, <a href="dashboard/" style="color:#00d4ff;">klik di sini</a></p>
-    </div>
-    <script>
-        // Fallback redirect jika meta refresh tidak bekerja
-        setTimeout(function() {
-            window.location.href = 'dashboard/';
-        }, 1000);
-    </script>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
 </body>
 </html>

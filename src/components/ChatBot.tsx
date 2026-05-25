@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { MessageCircle, X, Send, Bot, User, Cpu, Zap, Settings, Headphones, Monitor, Smartphone, Wifi, Database, Phone } from 'lucide-react';
 
 interface Message {
@@ -100,11 +100,10 @@ const ChatBot = () => {
   // State for current bot icon
   const [currentBot, setCurrentBot] = useState<BotIcon>(botIcons[0]);
 
-  // Function to get random bot icon
-  const getRandomBot = () => {
+  const getRandomBot = useCallback(() => {
     const randomIndex = Math.floor(Math.random() * botIcons.length);
     return botIcons[randomIndex];
-  };
+  }, []);
 
   // Change bot icon every 30 seconds when chat is open
   useEffect(() => {
@@ -115,14 +114,14 @@ const ChatBot = () => {
     }, 30000); // Change every 30 seconds
 
     return () => clearInterval(interval);
-  }, [isOpen]);
+  }, [isOpen, getRandomBot]);
 
   // Change bot icon when chat opens
   useEffect(() => {
     if (isOpen) {
       setCurrentBot(getRandomBot());
     }
-  }, [isOpen]);
+  }, [isOpen, getRandomBot]);
 
   // Change bot icon on each bot response
   const changeBotOnResponse = () => {
@@ -234,7 +233,7 @@ const ChatBot = () => {
     }, 1000 + Math.random() * 1000);
   };
 
-  const handleKeyPress = (e: React.KeyboardEvent) => {
+  const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       handleSendMessage();
@@ -382,7 +381,7 @@ const ChatBot = () => {
                 type="text"
                 value={inputMessage}
                 onChange={(e) => setInputMessage(e.target.value)}
-                onKeyPress={handleKeyPress}
+                onKeyDown={handleKeyDown}
                 placeholder="Ketik pesan Anda..."
                 className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ywm-red focus:border-ywm-red outline-none"
               />

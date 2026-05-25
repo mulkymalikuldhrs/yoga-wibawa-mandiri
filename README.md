@@ -4,7 +4,7 @@
 [![Puter.js](https://img.shields.io/badge/Powered%20by-Puter.js-00d4ff)](https://puter.com/)
 [![Zero Server](https://img.shields.io/badge/Architecture-Zero%20Server-green)](https://puter.com/)
 [![AI Agent](https://img.shields.io/badge/AI-Agent%20%7C%20GPT--4o%20%7C%20Claude%20%7C%20Gemini-blue)](https://puter.com/)
-[![Version](https://img.shields.io/badge/Version-5.0.0-brightgreen)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/Version-5.1.0-brightgreen)](CHANGELOG.md)
 
 ---
 
@@ -58,14 +58,23 @@ PT. Yoga Wibawa Mandiri is a trusted cement packaging company strategically loca
 git clone https://github.com/mulkymalikuldhrs/yoga-wibawa-mandiri.git
 cd yoga-wibawa-mandiri
 
-# Open dashboard directly in browser (no build needed!)
-open dashboard/index.html
+# Install dependencies
+npm install
 
-# Or serve locally
-npx serve .
+# Development server
+npm run dev
+
+# Build for production
+npm run build
+
+# Preview production build
+npm run preview
+
+# Lint
+npm run lint
 ```
 
-> **No npm install needed for the dashboard!** Just open `dashboard/index.html` in a browser. Puter.js loads from CDN.
+> **The corporate website requires `npm install` and `npm run dev` for development.** The dashboard (vanilla HTML/JS) can be opened directly by opening `dashboard/index.html` in a browser.
 
 ### Documentation
 

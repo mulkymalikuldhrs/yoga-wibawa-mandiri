@@ -48,7 +48,10 @@ export const sendContactEmail = async (formData: ContactFormData): Promise<boole
       templateParams
     );
 
-    console.log('Email sent successfully:', response);
+    // Success confirmed (no sensitive data logged)
+    if (import.meta.env.DEV) {
+      console.info('[EmailService] Email sent successfully, status:', response.status);
+    }
     return response.status === 200;
   } catch (error) {
     console.error('Failed to send email:', error);

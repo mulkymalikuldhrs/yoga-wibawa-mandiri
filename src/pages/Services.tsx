@@ -140,6 +140,7 @@ const Services = () => {
                 src="https://images.unsplash.com/photo-1433086966358-54859d0ed716?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" 
                 alt="Fasilitas Modern"
                 className="rounded-lg shadow-2xl"
+                loading="lazy"
               />
             </div>
           </div>

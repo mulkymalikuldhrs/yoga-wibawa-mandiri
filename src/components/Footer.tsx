@@ -128,7 +128,7 @@ const Footer = () => {
         <div className="border-t border-gray-700 mt-12 pt-8">
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
             <p className="text-gray-300 text-sm text-center md:text-left">
-              © 2024 PT. Yoga Wibawa Mandiri. Semua hak cipta dilindungi.
+              © {new Date().getFullYear()} PT. Yoga Wibawa Mandiri. Semua hak cipta dilindungi.
             </p>
             <div className="text-center md:text-right">
               <p className="text-gray-400 text-xs mb-1">

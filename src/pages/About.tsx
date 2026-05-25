@@ -43,6 +43,7 @@ const About = () => {
                 src="https://images.unsplash.com/photo-1501854140801-50d01698950b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" 
                 alt="Sejarah Perusahaan"
                 className="rounded-lg shadow-2xl"
+                loading="lazy"
               />
             </div>
           </div>

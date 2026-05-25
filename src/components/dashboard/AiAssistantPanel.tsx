@@ -11,7 +11,6 @@ import {
   Send,
   Mic,
   MicOff,
-  X,
   MessageSquare,
   Sparkles,
   Zap,
@@ -21,7 +20,6 @@ import {
   User,
   Loader2,
   PanelRightClose,
-  PanelRightOpen,
 } from 'lucide-react';
 
 interface AiAssistantPanelProps {

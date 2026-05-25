@@ -64,6 +64,7 @@ const Gallery = () => {
                     src={image.src}
                     alt={image.title}
                     className="w-full h-64 object-cover transition-transform duration-300 group-hover:scale-110"
+                    loading="lazy"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                     <div className="absolute bottom-4 left-4 right-4 text-white">

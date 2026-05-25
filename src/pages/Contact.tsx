@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import Layout from '@/components/Layout';
-import { MapPin, Phone, Mail, Clock, Send, CheckCircle, AlertCircle, Loader2 } from 'lucide-react';
+import { MapPin, Phone, Mail, Clock, Send, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { sendContactEmail, type ContactFormData } from '@/services/emailService';
 
@@ -125,12 +125,10 @@ const Contact = () => {
           message: ''
         });
 
-        // Log the form data for manual processing
-        console.log('Contact form submission:', {
-          ...formData,
-          timestamp: new Date().toISOString(),
-          targetEmail: 'mulkymalikuldhaher@mail.com'
-        });
+        // Form data logged server-side only (no PII in console)
+        if (import.meta.env.DEV) {
+          console.info('[Contact] Form submitted successfully at', new Date().toISOString());
+        }
       }
     } catch (error) {
       console.error('Form submission error:', error);

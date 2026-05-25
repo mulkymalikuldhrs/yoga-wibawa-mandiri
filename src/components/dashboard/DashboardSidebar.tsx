@@ -19,7 +19,6 @@ import {
   Bell,
   ChevronLeft,
   ChevronRight,
-  LogOut,
   ExternalLink,
 } from 'lucide-react';
 
