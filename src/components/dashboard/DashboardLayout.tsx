@@ -51,7 +51,12 @@ function DashboardLayoutInner({
   }, []);
 
   return (
-    <div className="h-screen flex overflow-hidden bg-gradient-to-br from-[#0f0c29] via-[#302b63] to-[#24243e]">
+    <div className="glassmorphic-bg h-screen flex overflow-hidden">
+      {/* Floating colored orbs for liquid glass effect */}
+      <div className="glassmorphic-orb-cyan" style={{ top: '20%', left: '30%' }} />
+      <div className="glassmorphic-orb-amber" style={{ top: '60%', right: '10%' }} />
+      <div className="glassmorphic-orb-emerald" style={{ bottom: '10%', left: '50%' }} />
+
       {/* Desktop Sidebar — hidden on mobile */}
       <DashboardSidebar
         activeModule={activeModule}
@@ -73,7 +78,7 @@ function DashboardLayoutInner({
       {/* Main Content Area */}
       <main
         className={cn(
-          'flex-1 overflow-y-auto custom-scrollbar',
+          'flex-1 overflow-y-auto custom-scrollbar relative z-10',
           // Responsive padding
           isMobile ? 'px-3 pt-14 pb-20' : 'px-6 pt-6 pb-6 lg:px-8'
         )}

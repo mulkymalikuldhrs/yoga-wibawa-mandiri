@@ -1,6 +1,8 @@
 // ============================================================
 // PWA Registration & Utilities for YWM Dashboard
+// Updated: 2026-05-29 — Enhanced push notification support
 // registerSW(), unregisterSW(), isPWAInstalled(), showInstallPrompt()
+// requestPushPermission(), getPushSubscription()
 // ============================================================
 
 // Store the beforeinstallprompt event for later use
@@ -165,4 +167,104 @@ export function canInstallPWA(): boolean {
  */
 export function getDeferredPrompt(): BeforeInstallPromptEvent | null {
   return deferredPrompt;
+}
+
+// ── Push Notification Functions ──
+
+/**
+ * Check if push notifications are supported
+ */
+export function isPushSupported(): boolean {
+  if (typeof window === 'undefined') return false;
+  return 'PushManager' in window && 'serviceWorker' in navigator;
+}
+
+/**
+ * Request push notification permission
+ * Returns the permission status: 'granted', 'denied', or 'default'
+ */
+export async function requestPushPermission(): Promise<NotificationPermission> {
+  if (!isPushSupported()) {
+    console.warn('[YWM PWA] Push notifications not supported');
+    return 'denied';
+  }
+
+  const permission = await Notification.requestPermission();
+  console.log('[YWM PWA] Push permission:', permission);
+  return permission;
+}
+
+/**
+ * Get the current push subscription
+ * Returns the subscription object or null
+ */
+export async function getPushSubscription(): Promise<PushSubscription | null> {
+  if (!isPushSupported()) return null;
+
+  try {
+    const registration = await navigator.serviceWorker.ready;
+    const subscription = await registration.pushManager.getSubscription();
+    return subscription;
+  } catch (error) {
+    console.error('[YWM PWA] Failed to get push subscription:', error);
+    return null;
+  }
+}
+
+/**
+ * Subscribe to push notifications
+ * Requires a VAPID public key (to be configured on server)
+ * Returns the subscription object or null on failure
+ */
+export async function subscribeToPush(vapidPublicKey: string): Promise<PushSubscription | null> {
+  if (!isPushSupported()) return null;
+
+  try {
+    const permission = await requestPushPermission();
+    if (permission !== 'granted') {
+      console.warn('[YWM PWA] Push permission not granted');
+      return null;
+    }
+
+    const registration = await navigator.serviceWorker.ready;
+    const subscription = await registration.pushManager.subscribe({
+      userVisibleOnly: true,
+      applicationServerKey: vapidPublicKey,
+    });
+
+    console.log('[YWM PWA] Push subscription created:', subscription.endpoint);
+    // In a real implementation, you would send the subscription to your server
+    return subscription;
+  } catch (error) {
+    console.error('[YWM PWA] Failed to subscribe to push:', error);
+    return null;
+  }
+}
+
+/**
+ * Unsubscribe from push notifications
+ */
+export async function unsubscribeFromPush(): Promise<boolean> {
+  try {
+    const subscription = await getPushSubscription();
+    if (subscription) {
+      await subscription.unsubscribe();
+      console.log('[YWM PWA] Push subscription removed');
+      return true;
+    }
+    return false;
+  } catch (error) {
+    console.error('[YWM PWA] Failed to unsubscribe from push:', error);
+    return false;
+  }
+}
+
+/**
+ * Check the current notification permission status
+ */
+export function getNotificationPermission(): NotificationPermission {
+  if (typeof window === 'undefined' || !('Notification' in window)) {
+    return 'denied';
+  }
+  return Notification.permission;
 }

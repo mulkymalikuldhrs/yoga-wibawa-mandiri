@@ -3,6 +3,8 @@
 -- PT. Yoga Wibawa Mandiri — Cement Bagging Company
 -- Run this in Supabase SQL Editor
 -- ============================================================
+-- Updated to match TypeScript types in src/types/dashboard.ts
+-- Column names use snake_case, mapped to camelCase in the app layer
 
 -- Enable UUID extension
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
@@ -27,24 +29,7 @@ CREATE TABLE IF NOT EXISTS spare_parts (
 );
 
 -- ─────────────────────────────────────────────
--- 2. PRODUCTION (Produksi)
--- ─────────────────────────────────────────────
-CREATE TABLE IF NOT EXISTS production (
-  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
-  tanggal DATE DEFAULT CURRENT_DATE,
-  shift TEXT CHECK (shift IN ('pagi', 'siang', 'malam')),
-  mesin TEXT,
-  target INTEGER DEFAULT 0,
-  aktual INTEGER DEFAULT 0,
-  satuan TEXT DEFAULT 'ton',
-  kualitas TEXT CHECK (kualitas IN ('A', 'B', 'C')) DEFAULT 'A',
-  catatan TEXT,
-  created_at TIMESTAMPTZ DEFAULT NOW(),
-  updated_at TIMESTAMPTZ DEFAULT NOW()
-);
-
--- ─────────────────────────────────────────────
--- 3. MAINTENANCE (Perawatan)
+-- 2. MAINTENANCE (Perawatan)
 -- ─────────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS maintenance (
   id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
@@ -63,7 +48,7 @@ CREATE TABLE IF NOT EXISTS maintenance (
 );
 
 -- ─────────────────────────────────────────────
--- 4. TEAM ACTIVITY (Aktivitas Tim)
+-- 3. TEAM ACTIVITY (Aktivitas Tim)
 -- ─────────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS team_activity (
   id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
@@ -71,8 +56,8 @@ CREATE TABLE IF NOT EXISTS team_activity (
   divisi TEXT,
   aktivitas TEXT,
   status TEXT CHECK (status IN ('hadir', 'izin', 'sakit', 'alpha', 'lembur')) DEFAULT 'hadir',
-  jam_masuk TIME,
-  jam_keluar TIME,
+  jam_masuk TEXT,
+  jam_keluar TEXT,
   tanggal DATE DEFAULT CURRENT_DATE,
   catatan TEXT,
   created_at TIMESTAMPTZ DEFAULT NOW(),
@@ -80,75 +65,66 @@ CREATE TABLE IF NOT EXISTS team_activity (
 );
 
 -- ─────────────────────────────────────────────
--- 5. SAFETY / HSE (Keselamatan)
+-- 4. PISPOT (Pompa Gemik Bearing / Lubrikasi / Pelumasan)
+-- Checklist siklus bulanan untuk pelumasan dan perawatan bearing/pompa
 -- ─────────────────────────────────────────────
-CREATE TABLE IF NOT EXISTS safety (
+CREATE TABLE IF NOT EXISTS pispot (
   id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
-  judul TEXT NOT NULL,
-  tanggal DATE DEFAULT CURRENT_DATE,
+  nama_peralatan TEXT NOT NULL,
+  kode_peralatan TEXT,
   lokasi TEXT,
-  severity TEXT CHECK (severity IN ('ringan', 'sedang', 'berat', 'fatal')) DEFAULT 'ringan',
-  status TEXT CHECK (status IN ('dilaporkan', 'investigasi', 'selesai', 'ditutup')) DEFAULT 'dilaporkan',
-  pelapor TEXT,
-  korban TEXT,
-  deskripsi TEXT,
-  tindakan TEXT,
-  created_at TIMESTAMPTZ DEFAULT NOW(),
-  updated_at TIMESTAMPTZ DEFAULT NOW()
-);
-
--- ─────────────────────────────────────────────
--- 6. FINANCE (Keuangan)
--- ─────────────────────────────────────────────
-CREATE TABLE IF NOT EXISTS finance (
-  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
-  tanggal DATE DEFAULT CURRENT_DATE,
-  jenis TEXT CHECK (jenis IN ('pemasukan', 'pengeluaran')) DEFAULT 'pemasukan',
-  kategori TEXT,
-  deskripsi TEXT,
-  jumlah NUMERIC(15,2) DEFAULT 0,
-  metode_pembayaran TEXT DEFAULT 'transfer',
-  referensi TEXT,
+  jenis_pelumas TEXT,
+  spesifikasi TEXT,
+  volume TEXT,
+  periode TEXT DEFAULT 'bulanan',
+  bulan TEXT NOT NULL,
+  tanggal_pelaksanaan DATE,
+  petugas TEXT,
+  status TEXT CHECK (status IN ('terjadwal', 'selesai', 'terlewat')) DEFAULT 'terjadwal',
+  kondisi TEXT CHECK (kondisi IN ('baik', 'perlu_perhatian', 'rusak')) DEFAULT 'baik',
   catatan TEXT,
+  tindak_lanjut TEXT,
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
 -- ─────────────────────────────────────────────
--- 7. HR / PAYROLL (SDM)
+-- 5. DOCUMENTS (Dokumen)
+-- Matches Document TypeScript interface
 -- ─────────────────────────────────────────────
-CREATE TABLE IF NOT EXISTS hr (
+CREATE TABLE IF NOT EXISTS documents (
   id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
   nama TEXT NOT NULL,
-  nip TEXT UNIQUE,
-  jabatan TEXT,
-  divisi TEXT,
-  tanggal_masuk DATE,
-  gaji_pokok NUMERIC(12,2) DEFAULT 0,
-  status TEXT CHECK (status IN ('aktif', 'cuti', 'resign')) DEFAULT 'aktif',
-  no_telepon TEXT,
-  email TEXT,
-  alamat TEXT,
+  jenis TEXT CHECK (jenis IN ('kontrak', 'laporan', 'manual', 'sertifikat', 'lainnya')) DEFAULT 'lainnya',
+  kategori TEXT,
+  ukuran BIGINT DEFAULT 0,
+  url TEXT,
+  ocr_text TEXT,
+  diunggah_oleh TEXT,
+  catatan TEXT,
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
 -- ─────────────────────────────────────────────
--- 8. NOTIFICATIONS (Notifikasi)
+-- 6. NOTIFICATIONS (Notifikasi)
+-- Updated tipe values to match TypeScript: 'info' | 'peringatan' | 'bahaya' | 'sukses'
+-- Added link column (maps to action_url in DB)
 -- ─────────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS notifications (
   id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
   judul TEXT NOT NULL,
   pesan TEXT,
-  tipe TEXT CHECK (tipe IN ('info', 'warning', 'error', 'success', 'ai')) DEFAULT 'info',
-  modul TEXT,
+  tipe TEXT CHECK (tipe IN ('info', 'peringatan', 'bahaya', 'sukses')) DEFAULT 'info',
   dibaca BOOLEAN DEFAULT FALSE,
+  modul TEXT,
   action_url TEXT,
-  created_at TIMESTAMPTZ DEFAULT NOW()
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
 -- ─────────────────────────────────────────────
--- 9. CHAT HISTORY (Riwayat Chat AI)
+-- 7. CHAT HISTORY (Riwayat Chat AI)
 -- ─────────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS chat_history (
   id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
@@ -156,21 +132,84 @@ CREATE TABLE IF NOT EXISTS chat_history (
   role TEXT CHECK (role IN ('user', 'assistant', 'system')),
   content TEXT NOT NULL,
   tokens_used INTEGER DEFAULT 0,
-  created_at TIMESTAMPTZ DEFAULT NOW()
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- ─────────────────────────────────────────────
+-- 8. SILO CALCULATION (Kalkulasi Kekosongan Silo)
+-- Matches SiloCalculation TypeScript interface
+-- Based on YWM's "Kalkulasi Kekosongan" formula
+-- ─────────────────────────────────────────────
+CREATE TABLE IF NOT EXISTS silo_calculation (
+  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+  silo TEXT CHECK (silo IN ('A', 'B')) NOT NULL,
+  tanggal DATE DEFAULT CURRENT_DATE,
+  jam TEXT DEFAULT '00:00',
+  ukuran JSONB DEFAULT '[]',            -- 7 lubang: array of depth measurements (meters)
+  jumlah NUMERIC(10,4) DEFAULT 0,       -- (b) Jumlah 1-7
+  tinggi_rata_rata NUMERIC(10,4) DEFAULT 0, -- (c) Tinggi Rata-Rata
+  t_silinder NUMERIC(10,4) DEFAULT 0,   -- (d) t Silinder
+  t_conis NUMERIC(10,4) DEFAULT 0,      -- (e) t Conis
+  volume_silinder NUMERIC(12,3) DEFAULT 0, -- Volume Silinder
+  volume_conis NUMERIC(12,3) DEFAULT 0, -- Volume Conis
+  volume_total NUMERIC(12,3) DEFAULT 0, -- Total Volume
+  kekosongan NUMERIC(12,3) DEFAULT 0,   -- Kekosongan (m³)
+  space_silo NUMERIC(12,3) DEFAULT 0,   -- Space Silo setelah dikurangi pengeluaran
+  pengeluaran NUMERIC(10,3) DEFAULT 0,  -- Pengeluaran (ton)
+  keterangan TEXT,
+  petugas TEXT,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- ─────────────────────────────────────────────
+-- 9. SILO OPNAME (Berita Acara Opname)
+-- Matches SiloOpname TypeScript interface
+-- Based on YWM's "Berita Acara Opname Silo A & B"
+-- ─────────────────────────────────────────────
+CREATE TABLE IF NOT EXISTS silo_opname (
+  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+  tanggal DATE DEFAULT CURRENT_DATE,
+  jam TEXT DEFAULT '00:00',
+  kapal TEXT,                            -- nama kapal pengirim semen curah
+  -- --- Opname I (Sebelum Bongkar) ---
+  opname1_tanggal DATE,
+  opname1_jam TEXT,
+  opname1_ukuran_a JSONB DEFAULT '[]',   -- 7 lubang Silo A
+  opname1_ukuran_b JSONB DEFAULT '[]',   -- 7 lubang Silo B
+  opname1_volume_a NUMERIC(12,3) DEFAULT 0,
+  opname1_volume_b NUMERIC(12,3) DEFAULT 0,
+  opname1_total_volume NUMERIC(12,3) DEFAULT 0,
+  -- --- Opname II (Sesudah Bongkar) ---
+  opname2_tanggal DATE,
+  opname2_jam TEXT,
+  opname2_ukuran_a JSONB DEFAULT '[]',   -- 7 lubang Silo A
+  opname2_ukuran_b JSONB DEFAULT '[]',   -- 7 lubang Silo B
+  opname2_volume_a NUMERIC(12,3) DEFAULT 0,
+  opname2_volume_b NUMERIC(12,3) DEFAULT 0,
+  opname2_total_volume NUMERIC(12,3) DEFAULT 0,
+  -- --- Rekapitulasi ---
+  pengeluaran_zak NUMERIC(10,3) DEFAULT 0,        -- ton semen dizakkan
+  semen_curah_terbongkar NUMERIC(12,3) DEFAULT 0,  -- m/t semen curah terbongkar dari kapal
+  catatan TEXT,
+  petugas TEXT,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
 -- ─────────────────────────────────────────────
 -- ENABLE ROW LEVEL SECURITY (RLS)
 -- ─────────────────────────────────────────────
 ALTER TABLE spare_parts ENABLE ROW LEVEL SECURITY;
-ALTER TABLE production ENABLE ROW LEVEL SECURITY;
 ALTER TABLE maintenance ENABLE ROW LEVEL SECURITY;
 ALTER TABLE team_activity ENABLE ROW LEVEL SECURITY;
-ALTER TABLE safety ENABLE ROW LEVEL SECURITY;
-ALTER TABLE finance ENABLE ROW LEVEL SECURITY;
-ALTER TABLE hr ENABLE ROW LEVEL SECURITY;
+ALTER TABLE pispot ENABLE ROW LEVEL SECURITY;
+ALTER TABLE documents ENABLE ROW LEVEL SECURITY;
 ALTER TABLE notifications ENABLE ROW LEVEL SECURITY;
 ALTER TABLE chat_history ENABLE ROW LEVEL SECURITY;
+ALTER TABLE silo_calculation ENABLE ROW LEVEL SECURITY;
+ALTER TABLE silo_opname ENABLE ROW LEVEL SECURITY;
 
 -- ─────────────────────────────────────────────
 -- PUBLIC POLICIES (for now — internal app)
@@ -184,10 +223,22 @@ BEGIN
   FOR t IN SELECT table_name FROM information_schema.tables 
     WHERE table_schema = 'public' AND table_type = 'BASE TABLE'
   LOOP
-    EXECUTE format('CREATE POLICY "Allow public read on %s" ON %I FOR SELECT USING (true)', t, t);
-    EXECUTE format('CREATE POLICY "Allow public insert on %s" ON %I FOR INSERT WITH CHECK (true)', t, t);
-    EXECUTE format('CREATE POLICY "Allow public update on %s" ON %I FOR UPDATE USING (true)', t, t);
-    EXECUTE format('CREATE POLICY "Allow public delete on %s" ON %I FOR DELETE USING (true)', t, t);
+    BEGIN
+      EXECUTE format('CREATE POLICY "Allow public read on %s" ON %I FOR SELECT USING (true)', t, t);
+    EXCEPTION WHEN others THEN NULL;
+    END;
+    BEGIN
+      EXECUTE format('CREATE POLICY "Allow public insert on %s" ON %I FOR INSERT WITH CHECK (true)', t, t);
+    EXCEPTION WHEN others THEN NULL;
+    END;
+    BEGIN
+      EXECUTE format('CREATE POLICY "Allow public update on %s" ON %I FOR UPDATE USING (true)', t, t);
+    EXCEPTION WHEN others THEN NULL;
+    END;
+    BEGIN
+      EXECUTE format('CREATE POLICY "Allow public delete on %s" ON %I FOR DELETE USING (true)', t, t);
+    EXCEPTION WHEN others THEN NULL;
+    END;
   END LOOP;
 END $$;
 
@@ -196,17 +247,19 @@ END $$;
 -- ─────────────────────────────────────────────
 CREATE INDEX IF NOT EXISTS idx_spare_parts_kategori ON spare_parts(kategori);
 CREATE INDEX IF NOT EXISTS idx_spare_parts_stok ON spare_parts(stok);
-CREATE INDEX IF NOT EXISTS idx_production_tanggal ON production(tanggal);
-CREATE INDEX IF NOT EXISTS idx_production_shift ON production(shift);
 CREATE INDEX IF NOT EXISTS idx_maintenance_status ON maintenance(status);
 CREATE INDEX IF NOT EXISTS idx_maintenance_prioritas ON maintenance(prioritas);
 CREATE INDEX IF NOT EXISTS idx_team_activity_tanggal ON team_activity(tanggal);
-CREATE INDEX IF NOT EXISTS idx_safety_severity ON safety(severity);
-CREATE INDEX IF NOT EXISTS idx_finance_tanggal ON finance(tanggal);
-CREATE INDEX IF NOT EXISTS idx_finance_jenis ON finance(jenis);
-CREATE INDEX IF NOT EXISTS idx_hr_status ON hr(status);
+CREATE INDEX IF NOT EXISTS idx_pispot_bulan ON pispot(bulan);
+CREATE INDEX IF NOT EXISTS idx_pispot_status ON pispot(status);
+CREATE INDEX IF NOT EXISTS idx_pispot_lokasi ON pispot(lokasi);
+CREATE INDEX IF NOT EXISTS idx_documents_jenis ON documents(jenis);
 CREATE INDEX IF NOT EXISTS idx_notifications_dibaca ON notifications(dibaca);
 CREATE INDEX IF NOT EXISTS idx_chat_history_session ON chat_history(session_id);
+CREATE INDEX IF NOT EXISTS idx_silo_calculation_silo ON silo_calculation(silo);
+CREATE INDEX IF NOT EXISTS idx_silo_calculation_tanggal ON silo_calculation(tanggal);
+CREATE INDEX IF NOT EXISTS idx_silo_opname_tanggal ON silo_opname(tanggal);
+CREATE INDEX IF NOT EXISTS idx_silo_opname_kapal ON silo_opname(kapal);
 
 -- ─────────────────────────────────────────────
 -- AUTO-UPDATE updated_at TRIGGER
@@ -225,7 +278,6 @@ DECLARE
 BEGIN
   FOR t IN SELECT table_name FROM information_schema.tables 
     WHERE table_schema = 'public' AND table_type = 'BASE TABLE'
-    AND table_name != 'notifications' AND table_name != 'chat_history'
   LOOP
     BEGIN
       EXECUTE format('CREATE TRIGGER set_updated_at BEFORE UPDATE ON %I FOR EACH ROW EXECUTE FUNCTION update_updated_at()', t);
@@ -237,91 +289,77 @@ BEGIN
 END $$;
 
 -- ─────────────────────────────────────────────
--- SEED DATA: Sample records for testing
+-- SEED DATA: Realistic YWM records
 -- ─────────────────────────────────────────────
 
 -- Sample spare parts
-INSERT INTO spare_parts (nama, kode, kategori, stok, stok_minimum, satuan, lokasi, harga, pemasok) VALUES
-('Nozzle Packer A1', 'NP-A1', 'packer', 25, 10, 'pcs', 'Gudang A-1', 2500000, 'PT. Suku Cadang Nusantara'),
-('Nozzle Packer B2', 'NP-B2', 'packer', 8, 10, 'pcs', 'Gudang A-2', 2500000, 'PT. Suku Cadang Nusantara'),
-('Belt Conveyor 50m', 'BC-50', 'conveyor', 3, 2, 'roll', 'Gudang B-1', 15000000, 'PT. Beltindo'),
-('Bearing SKF 6308', 'BR-6308', 'bearing', 15, 5, 'pcs', 'Gudang A-3', 850000, 'PT. Bearing Indonesia'),
-('Filter Oli Genset', 'FO-GS', 'genset', 12, 5, 'pcs', 'Gudang C-1', 350000, 'CV. Filter Jaya'),
-('Seal Hidrolik Packer', 'SH-PK', 'packer', 6, 8, 'pcs', 'Gudang A-1', 1200000, 'PT. Sealing Tech'),
-('Roller Conveyor', 'RC-01', 'conveyor', 10, 4, 'pcs', 'Gudang B-2', 3500000, 'PT. Roller Indo'),
-('Saklar Limit', 'SL-LM', 'electrical', 20, 8, 'pcs', 'Gudang C-2', 450000, 'PT. Electric Supply');
-
--- Sample production data (last 7 days)
-INSERT INTO production (tanggal, shift, mesin, target, aktual, satuan, kualitas) VALUES
-(CURRENT_DATE - 6, 'pagi', 'Packer A', 150, 145, 'ton', 'A'),
-(CURRENT_DATE - 6, 'siang', 'Packer A', 150, 148, 'ton', 'A'),
-(CURRENT_DATE - 6, 'malam', 'Packer B', 150, 140, 'ton', 'B'),
-(CURRENT_DATE - 5, 'pagi', 'Packer A', 150, 152, 'ton', 'A'),
-(CURRENT_DATE - 5, 'siang', 'Packer B', 150, 147, 'ton', 'A'),
-(CURRENT_DATE - 5, 'malam', 'Packer A', 150, 138, 'ton', 'B'),
-(CURRENT_DATE - 4, 'pagi', 'Packer B', 150, 150, 'ton', 'A'),
-(CURRENT_DATE - 4, 'siang', 'Packer A', 150, 149, 'ton', 'A'),
-(CURRENT_DATE - 4, 'malam', 'Packer B', 150, 142, 'ton', 'B'),
-(CURRENT_DATE - 3, 'pagi', 'Packer A', 150, 155, 'ton', 'A'),
-(CURRENT_DATE - 3, 'siang', 'Packer B', 150, 146, 'ton', 'A'),
-(CURRENT_DATE - 3, 'malam', 'Packer A', 150, 135, 'ton', 'C'),
-(CURRENT_DATE - 2, 'pagi', 'Packer B', 150, 148, 'ton', 'A'),
-(CURRENT_DATE - 2, 'siang', 'Packer A', 150, 151, 'ton', 'A'),
-(CURRENT_DATE - 2, 'malam', 'Packer B', 150, 144, 'ton', 'B'),
-(CURRENT_DATE - 1, 'pagi', 'Packer A', 150, 153, 'ton', 'A'),
-(CURRENT_DATE - 1, 'siang', 'Packer B', 150, 149, 'ton', 'A'),
-(CURRENT_DATE - 1, 'malam', 'Packer A', 150, 141, 'ton', 'B'),
-(CURRENT_DATE, 'pagi', 'Packer B', 150, 130, 'ton', 'B');
+INSERT INTO spare_parts (nama, kode, kategori, stok, stok_minimum, satuan, lokasi, harga, pemasok, catatan) VALUES
+('Bearing SKF 6205', 'BRG-001', 'Bearing', 15, 5, 'pcs', 'Gudang A-1', 350000, 'PT. Bearing Indonesia', 'Untuk Packer A & B'),
+('Belt Conveyor 500mm', 'BLT-001', 'Conveyor', 3, 2, 'meter', 'Gudang B-2', 1200000, 'PT. Belt Solutions', 'Stok menipis'),
+('Filter Oli Hydraulic', 'FLT-001', 'Filter', 8, 10, 'pcs', 'Gudang A-2', 275000, 'PT. Filter Mandiri', 'Stok di bawah minimum'),
+('Seal Packer Nozzle', 'SLP-001', 'Seal', 24, 10, 'pcs', 'Gudang A-1', 85000, 'PT. Sealing Tech', 'Kompatibel nozzle A1-A4, B1-B4'),
+('Motor Elektrik 7.5kW', 'MOT-001', 'Motor', 2, 1, 'unit', 'Gudang C-1', 8500000, 'PT. Indodaya Electric', 'Spare motor conveyor'),
+('Roller Conveyor Ø89', 'RLR-001', 'Conveyor', 1, 3, 'pcs', 'Gudang B-1', 450000, 'PT. Belt Solutions', 'Stok di bawah minimum'),
+('Gearbox Reducer 1:40', 'GRB-001', 'Gearbox', 1, 1, 'unit', 'Gudang C-2', 15000000, 'PT. Nordion Gear', 'Untuk Packer A'),
+('V-Belt B-68', 'VBL-001', 'Belt', 12, 6, 'pcs', 'Gudang A-3', 120000, 'PT. Belt Solutions', 'V-belt untuk motor packer');
 
 -- Sample maintenance
-INSERT INTO maintenance (judul, mesin, jenis, prioritas, status, tanggal_mulai, teknisi, estimasi_biaya) VALUES
-('Perawatan Rutin Packer A Nozzle 1', 'Packer A', 'preventif', 'sedang', 'terjadwal', CURRENT_DATE + 2, 'Ahmad Fauzi', 5000000),
-('Ganti Belt Conveyor Utama', 'Conveyor', 'korektif', 'tinggi', 'berjalan', CURRENT_DATE - 1, 'Budi Santoso', 25000000),
-('Perbaikan Seal Hidrolik Packer B', 'Packer B', 'darurat', 'kritis', 'berjalan', CURRENT_DATE, 'Rizky Pratama', 8000000),
-('Kalibrasi Timbangan Packer', 'Packer A', 'preventif', 'rendah', 'terjadwal', CURRENT_DATE + 7, 'Dimas Arya', 3000000),
-('Servis Genset Backup', 'Genset', 'preventif', 'sedang', 'terjadwal', CURRENT_DATE + 5, 'Eko Wahyudi', 7000000);
+INSERT INTO maintenance (judul, mesin, jenis, prioritas, status, tanggal_mulai, tanggal_selesai, teknisi, estimasi_biaya, catatan) VALUES
+('Ganti Bearing Packer A2', 'Packer A', 'korektif', 'tinggi', 'berjalan', CURRENT_DATE, NULL, 'Budi Santoso', 1500000, 'Bearing berbunyi abnormal'),
+('Service Rutin Conveyor #3', 'Conveyor 3', 'preventif', 'sedang', 'terjadwal', CURRENT_DATE + 5, NULL, 'Eko Prasetyo', 2500000, 'Service berkala bulanan'),
+('Perbaikan Nozzle B3 Bocor', 'Packer B', 'darurat', 'kritis', 'berjalan', CURRENT_DATE, NULL, 'Budi Santoso', 800000, 'Nozzle bocor, semen tumpah'),
+('Kalibrasi Timbangan Packer', 'Packer A', 'preventif', 'sedang', 'selesai', CURRENT_DATE - 2, CURRENT_DATE - 2, 'Eko Prasetyo', 500000, 'Kalibrasi selesai, akurasi ±0.2%'),
+('Ganti Oli Gearbox Packer B', 'Packer B', 'preventif', 'rendah', 'terjadwal', CURRENT_DATE + 10, NULL, 'Budi Santoso', 1200000, 'Penggantian oli berkala 6 bulan');
 
 -- Sample team activity
-INSERT INTO team_activity (nama_karyawan, divisi, aktivitas, status, jam_masuk, jam_keluar, tanggal) VALUES
-('Ahmad Fauzi', 'Maintenance', 'Perawatan Packer A', 'hadir', '07:00', '15:00', CURRENT_DATE),
-('Budi Santoso', 'Maintenance', 'Ganti Belt Conveyor', 'hadir', '07:00', '15:00', CURRENT_DATE),
-('Rizky Pratama', 'Maintenance', 'Perbaikan Seal Hidrolik', 'lembur', '07:00', '19:00', CURRENT_DATE),
-('Siti Nurhaliza', 'Produksi', 'Operasi Packer A Shift Pagi', 'hadir', '06:00', '14:00', CURRENT_DATE),
-('Dewi Sartika', 'Produksi', 'Operasi Packer B Shift Pagi', 'hadir', '06:00', '14:00', CURRENT_DATE),
-('Hendra Gunawan', 'Safety', 'Inspeksi Harian', 'hadir', '07:30', '16:00', CURRENT_DATE),
-('Maya Putri', 'HR', 'Administrasi Karyawan', 'izin', NULL, NULL, CURRENT_DATE),
-('Rudi Hartono', 'Produksi', 'Operator Conveyor', 'sakit', NULL, NULL, CURRENT_DATE);
+INSERT INTO team_activity (nama_karyawan, divisi, aktivitas, status, jam_masuk, jam_keluar, tanggal, catatan) VALUES
+('Ahmad Fauzi', 'Produksi', 'Operator Packer A', 'hadir', '07:00', '15:00', CURRENT_DATE, ''),
+('Budi Santoso', 'Perawatan', 'Teknisi Maintenance', 'hadir', '07:00', '15:00', CURRENT_DATE, ''),
+('Citra Dewi', 'Keuangan', 'Staff Administrasi', 'hadir', '08:00', '16:00', CURRENT_DATE, ''),
+('Dian Purnama', 'Produksi', 'Operator Packer B', 'lembur', '07:00', '19:00', CURRENT_DATE, 'Lembur shift malam'),
+('Eko Prasetyo', 'Perawatan', 'Kepala Teknisi', 'izin', '-', '-', CURRENT_DATE, 'Keperluan keluarga'),
+('Fitri Handayani', 'SDM', 'HR Manager', 'sakit', '-', '-', CURRENT_DATE, 'Sakit demam'),
+('Gunawan Wibowo', 'Produksi', 'Operator Conveyor', 'alpha', '-', '-', CURRENT_DATE, 'Tidak ada kabar');
 
--- Sample safety incidents
-INSERT INTO safety (judul, tanggal, lokasi, severity, status, pelapor, korban, deskripsi, tindakan) VALUES
-('Tumpahan Semen di Area Packer', CURRENT_DATE - 3, 'Area Packer A', 'ringan', 'selesai', 'Hendra Gunawan', '-', 'Tumpahan semen kurang lebih 50kg saat pengisian nozzle A2', 'Pembersihan segera, perbaikan nozzle'),
-('Kecelakaan Ringan di Conveyor', CURRENT_DATE - 7, 'Area Conveyor', 'sedang', 'investigasi', 'Budi Santoso', 'Rudi Hartono', 'Jari terjepit roller conveyor saat pembersihan', 'P3K, istirahat 2 hari, evaluasi SOP'),
-('Kebocoran Silo B Lubang 3', CURRENT_DATE - 1, 'Silo B', 'sedang', 'dilaporkan', 'Ahmad Fauzi', '-', 'Kebocoran semen dari lubang pengisian silo B nomor 3', 'Perbaikan terjadwal besok pagi');
+-- Sample Pispot data
+INSERT INTO pispot (nama_peralatan, kode_peralatan, lokasi, jenis_pelumas, spesifikasi, volume, periode, bulan, tanggal_pelaksanaan, petugas, status, kondisi, catatan, tindak_lanjut) VALUES
+('Bearing Packer A - Nozzle 1', 'BRG-PA1', 'Packer A', 'Lithium Grease EP2', 'NLGI Grade 2, -20°C s/d 130°C', '50 gram', 'bulanan', TO_CHAR(CURRENT_DATE, 'YYYY-MM'), CURRENT_DATE - 25, 'Budi Santoso', 'selesai', 'baik', 'Pelumasan rutin bulanan', ''),
+('Bearing Packer A - Nozzle 2', 'BRG-PA2', 'Packer A', 'Lithium Grease EP2', 'NLGI Grade 2, -20°C s/d 130°C', '50 gram', 'bulanan', TO_CHAR(CURRENT_DATE, 'YYYY-MM'), CURRENT_DATE - 25, 'Budi Santoso', 'selesai', 'baik', '', ''),
+('Bearing Packer A - Nozzle 3', 'BRG-PA3', 'Packer A', 'Lithium Grease EP2', 'NLGI Grade 2, -20°C s/d 130°C', '50 gram', 'bulanan', TO_CHAR(CURRENT_DATE, 'YYYY-MM'), CURRENT_DATE + 5, 'Eko Prasetyo', 'terjadwal', 'baik', '', ''),
+('Bearing Packer A - Nozzle 4', 'BRG-PA4', 'Packer A', 'Lithium Grease EP2', 'NLGI Grade 2, -20°C s/d 130°C', '50 gram', 'bulanan', TO_CHAR(CURRENT_DATE, 'YYYY-MM'), CURRENT_DATE + 5, 'Eko Prasetyo', 'terjadwal', 'baik', '', ''),
+('Bearing Packer B - Nozzle 1', 'BRG-PB1', 'Packer B', 'Lithium Grease EP2', 'NLGI Grade 2, -20°C s/d 130°C', '50 gram', 'bulanan', TO_CHAR(CURRENT_DATE, 'YYYY-MM'), CURRENT_DATE - 20, 'Ahmad Fauzi', 'selesai', 'perlu_perhatian', 'Sedikit berisik, perlu pemantauan', 'Cek ulang minggu depan'),
+('Bearing Packer B - Nozzle 2', 'BRG-PB2', 'Packer B', 'Lithium Grease EP2', 'NLGI Grade 2, -20°C s/d 130°C', '50 gram', 'bulanan', TO_CHAR(CURRENT_DATE, 'YYYY-MM'), CURRENT_DATE - 20, 'Ahmad Fauzi', 'selesai', 'baik', '', ''),
+('Bearing Packer B - Nozzle 3', 'BRG-PB3', 'Packer B', 'Lithium Grease EP2', 'NLGI Grade 2, -20°C s/d 130°C', '50 gram', 'bulanan', TO_CHAR(CURRENT_DATE, 'YYYY-MM'), CURRENT_DATE + 8, 'Budi Santoso', 'terjadwal', 'baik', '', ''),
+('Bearing Packer B - Nozzle 4', 'BRG-PB4', 'Packer B', 'Lithium Grease EP2', 'NLGI Grade 2, -20°C s/d 130°C', '50 gram', 'bulanan', TO_CHAR(CURRENT_DATE, 'YYYY-MM'), CURRENT_DATE + 8, 'Budi Santoso', 'terjadwal', 'baik', '', ''),
+('Bearing Conveyor Utama', 'BRG-CV01', 'Conveyor Utama', 'Lithium Grease EP3', 'NLGI Grade 3, -10°C s/d 150°C', '100 gram', 'bulanan', TO_CHAR(CURRENT_DATE, 'YYYY-MM'), CURRENT_DATE - 27, 'Eko Prasetyo', 'selesai', 'baik', '', ''),
+('Bearing Conveyor Return', 'BRG-CV02', 'Conveyor Return', 'Lithium Grease EP3', 'NLGI Grade 3, -10°C s/d 150°C', '100 gram', 'bulanan', TO_CHAR(CURRENT_DATE, 'YYYY-MM'), CURRENT_DATE - 27, 'Eko Prasetyo', 'selesai', 'baik', '', ''),
+('Pompa Hidrolik Packer A', 'PMP-HYD-PA', 'Packer A', 'Hydraulic Oil HLP 46', 'ISO VG 46, -15°C s/d 80°C', '5 liter', 'bulanan', TO_CHAR(CURRENT_DATE, 'YYYY-MM'), CURRENT_DATE + 2, 'Ahmad Fauzi', 'terjadwal', 'baik', 'Cek level oli', ''),
+('Pompa Hidrolik Packer B', 'PMP-HYD-PB', 'Packer B', 'Hydraulic Oil HLP 46', 'ISO VG 46, -15°C s/d 80°C', '5 liter', 'bulanan', TO_CHAR(CURRENT_DATE, 'YYYY-MM'), CURRENT_DATE + 2, 'Ahmad Fauzi', 'terlewat', 'perlu_perhatian', 'Pelumasan terlewat, ada kebocoran minor', 'Segera lakukan pelumasan dan cek kebocoran'),
+('Gearbox Reducer Packer A', 'GRB-PA', 'Packer A', 'Gear Oil GL-5 85W-90', 'API GL-5, SAE 85W-90', '2 liter', 'bulanan', TO_CHAR(CURRENT_DATE, 'YYYY-MM'), CURRENT_DATE + 12, 'Budi Santoso', 'terjadwal', 'baik', 'Cek kualitas oli', ''),
+('Motor Conveyor Drive', 'MOT-CV-DRV', 'Conveyor Drive', 'Lithium Grease EP2', 'NLGI Grade 2', '30 gram', 'bulanan', TO_CHAR(CURRENT_DATE, 'YYYY-MM'), CURRENT_DATE - 22, 'Eko Prasetyo', 'selesai', 'baik', '', '');
 
--- Sample finance data
-INSERT INTO finance (tanggal, jenis, kategori, deskripsi, jumlah, metode_pembayaran, referensi) VALUES
-(CURRENT_DATE - 6, 'pemasukan', 'penjualan', 'Penjualan 450 ton semen 50kg', 337500000, 'transfer', 'INV-2025-001'),
-(CURRENT_DATE - 5, 'pengeluaran', 'operasional', 'BBM Genset & Kendaraan', 15000000, 'transfer', 'EXP-2025-001'),
-(CURRENT_DATE - 4, 'pengeluaran', 'gaji', 'Gaji karyawan bulan ini', 120000000, 'transfer', 'EXP-2025-002'),
-(CURRENT_DATE - 3, 'pemasukan', 'penjualan', 'Penjualan 380 ton semen 40kg', 266000000, 'transfer', 'INV-2025-002'),
-(CURRENT_DATE - 2, 'pengeluaran', 'suku_cadang', 'Pembelian Nozzle Packer', 25000000, 'transfer', 'EXP-2025-003'),
-(CURRENT_DATE - 1, 'pemasukan', 'penjualan', 'Penjualan 420 ton semen 50kg', 315000000, 'transfer', 'INV-2025-003'),
-(CURRENT_DATE, 'pengeluaran', 'perawatan', 'Biaya perbaikan seal hidrolik', 8000000, 'transfer', 'EXP-2025-004');
+-- Sample documents
+INSERT INTO documents (nama, jenis, kategori, ukuran, url, ocr_text, diunggah_oleh, catatan) VALUES
+('SOP Pengantongan Semen', 'manual', 'SOP', 2500000, '#', '', 'Eko Prasetyo', 'SOP terbaru revisi 2026'),
+('Kontrak Penjualan PT Bangun Jaya', 'kontrak', 'Penjualan', 1500000, '#', '', 'Citra Dewi', 'Kontrak 1 tahun'),
+('Laporan Keuangan Februari 2026', 'laporan', 'Keuangan', 3200000, '#', '', 'Citra Dewi', 'Laporan bulanan'),
+('Sertifikat ISO 9001:2015', 'sertifikat', 'Sertifikasi', 800000, '#', '', 'Fitri Handayani', 'Berlaku s/d 2027');
 
--- Sample HR
-INSERT INTO hr (nama, nip, jabatan, divisi, tanggal_masuk, gaji_pokok, status, no_telepon, email) VALUES
-('Ahmad Fauzi', 'YWM-001', 'Teknisi Senior', 'Maintenance', '2020-03-15', 8500000, 'aktif', '082345678901', 'ahmad.fauzi@ywm.co.id'),
-('Budi Santoso', 'YWM-002', 'Teknisi', 'Maintenance', '2021-06-01', 7000000, 'aktif', '082345678902', 'budi.santoso@ywm.co.id'),
-('Siti Nurhaliza', 'YWM-003', 'Operator Packer', 'Produksi', '2020-09-20', 6500000, 'aktif', '082345678903', 'siti.nurhaliza@ywm.co.id'),
-('Hendra Gunawan', 'YWM-004', 'Officer HSE', 'Safety', '2022-01-10', 7500000, 'aktif', '082345678904', 'hendra.gunawan@ywm.co.id'),
-('Maya Putri', 'YWM-005', 'Staff HR', 'HR', '2023-04-15', 6000000, 'aktif', '082345678905', 'maya.putri@ywm.co.id'),
-('Rizky Pratama', 'YWM-006', 'Teknisi', 'Maintenance', '2022-08-01', 7000000, 'aktif', '082345678906', 'rizky.pratama@ywm.co.id'),
-('Rudi Hartono', 'YWM-007', 'Operator Conveyor', 'Produksi', '2023-11-01', 5500000, 'aktif', '082345678907', 'rudi.hartono@ywm.co.id'),
-('Dewi Sartika', 'YWM-008', 'Operator Packer', 'Produksi', '2021-12-15', 6500000, 'aktif', '082345678908', 'dewi.sartika@ywm.co.id');
+-- Sample notifications (using updated tipe values)
+INSERT INTO notifications (judul, pesan, tipe, modul, dibaca, action_url) VALUES
+('Stok Filter Oli di Bawah Minimum', 'Filter Oli Hydraulic (FLT-001) stok saat ini 8 pcs, minimum 10 pcs. Segera lakukan pemesanan ulang.', 'peringatan', 'spare-parts', FALSE, '/dashboard?module=spare-parts'),
+('Work Order Kritis Aktif', 'Perbaikan Nozzle B3 Bocor sedang berjalan. Prioritas: KRITIS. Teknisi: Budi Santoso.', 'bahaya', 'maintenance', FALSE, '/dashboard?module=maintenance'),
+('Pelumasan Pompa Hidrolik Packer B Terlewat', 'Pelumasan Pompa Hidrolik Packer B (PMP-HYD-PB) bulan ini terlewat. Segera lakukan pelumasan.', 'bahaya', 'pispot', FALSE, '/dashboard?module=pispot'),
+('Karyawan Alpha Hari Ini', 'Gunawan Wibowo (Operator Conveyor) tidak hadir tanpa keterangan hari ini.', 'peringatan', 'team-activity', FALSE, '/dashboard?module=team-activity'),
+('Jadwal Perawatan Conveyor #3', 'Service rutin Conveyor #3 dijadwalkan. Estimasi biaya Rp 2.500.000.', 'info', 'maintenance', TRUE, '/dashboard?module=maintenance');
 
--- Sample notifications
-INSERT INTO notifications (judul, pesan, tipe, modul, dibaca) VALUES
-('Stok Rendah: Seal Hidrolik Packer', 'Stok Seal Hidrolik Packer (SH-PK) hanya tersisa 6 pcs, di bawah batas minimum 8 pcs. Segera lakukan pemesanan ulang.', 'warning', 'spare-parts', FALSE),
-('Perawatan Darurat Packer B', 'Perbaikan Seal Hidrolik Packer B berstatus darurat/kritis dan sedang berjalan. Pastikan pengawasan ketat.', 'error', 'maintenance', FALSE),
-('Produksi Shift Malam Menurun', 'Produksi shift malam kemarin hanya 135 ton dari target 150 ton (90%). Perlu evaluasi penyebab.', 'warning', 'production', FALSE),
-('Selamat Datang di YWM Dashboard', 'Dashboard AI YWM sudah aktif! Anda bisa bertanya, input data, dan menganalisis operasional langsung dari chat.', 'info', 'ai', FALSE);
+-- Sample silo calculation data
+INSERT INTO silo_calculation (silo, tanggal, jam, ukuran, jumlah, tinggi_rata_rata, t_silinder, t_conis, volume_silinder, volume_conis, volume_total, kekosongan, space_silo, pengeluaran, keterangan, petugas) VALUES
+('A', CURRENT_DATE, '07:30', '[5.1, 5.55, 7.0, 7.0, 6.6, 5.65, 5.0]', 41.9, 5.9857, 12.0143, 4.6, 1747.117, 222.962, 1970.079, 505.575, 505.575, 0, 'Sebelum bongkar', 'Hendra Wijaya'),
+('B', CURRENT_DATE, '07:30', '[7.7, 9.2, 10.8, 11.6, 11.35, 9.75, 7.75]', 68.15, 9.7357, 8.2643, 2.9, 1201.792, 140.563, 1342.355, 1049.178, 1049.178, 0, 'Sebelum bongkar', 'Hendra Wijaya'),
+('A', CURRENT_DATE, '15:00', '[1.9, 1.75, 2.1, 2.2, 2.0, 1.9, 1.9]', 13.75, 1.9643, 16.0357, 4.6, 2331.914, 222.962, 2554.876, 0, -100, 100, 'Sesudah bongkar', 'Ahmad Fauzi'),
+('B', CURRENT_DATE, '15:00', '[1.65, 1.7, 1.75, 1.9, 1.85, 1.75, 1.6]', 12.2, 1.7429, 16.2571, 2.9, 2364.114, 140.563, 2504.677, 0, -50, 50, 'Sesudah bongkar', 'Dian Purnama');
+
+-- Sample silo opname data
+INSERT INTO silo_opname (tanggal, jam, kapal, opname1_tanggal, opname1_jam, opname1_ukuran_a, opname1_ukuran_b, opname1_volume_a, opname1_volume_b, opname1_total_volume, opname2_tanggal, opname2_jam, opname2_ukuran_a, opname2_ukuran_b, opname2_volume_a, opname2_volume_b, opname2_total_volume, pengeluaran_zak, semen_curah_terbongkar, catatan, petugas) VALUES
+(CURRENT_DATE, '15:00', 'MV MADELIN FIRST', CURRENT_DATE, '01:00', '[5.1, 5.55, 7.0, 7.0, 6.6, 5.65, 5.0]', '[7.7, 9.2, 10.8, 11.6, 11.35, 9.75, 7.75]', 1970.079, 1342.355, 3312.434, CURRENT_DATE, '15:00', '[1.9, 1.75, 2.1, 2.2, 2.0, 1.9, 1.9]', '[1.65, 1.7, 1.75, 1.9, 1.85, 1.75, 1.6]', 2554.876, 2504.677, 5059.553, 230, 1977.119, 'Pembongkaran semen curah dari kapal', 'Hendra Wijaya');

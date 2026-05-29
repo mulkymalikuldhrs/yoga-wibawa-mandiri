@@ -8,7 +8,7 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
+    --background: 210 40% 98%;
     --foreground: 222.2 84% 4.9%;
 
     --card: 0 0% 100%;
@@ -17,8 +17,8 @@ All colors MUST be HSL.
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    --primary: 192 91% 42%;
+    --primary-foreground: 0 0% 100%;
 
     --secondary: 210 40% 96.1%;
     --secondary-foreground: 222.2 47.4% 11.2%;
@@ -34,25 +34,18 @@ All colors MUST be HSL.
 
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --ring: 192 91% 42%;
 
-    --radius: 0.5rem;
+    --radius: 0.75rem;
 
-    --sidebar-background: 0 0% 98%;
-
+    --sidebar-background: 210 40% 98%;
     --sidebar-foreground: 240 5.3% 26.1%;
-
-    --sidebar-primary: 240 5.9% 10%;
-
-    --sidebar-primary-foreground: 0 0% 98%;
-
-    --sidebar-accent: 240 4.8% 95.9%;
-
-    --sidebar-accent-foreground: 240 5.9% 10%;
-
-    --sidebar-border: 220 13% 91%;
-
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-primary: 192 91% 42%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 210 40% 96.1%;
+    --sidebar-accent-foreground: 222.2 47.4% 11.2%;
+    --sidebar-border: 214.3 31.8% 91.4%;
+    --sidebar-ring: 192 91% 42%;
   }
 
   .dark {
@@ -105,7 +98,7 @@ All colors MUST be HSL.
 }
 
 /* ============================================================
-   Custom Scrollbar — Thin, translucent for dark theme
+   Custom Scrollbar — Thin, translucent for bright theme
    ============================================================ */
 
 .custom-scrollbar::-webkit-scrollbar {
@@ -118,12 +111,12 @@ All colors MUST be HSL.
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(0, 0, 0, 0.1);
   border-radius: 3px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(0, 0, 0, 0.2);
 }
 
 .custom-scrollbar::-webkit-scrollbar-corner {
@@ -133,7 +126,7 @@ All colors MUST be HSL.
 /* Firefox scrollbar */
 .custom-scrollbar {
   scrollbar-width: thin;
-  scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
+  scrollbar-color: rgba(0, 0, 0, 0.1) transparent;
 }
 
 /* ============================================================
@@ -146,62 +139,85 @@ html {
 }
 
 /* ============================================================
-   Glassmorphic Utility Classes
+   Glassmorphic Liquid Glass Frosted Utility Classes — Bright Theme
    ============================================================ */
 
 @layer utilities {
-  /* Glass background with frosted effect */
+  /* Glass background with frosted effect — bright version */
   .glass {
-    background: rgba(255, 255, 255, 0.05);
+    background: rgba(255, 255, 255, 0.45);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    box-shadow: 0 8px 32px rgba(31, 38, 135, 0.08);
   }
 
-  /* Glass with stronger blur */
+  /* Glass with stronger blur — bright version */
   .glass-heavy {
-    background: rgba(255, 255, 255, 0.08);
+    background: rgba(255, 255, 255, 0.65);
     backdrop-filter: blur(40px);
     -webkit-backdrop-filter: blur(40px);
-    border: 1px solid rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.75);
+    box-shadow: 0 8px 32px rgba(31, 38, 135, 0.12);
   }
 
-  /* Glass with cyan accent */
+  /* Glass with cyan accent — bright version */
   .glass-accent {
-    background: rgba(6, 182, 212, 0.08);
+    background: rgba(6, 182, 212, 0.12);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(6, 182, 212, 0.2);
+    border: 1px solid rgba(6, 182, 212, 0.3);
+    box-shadow: 0 8px 32px rgba(6, 182, 212, 0.1);
   }
 
-  /* Glass with danger/red accent */
+  /* Glass with danger/red accent — bright version */
   .glass-danger {
-    background: rgba(239, 68, 68, 0.08);
+    background: rgba(239, 68, 68, 0.1);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(239, 68, 68, 0.2);
+    border: 1px solid rgba(239, 68, 68, 0.25);
+    box-shadow: 0 8px 32px rgba(239, 68, 68, 0.08);
   }
 
-  /* Glass with success/green accent */
+  /* Glass with success/green accent — bright version */
   .glass-success {
-    background: rgba(16, 185, 129, 0.08);
+    background: rgba(16, 185, 129, 0.1);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(16, 185, 129, 0.2);
+    border: 1px solid rgba(16, 185, 129, 0.25);
+    box-shadow: 0 8px 32px rgba(16, 185, 129, 0.08);
   }
 
-  /* Glow effect */
+  /* Liquid glass — gradient glass with high saturation blur */
+  .glass-liquid {
+    background: linear-gradient(135deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.2) 100%);
+    backdrop-filter: blur(24px) saturate(180%);
+    -webkit-backdrop-filter: blur(24px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.06), inset 0 1px 0 rgba(255,255,255,0.6);
+  }
+
+  /* Frosted glass — heavy blur with white base */
+  .glass-frosted {
+    background: rgba(255, 255, 255, 0.72);
+    backdrop-filter: blur(40px) saturate(200%);
+    -webkit-backdrop-filter: blur(40px) saturate(200%);
+    border: 1px solid rgba(255, 255, 255, 0.85);
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.04), inset 0 1px 0 rgba(255,255,255,0.8);
+  }
+
+  /* Glow effect — bright version */
   .glow-cyan {
-    box-shadow: 0 0 20px rgba(6, 182, 212, 0.15), 0 0 40px rgba(6, 182, 212, 0.05);
+    box-shadow: 0 0 20px rgba(6, 182, 212, 0.2), 0 0 40px rgba(6, 182, 212, 0.08);
   }
 
   .glow-cyan-strong {
-    box-shadow: 0 0 30px rgba(6, 182, 212, 0.25), 0 0 60px rgba(6, 182, 212, 0.1);
+    box-shadow: 0 0 30px rgba(6, 182, 212, 0.3), 0 0 60px rgba(6, 182, 212, 0.12);
   }
 
-  /* Text glow */
+  /* Text glow — bright version */
   .text-glow-cyan {
-    text-shadow: 0 0 10px rgba(6, 182, 212, 0.5);
+    text-shadow: 0 0 10px rgba(6, 182, 212, 0.4);
   }
 
   /* Noise texture overlay */
@@ -209,7 +225,7 @@ html {
     content: '';
     position: absolute;
     inset: 0;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.02'/%3E%3C/svg%3E");
     pointer-events: none;
     z-index: 0;
     border-radius: inherit;
@@ -238,6 +254,153 @@ html {
     padding-bottom: env(safe-area-inset-bottom);
     padding-left: env(safe-area-inset-left);
     padding-right: env(safe-area-inset-right);
+  }
+}
+
+/* ============================================================
+   Glassmorphic Background — Bright with Floating Colored Orbs
+   ============================================================ */
+
+.glassmorphic-bg {
+  position: relative;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #e0f2fe 0%, #f0f9ff 25%, #faf5ff 50%, #fdf2f8 75%, #ecfdf5 100%);
+  overflow: hidden;
+}
+
+.glassmorphic-bg::before,
+.glassmorphic-bg::after {
+  content: '';
+  position: fixed;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.5;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.glassmorphic-bg::before {
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(6,182,212,0.3), transparent);
+  top: -200px;
+  right: -100px;
+  animation: float-orb-1 20s ease-in-out infinite;
+}
+
+.glassmorphic-bg::after {
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, rgba(168,85,247,0.25), transparent);
+  bottom: -150px;
+  left: -100px;
+  animation: float-orb-2 25s ease-in-out infinite;
+}
+
+/* Additional floating orbs via extra elements */
+.glassmorphic-orb-cyan {
+  position: fixed;
+  width: 400px;
+  height: 400px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(6,182,212,0.2), transparent);
+  filter: blur(60px);
+  opacity: 0.4;
+  pointer-events: none;
+  z-index: 0;
+  animation: float-orb-3 18s ease-in-out infinite;
+}
+
+.glassmorphic-orb-amber {
+  position: fixed;
+  width: 350px;
+  height: 350px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(245,158,11,0.15), transparent);
+  filter: blur(60px);
+  opacity: 0.4;
+  pointer-events: none;
+  z-index: 0;
+  animation: float-orb-4 22s ease-in-out infinite;
+}
+
+.glassmorphic-orb-emerald {
+  position: fixed;
+  width: 300px;
+  height: 300px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(16,185,129,0.18), transparent);
+  filter: blur(50px);
+  opacity: 0.4;
+  pointer-events: none;
+  z-index: 0;
+  animation: float-orb-5 15s ease-in-out infinite;
+}
+
+/* ============================================================
+   Animation Keyframes — Floating Orbs
+   ============================================================ */
+
+@keyframes float-orb-1 {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+  }
+  25% {
+    transform: translate(-80px, 60px) scale(1.1);
+  }
+  50% {
+    transform: translate(-40px, 120px) scale(0.95);
+  }
+  75% {
+    transform: translate(60px, 40px) scale(1.05);
+  }
+}
+
+@keyframes float-orb-2 {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+  }
+  25% {
+    transform: translate(100px, -50px) scale(1.08);
+  }
+  50% {
+    transform: translate(60px, -100px) scale(0.92);
+  }
+  75% {
+    transform: translate(-40px, -30px) scale(1.04);
+  }
+}
+
+@keyframes float-orb-3 {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+  }
+  33% {
+    transform: translate(60px, -80px) scale(1.1);
+  }
+  66% {
+    transform: translate(-40px, 40px) scale(0.9);
+  }
+}
+
+@keyframes float-orb-4 {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+  }
+  33% {
+    transform: translate(-70px, 50px) scale(1.05);
+  }
+  66% {
+    transform: translate(50px, -60px) scale(0.95);
+  }
+}
+
+@keyframes float-orb-5 {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(80px, -40px) scale(1.08);
   }
 }
 
@@ -296,10 +459,10 @@ html {
 
 @keyframes glow-pulse {
   0%, 100% {
-    box-shadow: 0 0 20px rgba(6, 182, 212, 0.15);
+    box-shadow: 0 0 20px rgba(6, 182, 212, 0.2);
   }
   50% {
-    box-shadow: 0 0 30px rgba(6, 182, 212, 0.3);
+    box-shadow: 0 0 30px rgba(6, 182, 212, 0.35);
   }
 }
 
@@ -320,7 +483,7 @@ html {
 }
 
 .animate-shimmer {
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.05), transparent);
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
   background-size: 200% 100%;
   animation: shimmer 2s infinite;
 }
@@ -360,7 +523,7 @@ html {
   }
 
   /* Reduce padding on mobile for cards */
-  .glass, .glass-heavy, .glass-accent {
+  .glass, .glass-heavy, .glass-accent, .glass-liquid, .glass-frosted {
     border-radius: 1rem;
   }
 }
@@ -423,8 +586,8 @@ html {
    ============================================================ */
 
 ::selection {
-  background: rgba(6, 182, 212, 0.3);
-  color: white;
+  background: rgba(6, 182, 212, 0.25);
+  color: #0e7490;
 }
 
 :focus-visible {
@@ -438,7 +601,7 @@ html {
 }
 
 /* ============================================================
-   Dark Theme Body Override for Dashboard
+   Body Override
    ============================================================ */
 
 body {
@@ -460,7 +623,7 @@ body {
     color: black;
   }
 
-  .glass, .glass-heavy, .glass-accent {
+  .glass, .glass-heavy, .glass-accent, .glass-liquid, .glass-frosted {
     background: white;
     backdrop-filter: none;
     border: 1px solid #e5e7eb;

@@ -6,8 +6,9 @@
 
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { cn } from '@/lib/utils';
-import { chatWithAiStream, checkAIHealth, smartParse, parseDataInputAction } from '@/lib/ywm-ai';
+import { chatWithAiStream, checkAIHealth, smartParse, parseDataInputAction, buildDashboardContext } from '@/lib/ywm-ai';
 import type { AiMessage } from '@/types/dashboard';
+import { saveData, generateId } from '@/lib/supabase-data';
 import { useIsMobile } from '@/hooks/use-mobile';
 import {
   MessageCircle,
@@ -37,37 +38,37 @@ const QUICK_ACTIONS = [
     label: 'Ringkasan Hari Ini',
     icon: <Zap size={14} />,
     prompt: 'Beri ringkasan operasional hari ini untuk PT. Yoga Wibawa Mandiri. Apa saja yang perlu diperhatikan?',
-    color: 'text-amber-400',
+    color: 'text-amber-600',
   },
   {
     label: 'Cek Stok Rendah',
     icon: <Package size={14} />,
     prompt: 'Suku cadang mana yang stoknya mendekati batas minimum? Tampilkan daftar lengkap.',
-    color: 'text-orange-400',
+    color: 'text-orange-600',
   },
   {
     label: 'Jadwal Perawatan',
     icon: <Wrench size={14} />,
     prompt: 'Apa jadwal perawatan mesin minggu ini? Ada WO yang overdue?',
-    color: 'text-blue-400',
+    color: 'text-blue-600',
   },
   {
     label: 'Status Produksi',
     icon: <TrendingUp size={14} />,
     prompt: 'Bagaimana status produksi hari ini? Bandingkan target vs aktual per shift.',
-    color: 'text-green-400',
+    color: 'text-green-600',
   },
   {
     label: 'Keselamatan Kerja',
     icon: <Shield size={14} />,
     prompt: 'Apakah ada insiden keselamatan yang perlu ditindaklanjuti? Tampilkan status HSE.',
-    color: 'text-red-400',
+    color: 'text-red-500',
   },
   {
     label: 'Input Data',
     icon: <Database size={14} />,
     prompt: 'Saya ingin input data. Apa saja modul yang tersedia dan format yang diperlukan?',
-    color: 'text-purple-400',
+    color: 'text-purple-600',
   },
 ];
 
@@ -94,30 +95,30 @@ function DataInputCard({
   };
 
   return (
-    <div className="mt-2 rounded-xl border border-cyan-500/30 bg-cyan-500/5 p-3">
+    <div className="mt-2 rounded-xl border border-cyan-200/50 bg-cyan-50/80 p-3">
       <div className="flex items-center gap-2 mb-2">
-        <Database size={16} className="text-cyan-400" />
-        <span className="text-cyan-400 font-semibold text-sm">Input Data: {moduleLabels[module] || module}</span>
+        <Database size={16} className="text-cyan-600" />
+        <span className="text-cyan-600 font-semibold text-sm">Input Data: {moduleLabels[module] || module}</span>
       </div>
-      <div className="space-y-1 text-xs text-white/70">
+      <div className="space-y-1 text-xs text-slate-600">
         {Object.entries(data).map(([key, value]) => (
           <div key={key} className="flex justify-between">
-            <span className="text-white/50">{key}:</span>
-            <span className="text-white/90 font-medium">{String(value ?? '-')}</span>
+            <span className="text-slate-500">{key}:</span>
+            <span className="text-slate-700 font-medium">{String(value ?? '-')}</span>
           </div>
         ))}
       </div>
       <div className="flex gap-2 mt-3">
         <button
           onClick={onConfirm}
-          className="flex-1 py-1.5 rounded-lg bg-cyan-500/20 text-cyan-400 text-xs font-medium hover:bg-cyan-500/30 transition-all"
+          className="flex-1 py-1.5 rounded-lg bg-cyan-100/80 text-cyan-600 text-xs font-medium hover:bg-cyan-500/30 transition-all"
         >
           <CheckCircle2 size={12} className="inline mr-1" />
           Simpan
         </button>
         <button
           onClick={onCancel}
-          className="flex-1 py-1.5 rounded-lg bg-white/5 text-white/50 text-xs font-medium hover:bg-white/10 transition-all"
+          className="flex-1 py-1.5 rounded-lg bg-white/50 text-slate-500 text-xs font-medium hover:bg-white/60 transition-all"
         >
           Batal
         </button>
@@ -230,8 +231,17 @@ export default function FloatingChatBot() {
         (m) => m.id !== 'welcome'
       );
 
+      // Add dashboard data context as a system message
+      const dashboardContext = buildDashboardContext();
+      const contextMessage: AiMessage = {
+        id: 'dashboard_context',
+        role: 'system',
+        content: `Berikut data dashboard YWM terkini yang bisa Anda gunakan untuk menjawab pertanyaan user:${dashboardContext}`,
+        timestamp: new Date().toISOString(),
+      };
+
       await chatWithAiStream(
-        chatMessages,
+        [contextMessage, ...chatMessages],
         (chunk) => {
           setMessages((prev) =>
             prev.map((m) =>
@@ -312,8 +322,17 @@ export default function FloatingChatBot() {
           (m) => m.id !== 'welcome'
         );
 
+        // Add dashboard data context
+        const dashboardContext = buildDashboardContext();
+        const contextMessage: AiMessage = {
+          id: 'dashboard_context',
+          role: 'system',
+          content: `Berikut data dashboard YWM terkini yang bisa Anda gunakan untuk menjawab pertanyaan user:${dashboardContext}`,
+          timestamp: new Date().toISOString(),
+        };
+
         chatWithAiStream(
-          chatMessages,
+          [contextMessage, ...chatMessages],
           (chunk) => {
             setMessages((prev) =>
               prev.map((m) =>
@@ -344,16 +363,26 @@ export default function FloatingChatBot() {
   const handleConfirmDataInput = useCallback(() => {
     if (!pendingDataInput) return;
 
-    // Store data in localStorage as a simple persistence mechanism
-    const storageKey = `ywm_data_${pendingDataInput.module}`;
-    const existingData = JSON.parse(localStorage.getItem(storageKey) || '[]');
-    existingData.push({
+    // Determine the correct KV prefix based on module
+    const modulePrefixMap: Record<string, string> = {
+      'spare-parts': 'ywm_sparePart_',
+      'production': 'ywm_production_',
+      'maintenance': 'ywm_maintenance_',
+      'team-activity': 'ywm_teamActivity_',
+      'safety': 'ywm_safety_',
+      'finance': 'ywm_finance_',
+      'hr': 'ywm_employee_',
+    };
+    const prefix = modulePrefixMap[pendingDataInput.module] || `ywm_${pendingDataInput.module}_`;
+
+    // Save using Supabase-aware saveData (dual-write)
+    const record = {
       ...pendingDataInput.data,
-      id: Date.now().toString(36),
+      id: generateId(),
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
-    });
-    localStorage.setItem(storageKey, JSON.stringify(existingData));
+    };
+    saveData(prefix, record);
 
     const confirmMsg: AiMessage = {
       id: Date.now().toString(36),
@@ -445,22 +474,22 @@ export default function FloatingChatBot() {
           {/* Main button — smaller on mobile */}
           <div className={cn(
             'relative rounded-full bg-gradient-to-br from-cyan-500 to-blue-600',
-            'flex items-center justify-center shadow-lg shadow-cyan-500/25',
-            'transition-all duration-300 group-hover:scale-110 group-hover:shadow-xl group-hover:shadow-cyan-500/40',
+            'flex items-center justify-center shadow-lg shadow-cyan-500/15',
+            'transition-all duration-300 group-hover:scale-110 group-hover:shadow-xl group-hover:shadow-cyan-500/20',
             isMobile ? 'w-12 h-12' : 'w-14 h-14'
           )}>
-            <MessageCircle size={isMobile ? 20 : 24} className="text-white" />
+            <MessageCircle size={isMobile ? 20 : 24} className="text-slate-800" />
           </div>
           {/* Status dot */}
           <div className={cn(
-            'absolute -top-0.5 -right-0.5 w-4 h-4 rounded-full border-2 border-[#0f0c29]',
+            'absolute -top-0.5 -right-0.5 w-4 h-4 rounded-full border-2 border-white/80',
             checkingAI ? 'bg-yellow-400 animate-pulse' :
             aiReady ? 'bg-emerald-400' : 'bg-red-400'
           )} />
           {/* Tooltip — hidden on mobile */}
           {!isMobile && (
-            <div className="absolute bottom-full right-0 mb-2 px-3 py-1.5 bg-white/10 backdrop-blur-xl 
-              border border-white/20 rounded-lg text-white text-xs whitespace-nowrap
+            <div className="absolute bottom-full right-0 mb-2 px-3 py-1.5 bg-white/60 backdrop-blur-xl 
+              border border-slate-200/50 rounded-lg text-slate-800 text-xs whitespace-nowrap
               opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
               {checkingAI ? 'Menghubungkan AI...' : aiReady ? 'Chat dengan AI YWM' : 'AI Offline'}
             </div>
@@ -475,8 +504,8 @@ export default function FloatingChatBot() {
         <div
           className={cn(
             'fixed z-50',
-            'bg-[#0f0c29]/95 backdrop-blur-xl border border-white/10',
-            'shadow-2xl shadow-black/40 flex flex-col',
+            'bg-white/90 backdrop-blur-2xl border border-white/60',
+            'shadow-2xl shadow-black/[0.08] flex flex-col',
             'animate-in slide-in-from-bottom-4 fade-in duration-300',
             // Mobile: full screen
             isMobile
@@ -486,21 +515,21 @@ export default function FloatingChatBot() {
         >
           
           {/* ── Header ── */}
-          <div className="px-4 py-3 border-b border-white/10 flex items-center justify-between flex-shrink-0">
+          <div className="px-4 py-3 border-b border-white/60 flex items-center justify-between flex-shrink-0">
             <div className="flex items-center gap-3">
               <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-cyan-500/20 to-blue-600/20 
-                flex items-center justify-center border border-cyan-500/20">
-                <Bot size={18} className="text-cyan-400" />
+                flex items-center justify-center border border-cyan-200/50">
+                <Bot size={18} className="text-cyan-600" />
               </div>
               <div>
-                <h3 className="text-white font-semibold text-sm">Asisten AI YWM</h3>
+                <h3 className="text-slate-800 font-semibold text-sm">Asisten AI YWM</h3>
                 <div className="flex items-center gap-1.5">
                   <div className={cn(
                     'w-1.5 h-1.5 rounded-full',
                     checkingAI ? 'bg-yellow-400 animate-pulse' :
                     aiReady ? 'bg-emerald-400' : 'bg-red-400'
                   )} />
-                  <span className="text-white/40 text-xs">
+                  <span className="text-slate-400 text-xs">
                     {checkingAI ? 'Menghubungkan...' : aiReady ? 'Online — Siap membantu' : 'Offline — Cek server AI'}
                   </span>
                 </div>
@@ -508,7 +537,7 @@ export default function FloatingChatBot() {
             </div>
             <button
               onClick={() => setIsOpen(false)}
-              className="p-1.5 rounded-lg text-white/40 hover:text-white hover:bg-white/10 transition-all"
+              className="p-1.5 rounded-lg text-slate-400 hover:text-slate-800 hover:bg-white/60 transition-all"
             >
               <X size={16} />
             </button>
@@ -516,16 +545,16 @@ export default function FloatingChatBot() {
 
           {/* ── Quick Actions (shown when no messages besides welcome) ── */}
           {showQuickActions && messages.length <= 1 && (
-            <div className="px-4 py-3 border-b border-white/5 flex-shrink-0">
-              <p className="text-white/30 text-xs mb-2">Aksi Cepat</p>
+            <div className="px-4 py-3 border-b border-white/60 flex-shrink-0">
+              <p className="text-slate-400 text-xs mb-2">Aksi Cepat</p>
               <div className="grid grid-cols-2 gap-1.5">
                 {QUICK_ACTIONS.map((action) => (
                   <button
                     key={action.label}
                     onClick={() => handleQuickAction(action.prompt)}
                     disabled={isStreaming || !aiReady}
-                    className="flex items-center gap-1.5 px-2.5 py-2 rounded-lg bg-white/5 border border-white/5 
-                      text-white/60 hover:text-white hover:bg-white/10 hover:border-white/10 
+                    className="flex items-center gap-1.5 px-2.5 py-2 rounded-lg bg-white/50 border border-white/60 
+                      text-slate-500 hover:text-slate-800 hover:bg-white/60 hover:border-white/60 
                       transition-all text-xs disabled:opacity-30 disabled:cursor-not-allowed"
                   >
                     <span className={action.color}>{action.icon}</span>
@@ -551,14 +580,14 @@ export default function FloatingChatBot() {
                   className={cn(
                     'w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0',
                     msg.role === 'user'
-                      ? 'bg-cyan-500/20'
-                      : 'bg-purple-500/20'
+                      ? 'bg-cyan-100/80'
+                      : 'bg-purple-100/80'
                   )}
                 >
                   {msg.role === 'user' ? (
-                    <User size={14} className="text-cyan-400" />
+                    <User size={14} className="text-cyan-600" />
                   ) : (
-                    <Bot size={14} className="text-purple-400" />
+                    <Bot size={14} className="text-purple-600" />
                   )}
                 </div>
 
@@ -567,15 +596,15 @@ export default function FloatingChatBot() {
                   className={cn(
                     'max-w-[82%] rounded-2xl px-3.5 py-2.5 text-sm leading-relaxed',
                     msg.role === 'user'
-                      ? 'bg-cyan-500/15 border border-cyan-500/20 text-white'
-                      : 'bg-white/5 border border-white/10 text-white/80'
+                      ? 'bg-cyan-50/80 border border-cyan-200/50 text-slate-800'
+                      : 'bg-white/50 border border-white/60 text-slate-600'
                   )}
                 >
                   <p className="whitespace-pre-wrap">{formatContent(msg.content)}</p>
                   
                   {/* Streaming indicator */}
                   {msg.content === '' && isStreaming && (
-                    <div className="flex items-center gap-1.5 text-white/40">
+                    <div className="flex items-center gap-1.5 text-slate-400">
                       <Loader2 size={12} className="animate-spin" />
                       <span className="text-xs">AI sedang berpikir...</span>
                     </div>
@@ -592,8 +621,8 @@ export default function FloatingChatBot() {
             {/* Data input confirmation card */}
             {pendingDataInput && (
               <div className="flex gap-2">
-                <div className="w-7 h-7 rounded-lg bg-cyan-500/20 flex items-center justify-center flex-shrink-0">
-                  <Database size={14} className="text-cyan-400" />
+                <div className="w-7 h-7 rounded-lg bg-cyan-100/80 flex items-center justify-center flex-shrink-0">
+                  <Database size={14} className="text-cyan-600" />
                 </div>
                 <DataInputCard
                   module={pendingDataInput.module}
@@ -608,9 +637,9 @@ export default function FloatingChatBot() {
           </div>
 
           {/* ── Input Area ── */}
-          <div className="p-3 border-t border-white/10 flex-shrink-0">
-            <div className="flex items-end gap-2 bg-white/5 border border-white/10 rounded-xl p-2 
-              focus-within:border-cyan-500/30 focus-within:bg-white/[0.07] transition-all">
+          <div className="p-3 border-t border-white/60 flex-shrink-0">
+            <div className="flex items-end gap-2 bg-white/50 border border-white/60 rounded-xl p-2 
+              focus-within:border-cyan-200/50 focus-within:bg-white/60 transition-all">
               <textarea
                 ref={inputRef}
                 value={input}
@@ -625,7 +654,7 @@ export default function FloatingChatBot() {
                 }
                 disabled={!aiReady || isStreaming}
                 rows={1}
-                className="flex-1 bg-transparent text-white text-sm placeholder:text-white/30 
+                className="flex-1 bg-transparent text-slate-800 text-sm placeholder:text-slate-400 
                   resize-none outline-none max-h-24 min-h-[32px]"
               />
               <button
@@ -633,8 +662,8 @@ export default function FloatingChatBot() {
                 className={cn(
                   'p-2 rounded-lg transition-all flex-shrink-0',
                   isRecording
-                    ? 'bg-red-500/20 text-red-400 animate-pulse'
-                    : 'text-white/30 hover:text-white/60 hover:bg-white/5'
+                    ? 'bg-red-100/80 text-red-500 animate-pulse'
+                    : 'text-slate-400 hover:text-slate-500 hover:bg-white/50'
                 )}
                 title={isRecording ? 'Berhenti merekam' : 'Input suara'}
               >
@@ -644,7 +673,7 @@ export default function FloatingChatBot() {
                 onClick={handleSend}
                 disabled={!input.trim() || isStreaming || !aiReady}
                 className="p-2 rounded-lg bg-gradient-to-r from-cyan-500/20 to-blue-600/20 
-                  text-cyan-400 hover:from-cyan-500/30 hover:to-blue-600/30 
+                  text-cyan-600 hover:from-cyan-200/60 hover:to-blue-200/60 
                   transition-all disabled:opacity-30 disabled:cursor-not-allowed flex-shrink-0"
                 title="Kirim"
               >
@@ -653,10 +682,10 @@ export default function FloatingChatBot() {
             </div>
             {/* Status bar */}
             <div className="flex items-center justify-between mt-1.5 px-1">
-              <span className="text-white/20 text-[10px]">Powered by YWM AI</span>
+              <span className="text-slate-400 text-[10px]">Powered by YWM AI</span>
               <button
                 onClick={() => setShowQuickActions(true)}
-                className="text-white/20 text-[10px] hover:text-white/40 transition-colors"
+                className="text-slate-400 text-[10px] hover:text-slate-400 transition-colors"
               >
                 Aksi Cepat
               </button>

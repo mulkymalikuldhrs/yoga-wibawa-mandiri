@@ -12,7 +12,7 @@ const Footer = () => {
   ];
 
   return (
-    <footer className="bg-ywm-dark text-white">
+    <footer className="bg-slate-900 text-white">
       <div className="container mx-auto px-4 py-12">
         <div className="grid md:grid-cols-4 gap-8">
           {/* Company Info */}
@@ -33,34 +33,32 @@ const Footer = () => {
               fasilitas modern dan distribusi yang luas di seluruh Aceh dan Sumatera Utara.
             </p>
             
-            {/* Partnership Badge */}
-            <div className="flex items-center space-x-4 mb-6">
-              <img 
-                src="/lovable-uploads/35616003-ad4f-4d69-940c-91a3a5a41f07.png" 
-                alt="Semen Padang Logo"
-                className="w-12 h-12 rounded-lg"
-              />
-              <span className="text-gray-300 text-sm font-medium">Mitra Resmi Semen Padang</span>
+            {/* Partnership Badge — text only, no logo */}
+            <div className="flex items-center space-x-3 mb-6">
+              <div className="px-3 py-2 bg-slate-800 rounded-lg border border-slate-700">
+                <span className="text-gray-400 text-xs font-medium">Mitra Resmi</span>
+                <span className="text-white text-sm font-bold ml-2">Semen Padang</span>
+              </div>
             </div>
 
-            {/* AI Powered Badge */}
-            <div className="flex items-center space-x-3 mb-6 p-3 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg">
+            {/* YWM AI Dashboard Badge */}
+            <div className="flex items-center space-x-3 mb-6 p-3 bg-gradient-to-r from-cyan-600 to-purple-600 rounded-lg">
               <Code className="text-white" size={20} />
               <div>
-                <p className="text-white font-semibold text-sm">AI-Powered Website</p>
-                <p className="text-blue-100 text-xs">JS Puter AI - Local Processing</p>
+                <p className="text-white font-semibold text-sm">YWM AI Dashboard</p>
+                <p className="text-cyan-100 text-xs">AI-Powered Operations Management</p>
               </div>
             </div>
 
             {/* Social Media */}
             <div className="flex space-x-4">
-              <a href="#" className="w-10 h-10 bg-ywm-red rounded-lg flex items-center justify-center hover:bg-red-700 transition-colors">
+              <a href="#" className="w-10 h-10 bg-cyan-600 rounded-lg flex items-center justify-center hover:bg-cyan-700 transition-colors">
                 <Facebook size={20} />
               </a>
-              <a href="#" className="w-10 h-10 bg-ywm-red rounded-lg flex items-center justify-center hover:bg-red-700 transition-colors">
+              <a href="#" className="w-10 h-10 bg-cyan-600 rounded-lg flex items-center justify-center hover:bg-cyan-700 transition-colors">
                 <Instagram size={20} />
               </a>
-              <a href="#" className="w-10 h-10 bg-ywm-red rounded-lg flex items-center justify-center hover:bg-red-700 transition-colors">
+              <a href="#" className="w-10 h-10 bg-cyan-600 rounded-lg flex items-center justify-center hover:bg-cyan-700 transition-colors">
                 <Linkedin size={20} />
               </a>
             </div>
@@ -68,7 +66,7 @@ const Footer = () => {
 
           {/* Quick Links */}
           <div>
-            <h4 className="font-bold text-lg mb-6 text-ywm-red">Navigasi</h4>
+            <h4 className="font-bold text-lg mb-6 text-cyan-400">Navigasi</h4>
             <ul className="space-y-3">
               {navigationItems.map((item) => (
                 <li key={item.path}>
@@ -83,9 +81,9 @@ const Footer = () => {
               <li>
                 <Link 
                   to="/dashboard" 
-                  className="text-blue-400 hover:text-blue-300 hover:pl-2 transition-all duration-300 block font-medium"
+                  className="text-cyan-400 hover:text-cyan-300 hover:pl-2 transition-all duration-300 block font-medium"
                 >
-                  🤖 AI Dashboard
+                  AI Dashboard
                 </Link>
               </li>
             </ul>
@@ -93,32 +91,32 @@ const Footer = () => {
 
           {/* Contact Info */}
           <div>
-            <h4 className="font-bold text-lg mb-6 text-ywm-red">Kontak Kami</h4>
+            <h4 className="font-bold text-lg mb-6 text-cyan-400">Kontak Kami</h4>
             <div className="space-y-4">
               <div className="flex items-start space-x-3">
-                <MapPin className="text-ywm-red mt-1" size={18} />
+                <MapPin className="text-cyan-400 mt-1" size={18} />
                 <div>
                   <p className="text-gray-300 text-sm font-medium">Kantor Pusat:</p>
                   <p className="text-gray-300 text-sm">Medan, Sumatera Utara</p>
                 </div>
               </div>
               <div className="flex items-start space-x-3">
-                <MapPin className="text-ywm-red mt-1" size={18} />
+                <MapPin className="text-cyan-400 mt-1" size={18} />
                 <div>
                   <p className="text-gray-300 text-sm font-medium">Pabrik:</p>
                   <p className="text-gray-300 text-sm">Pelabuhan Krueng Geukueh<br />Lhokseumawe, Aceh</p>
                 </div>
               </div>
               <div className="flex items-center space-x-3">
-                <Phone className="text-ywm-red" size={18} />
+                <Phone className="text-cyan-400" size={18} />
                 <p className="text-gray-300 text-sm">+62 651 123456</p>
               </div>
               <div className="flex items-center space-x-3">
-                <Mail className="text-ywm-red" size={18} />
+                <Mail className="text-cyan-400" size={18} />
                 <p className="text-gray-300 text-sm">info@ywm.co.id</p>
               </div>
               <div className="flex items-center space-x-3">
-                <Clock className="text-ywm-red" size={18} />
+                <Clock className="text-cyan-400" size={18} />
                 <p className="text-gray-300 text-sm">Senin - Jumat: 08:00 - 17:00</p>
               </div>
             </div>
@@ -128,17 +126,14 @@ const Footer = () => {
         <div className="border-t border-gray-700 mt-12 pt-8">
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
             <p className="text-gray-300 text-sm text-center md:text-left">
-              © {new Date().getFullYear()} PT. Yoga Wibawa Mandiri. Semua hak cipta dilindungi.
+              &copy; {new Date().getFullYear()} PT. Yoga Wibawa Mandiri. Semua hak cipta dilindungi.
             </p>
             <div className="text-center md:text-right">
               <p className="text-gray-400 text-xs mb-1">
-                Developed with ❤️ by <span className="text-ywm-red font-medium">Mulky Malikul Dhaher</span>
-              </p>
-              <p className="text-gray-400 text-xs mb-1">
-                <span className="text-blue-400">Technical Engineer</span> - PT. Yoga Wibawa Mandiri
+                Developed by <span className="text-cyan-400 font-medium">Tim Teknik | Mulky Malikul Dhaher</span>
               </p>
               <p className="text-gray-500 text-xs">
-                🤖 Powered by JS Puter AI | 🚀 React + TypeScript
+                YWM AI Dashboard | React + TypeScript
               </p>
             </div>
           </div>

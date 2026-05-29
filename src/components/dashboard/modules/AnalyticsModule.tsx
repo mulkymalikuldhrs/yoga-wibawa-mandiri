@@ -1,28 +1,27 @@
 // ============================================================
 // AnalyticsModule — Analitik dengan berbagai chart
+// Updated: Removed production, safety, finance; added Pispot
 // ============================================================
 
 import { useState, useEffect, useCallback } from 'react';
-import { cn } from '@/lib/utils';
 import GlassCard from '@/components/dashboard/GlassCard';
-import { getData, formatRupiah } from '@/lib/dashboard-storage';
-import { KV_PREFIXES, type ProductionRecord, type MaintenanceRecord, type SafetyIncident, type FinanceRecord } from '@/types/dashboard';
+import { getData, formatRupiah } from '@/lib/supabase-data';
+import { KV_PREFIXES, type PispotRecord, type MaintenanceRecord } from '@/types/dashboard';
 import {
-  BarChart3, Calendar,
+  BarChart3,
 } from 'lucide-react';
 import {
-  LineChart, Line, BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, AreaChart, Area,
+  BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, PieChart, Pie, Cell,
 } from 'recharts';
 
 const CustomTooltip = ({ active, payload, label }: any) => {
   if (active && payload && payload.length) {
     return (
-      <div className="backdrop-blur-xl bg-[#0f0c29]/90 border border-white/10 rounded-lg px-3 py-2 text-xs">
-        <p className="text-white/70 mb-1">{label}</p>
+      <div className="backdrop-blur-xl bg-white/90 border border-white/60 rounded-lg px-3 py-2 text-xs">
+        <p className="text-slate-600 mb-1">{label}</p>
         {payload.map((entry: any, idx: number) => (
           <p key={idx} style={{ color: entry.color }} className="font-medium">
             {entry.name}: {typeof entry.value === 'number' && entry.value > 1000 ? formatRupiah(entry.value) : entry.value}
-            {entry.name === 'Efisiensi' ? '%' : ''}
           </p>
         ))}
       </div>
@@ -31,40 +30,40 @@ const CustomTooltip = ({ active, payload, label }: any) => {
   return null;
 };
 
-export default function AnalyticsModule() {
-  const [dateRange, setDateRange] = useState('7');
-  const [productionData, setProductionData] = useState<ProductionRecord[]>([]);
-  const [maintenanceData, setMaintenanceData] = useState<MaintenanceRecord[]>([]);
-  const [safetyData, setSafetyData] = useState<SafetyIncident[]>([]);
-  const [financeData, setFinanceData] = useState<FinanceRecord[]>([]);
+const PIE_COLORS = ['#10b981', '#06b6d4', '#f87171', '#f59e0b'];
 
-  const loadData = useCallback(() => {
-    setProductionData(getData<ProductionRecord>(KV_PREFIXES.production));
-    setMaintenanceData(getData<MaintenanceRecord>(KV_PREFIXES.maintenance));
-    setSafetyData(getData<SafetyIncident>(KV_PREFIXES.safety));
-    setFinanceData(getData<FinanceRecord>(KV_PREFIXES.finance));
+export default function AnalyticsModule() {
+  const [pispotData, setPispotData] = useState<PispotRecord[]>([]);
+  const [maintenanceData, setMaintenanceData] = useState<MaintenanceRecord[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const loadData = useCallback(async () => {
+    setLoading(true);
+    const pispot = await getData<PispotRecord>(KV_PREFIXES.pispot);
+    const maint = await getData<MaintenanceRecord>(KV_PREFIXES.maintenance);
+    setPispotData(pispot);
+    setMaintenanceData(maint);
+    setLoading(false);
   }, []);
 
   useEffect(() => { loadData(); }, [loadData]);
 
-  const days = parseInt(dateRange);
+  // Pispot status breakdown
+  const pispotStatusData = [
+    { name: 'Selesai', value: pispotData.filter((p) => p.status === 'selesai').length },
+    { name: 'Terjadwal', value: pispotData.filter((p) => p.status === 'terjadwal').length },
+    { name: 'Terlewat', value: pispotData.filter((p) => p.status === 'terlewat').length },
+  ].filter((d) => d.value > 0);
 
-  // Production trends
-  const prodTrend: Array<{ name: string; aktual: number; target: number; efisiensi: number }> = [];
-  for (let d = days - 1; d >= 0; d--) {
-    const date = new Date(); date.setDate(date.getDate() - d);
-    const dateStr = date.toISOString().split('T')[0];
-    const dayProds = productionData.filter((p) => p.tanggal === dateStr);
-    const dayNames = ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'];
-    const totalTarget = dayProds.reduce((s, p) => s + p.target, 0);
-    const totalAktual = dayProds.reduce((s, p) => s + p.aktual, 0);
-    prodTrend.push({
-      name: dayNames[date.getDay()] + ' ' + date.getDate(),
-      aktual: totalAktual,
-      target: totalTarget,
-      efisiensi: totalTarget > 0 ? Math.round((totalAktual / totalTarget) * 100) : 0,
-    });
-  }
+  // Pispot by location
+  const pispotByLocation: Record<string, number> = {};
+  pispotData.forEach((p) => {
+    pispotByLocation[p.lokasi] = (pispotByLocation[p.lokasi] || 0) + 1;
+  });
+  const pispotLocationData = Object.entries(pispotByLocation).map(([name, count]) => ({
+    name,
+    jumlah: count,
+  }));
 
   // Maintenance cost by machine
   const maintByMachine: Record<string, number> = {};
@@ -76,58 +75,53 @@ export default function AnalyticsModule() {
     biaya: Math.round(biaya / 1000000),
   }));
 
-  // Safety incidents trend
-  const safetyTrend: Array<{ name: string; count: number }> = [];
-  for (let d = days - 1; d >= 0; d--) {
-    const date = new Date(); date.setDate(date.getDate() - d);
-    const dateStr = date.toISOString().split('T')[0];
-    const dayIncidents = safetyData.filter((s) => s.tanggal === dateStr);
-    const dayNames = ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'];
-    safetyTrend.push({
-      name: dayNames[date.getDay()] + ' ' + date.getDate(),
-      count: dayIncidents.length,
-    });
-  }
-
-  // Finance summary by month
-  const financeByMonth: Record<string, { pemasukan: number; pengeluaran: number }> = {};
-  financeData.forEach((f) => {
-    const month = f.tanggal.substring(0, 7);
-    if (!financeByMonth[month]) financeByMonth[month] = { pemasukan: 0, pengeluaran: 0 };
-    if (f.jenis === 'pemasukan') financeByMonth[month].pemasukan += f.jumlah;
-    else financeByMonth[month].pengeluaran += f.jumlah;
+  // Pispot by month (last 6 months)
+  const pispotByMonth: Record<string, { selesai: number; terjadwal: number; terlewat: number }> = {};
+  pispotData.forEach((p) => {
+    const month = p.bulan;
+    if (!pispotByMonth[month]) pispotByMonth[month] = { selesai: 0, terjadwal: 0, terlewat: 0 };
+    if (p.status === 'selesai') pispotByMonth[month].selesai++;
+    else if (p.status === 'terjadwal') pispotByMonth[month].terjadwal++;
+    else if (p.status === 'terlewat') pispotByMonth[month].terlewat++;
   });
-  const financeChartData = Object.entries(financeByMonth)
+  const pispotMonthData = Object.entries(pispotByMonth)
     .sort(([a], [b]) => a.localeCompare(b))
+    .slice(-6)
     .map(([month, vals]) => ({
       name: new Date(month + '-01').toLocaleDateString('id-ID', { month: 'short', year: '2-digit' }),
-      pemasukan: Math.round(vals.pemasukan / 1000000),
-      pengeluaran: Math.round(vals.pengeluaran / 1000000),
+      ...vals,
     }));
 
   // Summary stats
-  const totalProduction = productionData.reduce((s, p) => s + p.aktual, 0);
-  const avgEfficiency = productionData.length > 0
-    ? Math.round(productionData.reduce((s, p) => s + (p.target > 0 ? (p.aktual / p.target) * 100 : 0), 0) / productionData.length)
-    : 0;
   const totalMaintCost = maintenanceData.reduce((s, m) => s + m.estimasiBiaya, 0);
-  const totalIncidents = safetyData.length;
+  const pispotCompletionRate = pispotData.length > 0
+    ? Math.round((pispotData.filter((p) => p.status === 'selesai').length / pispotData.length) * 100)
+    : 0;
+  const overduePispot = pispotData.filter((p) => p.status === 'terlewat').length;
 
   return (
     <div className="p-4 md:p-6 space-y-6">
+      {/* Feature Description */}
+      <div className="mb-4 p-3 rounded-xl bg-cyan-50/60 border border-cyan-200/50">
+        <p className="text-cyan-700 text-sm">
+          <strong>Analitik</strong> — Analisis data operasional lintas modul. Visualisasi tren pelumasan (Pispot), biaya perawatan, kondisi peralatan, dan metrik kunci lainnya untuk pengambilan keputusan.
+        </p>
+      </div>
+
+      {loading ? (
+        <div className="flex items-center justify-center py-20">
+          <div className="flex items-center gap-3 text-slate-400">
+            <div className="w-5 h-5 border-2 border-cyan-500/30 border-t-cyan-500 rounded-full animate-spin" />
+            <span>Memuat data...</span>
+          </div>
+        </div>
+      ) : (<>
+
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
-          <h1 className="text-2xl md:text-3xl font-bold text-white">Analitik</h1>
-          <p className="text-white/40 text-sm mt-1">Visualisasi data dan tren operasional</p>
-        </div>
-        <div className="flex items-center gap-2">
-          <Calendar size={16} className="text-white/30" />
-          <select value={dateRange} onChange={(e) => setDateRange(e.target.value)} className="px-4 py-2 bg-white/[0.05] border border-white/[0.1] rounded-xl text-white text-sm focus:border-cyan-500/40 focus:outline-none appearance-none">
-            <option value="7" className="bg-[#0f0c29]">7 Hari</option>
-            <option value="14" className="bg-[#0f0c29]">14 Hari</option>
-            <option value="30" className="bg-[#0f0c29]">30 Hari</option>
-          </select>
+          <h1 className="text-2xl md:text-3xl font-bold text-slate-800">Analitik</h1>
+          <p className="text-slate-400 text-sm mt-1">Visualisasi data dan tren operasional</p>
         </div>
       </div>
 
@@ -135,83 +129,89 @@ export default function AnalyticsModule() {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         <GlassCard className="p-4">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-cyan-500/20 flex items-center justify-center"><BarChart3 size={18} className="text-cyan-400" /></div>
-            <div><p className="text-xl font-bold text-white">{totalProduction} ton</p><p className="text-white/40 text-xs">Total Produksi</p></div>
+            <div className="w-9 h-9 rounded-xl bg-teal-100/80 flex items-center justify-center"><BarChart3 size={18} className="text-teal-600" /></div>
+            <div><p className="text-xl font-bold text-slate-800">{pispotCompletionRate}%</p><p className="text-slate-400 text-xs">Ketuntasan Pispot</p></div>
           </div>
         </GlassCard>
         <GlassCard className="p-4">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-emerald-500/20 flex items-center justify-center"><BarChart3 size={18} className="text-emerald-400" /></div>
-            <div><p className="text-xl font-bold text-white">{avgEfficiency}%</p><p className="text-white/40 text-xs">Rata-rata Efisiensi</p></div>
+            <div className="w-9 h-9 rounded-xl bg-red-100/80 flex items-center justify-center"><BarChart3 size={18} className="text-red-600" /></div>
+            <div><p className="text-xl font-bold text-slate-800">{overduePispot}</p><p className="text-slate-400 text-xs">Pelumasan Terlewat</p></div>
           </div>
         </GlassCard>
         <GlassCard className="p-4">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-amber-500/20 flex items-center justify-center"><BarChart3 size={18} className="text-amber-400" /></div>
-            <div><p className="text-lg font-bold text-white">{formatRupiah(totalMaintCost)}</p><p className="text-white/40 text-xs">Total Biaya Perawatan</p></div>
+            <div className="w-9 h-9 rounded-xl bg-amber-100/80 flex items-center justify-center"><BarChart3 size={18} className="text-amber-600" /></div>
+            <div><p className="text-lg font-bold text-slate-800">{formatRupiah(totalMaintCost)}</p><p className="text-slate-400 text-xs">Total Biaya Perawatan</p></div>
           </div>
         </GlassCard>
         <GlassCard className="p-4">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-red-500/20 flex items-center justify-center"><BarChart3 size={18} className="text-red-400" /></div>
-            <div><p className="text-xl font-bold text-white">{totalIncidents}</p><p className="text-white/40 text-xs">Total Insiden</p></div>
+            <div className="w-9 h-9 rounded-xl bg-cyan-100/80 flex items-center justify-center"><BarChart3 size={18} className="text-cyan-600" /></div>
+            <div><p className="text-xl font-bold text-slate-800">{pispotData.length}</p><p className="text-slate-400 text-xs">Total Record Pispot</p></div>
           </div>
         </GlassCard>
       </div>
 
       {/* Charts Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        {/* Production Trends */}
+        {/* Pispot Monthly Trend */}
         <GlassCard className="p-5">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-white font-semibold text-sm">Tren Produksi</h2>
-            <span className="text-white/30 text-xs">Ton/hari</span>
+            <h2 className="text-slate-800 font-semibold text-sm">Tren Pelumasan Bulanan</h2>
+            <span className="text-slate-400 text-xs">Status per bulan</span>
           </div>
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={prodTrend}>
-                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
-                <XAxis dataKey="name" tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 11 }} axisLine={false} tickLine={false} />
-                <YAxis tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 11 }} axisLine={false} tickLine={false} />
+              <BarChart data={pispotMonthData} barGap={4}>
+                <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.06)" />
+                <XAxis dataKey="name" tick={{ fill: 'rgba(100,116,139,0.7)', fontSize: 11 }} axisLine={false} tickLine={false} />
+                <YAxis tick={{ fill: 'rgba(100,116,139,0.7)', fontSize: 11 }} axisLine={false} tickLine={false} allowDecimals={false} />
                 <Tooltip content={<CustomTooltip />} />
-                <Line type="monotone" dataKey="aktual" name="Aktual" stroke="#06b6d4" strokeWidth={2} dot={{ r: 3, fill: '#06b6d4' }} />
-                <Line type="monotone" dataKey="target" name="Target" stroke="rgba(255,255,255,0.2)" strokeWidth={1} strokeDasharray="5 5" dot={false} />
-              </LineChart>
+                <Bar dataKey="selesai" name="Selesai" fill="rgba(16,185,129,0.7)" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="terjadwal" name="Terjadwal" fill="rgba(6,182,212,0.7)" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="terlewat" name="Terlewat" fill="rgba(248,113,113,0.7)" radius={[4, 4, 0, 0]} />
+              </BarChart>
             </ResponsiveContainer>
           </div>
         </GlassCard>
 
-        {/* Efficiency Trend */}
+        {/* Pispot Status Pie */}
         <GlassCard className="p-5">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-white font-semibold text-sm">Efisiensi Produksi</h2>
-            <span className="text-white/30 text-xs">% efisiensi</span>
+            <h2 className="text-slate-800 font-semibold text-sm">Distribusi Status Pispot</h2>
+            <span className="text-slate-400 text-xs">Keseluruhan</span>
           </div>
-          <div className="h-64">
-            <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={prodTrend}>
-                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
-                <XAxis dataKey="name" tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 11 }} axisLine={false} tickLine={false} />
-                <YAxis tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 11 }} axisLine={false} tickLine={false} domain={[80, 120]} />
-                <Tooltip content={<CustomTooltip />} />
-                <Area type="monotone" dataKey="efisiensi" name="Efisiensi" stroke="#10b981" fill="rgba(16,185,129,0.1)" strokeWidth={2} />
-              </AreaChart>
-            </ResponsiveContainer>
+          <div className="h-64 flex items-center justify-center">
+            {pispotStatusData.length > 0 ? (
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie data={pispotStatusData} cx="50%" cy="50%" outerRadius={80} dataKey="value" label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}>
+                    {pispotStatusData.map((_, index) => (
+                      <Cell key={`cell-${index}`} fill={PIE_COLORS[index % PIE_COLORS.length]} />
+                    ))}
+                  </Pie>
+                  <Tooltip />
+                </PieChart>
+              </ResponsiveContainer>
+            ) : (
+              <p className="text-slate-400 text-xs">Belum ada data</p>
+            )}
           </div>
         </GlassCard>
 
         {/* Maintenance Cost by Machine */}
         <GlassCard className="p-5">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-white font-semibold text-sm">Biaya Perawatan per Mesin</h2>
-            <span className="text-white/30 text-xs">Juta Rupiah</span>
+            <h2 className="text-slate-800 font-semibold text-sm">Biaya Perawatan per Mesin</h2>
+            <span className="text-slate-400 text-xs">Juta Rupiah</span>
           </div>
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={maintCostData} layout="vertical">
-                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
-                <XAxis type="number" tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 11 }} axisLine={false} tickLine={false} />
-                <YAxis dataKey="name" type="category" tick={{ fill: 'rgba(255,255,255,0.6)', fontSize: 11 }} axisLine={false} tickLine={false} width={80} />
+                <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.06)" />
+                <XAxis type="number" tick={{ fill: 'rgba(100,116,139,0.7)', fontSize: 11 }} axisLine={false} tickLine={false} />
+                <YAxis dataKey="name" type="category" tick={{ fill: 'rgba(100,116,139,0.7)', fontSize: 11 }} axisLine={false} tickLine={false} width={80} />
                 <Tooltip content={<CustomTooltip />} />
                 <Bar dataKey="biaya" name="Biaya" fill="rgba(139,92,246,0.6)" radius={[0, 4, 4, 0]} />
               </BarChart>
@@ -219,45 +219,26 @@ export default function AnalyticsModule() {
           </div>
         </GlassCard>
 
-        {/* Safety Incidents Trend */}
+        {/* Pispot by Location */}
         <GlassCard className="p-5">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-white font-semibold text-sm">Tren Insiden Keselamatan</h2>
-            <span className="text-white/30 text-xs">Jumlah insiden</span>
+            <h2 className="text-slate-800 font-semibold text-sm">Pispot per Lokasi</h2>
+            <span className="text-slate-400 text-xs">Jumlah item</span>
           </div>
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={safetyTrend}>
-                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
-                <XAxis dataKey="name" tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 11 }} axisLine={false} tickLine={false} />
-                <YAxis tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 11 }} axisLine={false} tickLine={false} allowDecimals={false} />
+              <BarChart data={pispotLocationData}>
+                <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.06)" />
+                <XAxis dataKey="name" tick={{ fill: 'rgba(100,116,139,0.7)', fontSize: 11 }} axisLine={false} tickLine={false} />
+                <YAxis tick={{ fill: 'rgba(100,116,139,0.7)', fontSize: 11 }} axisLine={false} tickLine={false} allowDecimals={false} />
                 <Tooltip content={<CustomTooltip />} />
-                <Bar dataKey="count" name="Insiden" fill="rgba(248,113,113,0.6)" radius={[4, 4, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-        </GlassCard>
-
-        {/* Finance Summary */}
-        <GlassCard className="p-5 lg:col-span-2">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-white font-semibold text-sm">Ringkasan Keuangan Bulanan</h2>
-            <span className="text-white/30 text-xs">Juta Rupiah</span>
-          </div>
-          <div className="h-64">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={financeChartData} barGap={4}>
-                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
-                <XAxis dataKey="name" tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 11 }} axisLine={false} tickLine={false} />
-                <YAxis tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 11 }} axisLine={false} tickLine={false} />
-                <Tooltip content={<CustomTooltip />} />
-                <Bar dataKey="pemasukan" name="Pemasukan" fill="rgba(52,211,153,0.6)" radius={[4, 4, 0, 0]} />
-                <Bar dataKey="pengeluaran" name="Pengeluaran" fill="rgba(248,113,113,0.6)" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="jumlah" name="Jumlah" fill="rgba(6,182,212,0.6)" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>
         </GlassCard>
       </div>
+      </>)}
     </div>
   );
 }

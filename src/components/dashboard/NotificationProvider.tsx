@@ -18,7 +18,7 @@ import {
   saveData,
   deleteData,
   generateId,
-} from '@/lib/dashboard-storage';
+} from '@/lib/supabase-data';
 import { chatWithAiStream } from '@/lib/ywm-ai';
 import type { AiMessage } from '@/types/dashboard';
 
@@ -82,28 +82,12 @@ const SAMPLE_NOTIFICATIONS: Omit<Notification, 'id' | 'createdAt' | 'updatedAt'>
     link: '/dashboard?module=maintenance',
   },
   {
-    judul: 'Produksi shift pagi mencapai 95% target',
-    pesan: 'Selamat! Produksi shift pagi hari ini mencapai 95% dari target yang ditetapkan. Terus pertahankan performa ini.',
-    tipe: 'sukses',
+    judul: 'Pelumasan Pompa Hidrolik Packer B terlewat',
+    pesan: 'Pelumasan Pompa Hidrolik Packer B (PMP-HYD-PB) bulan ini terlewat. Kondisi peralatan perlu perhatian. Segera lakukan pelumasan.',
+    tipe: 'bahaya',
     dibaca: false,
-    modul: 'production',
-    link: '/dashboard?module=production',
-  },
-  {
-    judul: 'Insiden kecil di area Packer A — sudah ditangani',
-    pesan: 'Tumpahan semen kecil di area Packer A telah dibersihkan. Tidak ada korban. Tim sudah memasang splash guard tambahan.',
-    tipe: 'info',
-    dibaca: true,
-    modul: 'safety',
-    link: '/dashboard?module=safety',
-  },
-  {
-    judul: 'Pembayaran dari PT Semen Padang diterima Rp 150.000.000',
-    pesan: 'Pembayaran tagihan INV-2026-0225 dari PT Semen Padang sebesar Rp 150.000.000 telah diterima melalui transfer bank.',
-    tipe: 'sukses',
-    dibaca: false,
-    modul: 'finance',
-    link: '/dashboard?module=finance',
+    modul: 'pispot',
+    link: '/dashboard?module=pispot',
   },
   {
     judul: '3 karyawan izin hari ini',
@@ -112,6 +96,14 @@ const SAMPLE_NOTIFICATIONS: Omit<Notification, 'id' | 'createdAt' | 'updatedAt'>
     dibaca: false,
     modul: 'team-activity',
     link: '/dashboard?module=team-activity',
+  },
+  {
+    judul: 'Jadwal pelumasan Bearing Conveyor Utama selesai',
+    pesan: 'Pelumasan rutin Bearing Conveyor Utama (BRG-CV01) telah dilaksanakan oleh Eko Prasetyo. Kondisi peralatan: Baik.',
+    tipe: 'sukses',
+    dibaca: true,
+    modul: 'pispot',
+    link: '/dashboard?module=pispot',
   },
 ];
 
@@ -134,58 +126,61 @@ export function NotificationProvider({
 
   // ── Load from localStorage on mount ──
   useEffect(() => {
-    const items = getData<Notification>(KV_PREFIXES.notification);
-    items.sort(
-      (a, b) =>
-        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-    );
-    setNotifications(items);
+    async function loadNotifications() {
+      const items = await getData<Notification>(KV_PREFIXES.notification);
+      items.sort(
+        (a, b) =>
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      );
+      setNotifications(items);
 
-    // Seed sample notifications if empty
-    if (items.length === 0 && !initializedRef.current) {
-      initializedRef.current = true;
-      const now = new Date().toISOString();
-      const seeded: Notification[] = SAMPLE_NOTIFICATIONS.map((s, i) => ({
-        ...s,
-        id: generateId(),
-        createdAt: new Date(
-          Date.now() - i * 3600_000
-        ).toISOString(),
-        updatedAt: now,
-      }));
-      seeded.forEach((n) => saveData(KV_PREFIXES.notification, n));
-      setNotifications(seeded);
+      // Seed sample notifications if empty
+      if (items.length === 0 && !initializedRef.current) {
+        initializedRef.current = true;
+        const now = new Date().toISOString();
+        const seeded: Notification[] = SAMPLE_NOTIFICATIONS.map((s, i) => ({
+          ...s,
+          id: generateId(),
+          createdAt: new Date(
+            Date.now() - i * 3600_000
+          ).toISOString(),
+          updatedAt: now,
+        }));
+        seeded.forEach((n) => saveData(KV_PREFIXES.notification, n));
+        setNotifications(seeded);
 
-      // Show unread popups on first load
-      const unreadPopups = seeded
-        .filter((n) => !n.dibaca)
-        .slice(0, 3)
-        .map((n) => ({
-          ...n,
-          popupId: `popup_${n.id}_${Date.now()}`,
-          dismissed: false,
-        }));
-      setPopups(unreadPopups);
-    } else if (items.length > 0 && !initializedRef.current) {
-      initializedRef.current = true;
-      // Show unread popups for existing notifications on first visit
-      const unreadPopups = items
-        .filter((n) => !n.dibaca)
-        .slice(0, 3)
-        .map((n) => ({
-          ...n,
-          popupId: `popup_${n.id}_${Date.now()}`,
-          dismissed: false,
-        }));
-      setPopups(unreadPopups);
+        // Show unread popups on first load
+        const unreadPopups = seeded
+          .filter((n) => !n.dibaca)
+          .slice(0, 3)
+          .map((n) => ({
+            ...n,
+            popupId: `popup_${n.id}_${Date.now()}`,
+            dismissed: false,
+          }));
+        setPopups(unreadPopups);
+      } else if (items.length > 0 && !initializedRef.current) {
+        initializedRef.current = true;
+        // Show unread popups for existing notifications on first visit
+        const unreadPopups = items
+          .filter((n) => !n.dibaca)
+          .slice(0, 3)
+          .map((n) => ({
+            ...n,
+            popupId: `popup_${n.id}_${Date.now()}`,
+            dismissed: false,
+          }));
+        setPopups(unreadPopups);
+      }
     }
+    loadNotifications();
   }, []);
 
   const unreadCount = notifications.filter((n) => !n.dibaca).length;
 
   // ── Reload from localStorage ──
-  const reloadNotifications = useCallback(() => {
-    const items = getData<Notification>(KV_PREFIXES.notification);
+  const reloadNotifications = useCallback(async () => {
+    const items = await getData<Notification>(KV_PREFIXES.notification);
     items.sort(
       (a, b) =>
         new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
@@ -389,17 +384,11 @@ export function NotificationProvider({
 
   // ── Auto-generate smart notifications (check every 60s) ──
   useEffect(() => {
-    const checkSmartNotifications = () => {
+    const checkSmartNotifications = async () => {
       // Check for low stock items
-      const spareParts = getData<{
-        id: string;
-        nama: string;
-        kode: string;
-        stok: number;
-        stokMinimum: number;
-      }>(KV_PREFIXES.sparePart);
+      const spareParts = await getData<{ id: string; nama: string; kode: string; stok: number; stokMinimum: number }>(KV_PREFIXES.sparePart);
 
-      const existingNotifs = getData<Notification>(KV_PREFIXES.notification);
+      const existingNotifs = await getData<Notification>(KV_PREFIXES.notification);
 
       spareParts.forEach((part) => {
         if (part.stok <= part.stokMinimum) {
@@ -435,13 +424,7 @@ export function NotificationProvider({
       });
 
       // Check for overdue maintenance
-      const maintenanceRecords = getData<{
-        id: string;
-        judul: string;
-        status: string;
-        prioritas: string;
-        tanggalMulai: string;
-      }>(KV_PREFIXES.maintenance);
+      const maintenanceRecords = await getData<{ id: string; judul: string; status: string; prioritas: string; tanggalMulai: string }>(KV_PREFIXES.maintenance);
 
       maintenanceRecords.forEach((rec) => {
         if (
@@ -470,6 +453,30 @@ export function NotificationProvider({
                 link: '/dashboard?module=maintenance',
               });
             }
+          }
+        }
+      });
+
+      // Check for overdue Pispot (pelumasan terlewat)
+      const pispotRecords = await getData<{ id: string; namaPeralatan: string; kodePeralatan: string; status: string; kondisi: string; bulan: string }>(KV_PREFIXES.pispot);
+
+      pispotRecords.forEach((rec) => {
+        if (rec.status === 'terlewat') {
+          const existingAlert = existingNotifs.find(
+            (n) =>
+              n.modul === 'pispot' &&
+              n.judul.includes(rec.namaPeralatan) &&
+              Date.now() - new Date(n.createdAt).getTime() < 7200_000
+          );
+
+          if (!existingAlert) {
+            addNotification({
+              judul: `Pelumasan ${rec.namaPeralatan} terlewat`,
+              pesan: `Pelumasan ${rec.namaPeralatan} (${rec.kodePeralatan}) bulan ${rec.bulan} terlewat. Kondisi: ${rec.kondisi}. Segera lakukan pelumasan.`,
+              tipe: rec.kondisi === 'rusak' ? 'bahaya' : 'peringatan',
+              modul: 'pispot',
+              link: '/dashboard?module=pispot',
+            });
           }
         }
       });

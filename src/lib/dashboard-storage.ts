@@ -134,65 +134,25 @@ export function initializeSampleData(): void {
   ];
   maintenanceRecords.forEach((item) => saveData(KV_PREFIXES.maintenance, item));
 
-  // Production sample data
-  const productionRecords = [];
-  for (let d = 6; d >= 0; d--) {
-    const date = new Date();
-    date.setDate(date.getDate() - d);
-    const dateStr = date.toISOString().split('T')[0];
-    const shifts: Array<'pagi' | 'siang' | 'malam'> = ['pagi', 'siang', 'malam'];
-    shifts.forEach((shift) => {
-      const target = 170;
-      const variance = Math.floor(Math.random() * 30) - 10;
-      const aktual = target + variance;
-      productionRecords.push({
-        id: generateId(),
-        tanggal: dateStr,
-        shift,
-        mesin: shift === 'malam' ? 'Packer B' : 'Packer A',
-        target,
-        aktual,
-        satuan: 'ton',
-        kualitas: variance > -5 ? 'A' : variance > -10 ? 'B' : 'C',
-        catatan: variance < -5 ? 'Produksi di bawah target' : '',
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      });
-    });
-  }
-  productionRecords.forEach((item) => saveData(KV_PREFIXES.production, item));
-
-  // Safety sample data
-  const safetyIncidents = [
-    { id: generateId(), judul: 'Tumpahan Semen di Area Packer', tanggal: '2026-02-25', lokasi: 'Area Packer A', severity: 'ringan' as const, status: 'selesai' as const, pelapor: 'Ahmad Fauzi', korban: '-', deskripsi: 'Tumpahan semen dari nozzle, area segera dibersihkan', tindakan: 'Perbaikan nozzle, penambahan splash guard', createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
-    { id: generateId(), judul: 'Kecelakaan Terpeleset di Conveyor', tanggal: '2026-02-20', lokasi: 'Conveyor 2', severity: 'sedang' as const, status: 'investigasi' as const, pelapor: 'Gunawan Wibowo', korban: 'Rizki Ananda', deskripsi: 'Karyawan terpeleset di area conveyor yang basah', tindakan: 'Pemasangan anti-slip, investigasi ongoing', createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
-    { id: generateId(), judul: 'Hearing Loss Ringan Operator', tanggal: '2026-02-15', lokasi: 'Area Silo', severity: 'sedang' as const, status: 'dilaporkan' as const, pelapor: 'Fitri Handayani', korban: 'Hendra Wijaya', deskripsi: 'Keluhan pendengaran berkurang setelah bekerja tanpa earplug', tindakan: 'Pemeriksaan ke dokter, sosialisasi APD', createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+  // Pispot sample data (Pompa Gemik Bearing / Lubrikasi / Pelumasan)
+  const currentMonth = new Date().toISOString().slice(0, 7);
+  const pispotRecords = [
+    { id: generateId(), namaPeralatan: 'Bearing Packer A - Nozzle 1', kodePeralatan: 'BRG-PA1', lokasi: 'Packer A', jenisPelumas: 'Lithium Grease EP2', spesifikasi: 'NLGI Grade 2, -20°C s/d 130°C', volume: '50 gram', periode: 'bulanan', bulan: currentMonth, tanggalPelaksanaan: `${currentMonth}-05`, petugas: 'Budi Santoso', status: 'selesai' as const, kondisi: 'baik' as const, catatan: 'Pelumasan rutin bulanan', tindakLanjut: '', createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+    { id: generateId(), namaPeralatan: 'Bearing Packer A - Nozzle 2', kodePeralatan: 'BRG-PA2', lokasi: 'Packer A', jenisPelumas: 'Lithium Grease EP2', spesifikasi: 'NLGI Grade 2, -20°C s/d 130°C', volume: '50 gram', periode: 'bulanan', bulan: currentMonth, tanggalPelaksanaan: `${currentMonth}-05`, petugas: 'Budi Santoso', status: 'selesai' as const, kondisi: 'baik' as const, catatan: '', tindakLanjut: '', createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+    { id: generateId(), namaPeralatan: 'Bearing Packer A - Nozzle 3', kodePeralatan: 'BRG-PA3', lokasi: 'Packer A', jenisPelumas: 'Lithium Grease EP2', spesifikasi: 'NLGI Grade 2, -20°C s/d 130°C', volume: '50 gram', periode: 'bulanan', bulan: currentMonth, tanggalPelaksanaan: `${currentMonth}-12`, petugas: 'Eko Prasetyo', status: 'terjadwal' as const, kondisi: 'baik' as const, catatan: '', tindakLanjut: '', createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+    { id: generateId(), namaPeralatan: 'Bearing Packer A - Nozzle 4', kodePeralatan: 'BRG-PA4', lokasi: 'Packer A', jenisPelumas: 'Lithium Grease EP2', spesifikasi: 'NLGI Grade 2, -20°C s/d 130°C', volume: '50 gram', periode: 'bulanan', bulan: currentMonth, tanggalPelaksanaan: `${currentMonth}-12`, petugas: 'Eko Prasetyo', status: 'terjadwal' as const, kondisi: 'baik' as const, catatan: '', tindakLanjut: '', createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+    { id: generateId(), namaPeralatan: 'Bearing Packer B - Nozzle 1', kodePeralatan: 'BRG-PB1', lokasi: 'Packer B', jenisPelumas: 'Lithium Grease EP2', spesifikasi: 'NLGI Grade 2, -20°C s/d 130°C', volume: '50 gram', periode: 'bulanan', bulan: currentMonth, tanggalPelaksanaan: `${currentMonth}-07`, petugas: 'Ahmad Fauzi', status: 'selesai' as const, kondisi: 'perlu_perhatian' as const, catatan: 'Sedikit berisik, perlu pemantauan', tindakLanjut: 'Cek ulang minggu depan', createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+    { id: generateId(), namaPeralatan: 'Bearing Packer B - Nozzle 2', kodePeralatan: 'BRG-PB2', lokasi: 'Packer B', jenisPelumas: 'Lithium Grease EP2', spesifikasi: 'NLGI Grade 2, -20°C s/d 130°C', volume: '50 gram', periode: 'bulanan', bulan: currentMonth, tanggalPelaksanaan: `${currentMonth}-07`, petugas: 'Ahmad Fauzi', status: 'selesai' as const, kondisi: 'baik' as const, catatan: '', tindakLanjut: '', createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+    { id: generateId(), namaPeralatan: 'Bearing Packer B - Nozzle 3', kodePeralatan: 'BRG-PB3', lokasi: 'Packer B', jenisPelumas: 'Lithium Grease EP2', spesifikasi: 'NLGI Grade 2, -20°C s/d 130°C', volume: '50 gram', periode: 'bulanan', bulan: currentMonth, tanggalPelaksanaan: `${currentMonth}-15`, petugas: 'Budi Santoso', status: 'terjadwal' as const, kondisi: 'baik' as const, catatan: '', tindakLanjut: '', createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+    { id: generateId(), namaPeralatan: 'Bearing Packer B - Nozzle 4', kodePeralatan: 'BRG-PB4', lokasi: 'Packer B', jenisPelumas: 'Lithium Grease EP2', spesifikasi: 'NLGI Grade 2, -20°C s/d 130°C', volume: '50 gram', periode: 'bulanan', bulan: currentMonth, tanggalPelaksanaan: `${currentMonth}-15`, petugas: 'Budi Santoso', status: 'terjadwal' as const, kondisi: 'baik' as const, catatan: '', tindakLanjut: '', createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+    { id: generateId(), namaPeralatan: 'Bearing Conveyor Utama', kodePeralatan: 'BRG-CV01', lokasi: 'Conveyor Utama', jenisPelumas: 'Lithium Grease EP3', spesifikasi: 'NLGI Grade 3, -10°C s/d 150°C', volume: '100 gram', periode: 'bulanan', bulan: currentMonth, tanggalPelaksanaan: `${currentMonth}-03`, petugas: 'Eko Prasetyo', status: 'selesai' as const, kondisi: 'baik' as const, catatan: '', tindakLanjut: '', createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+    { id: generateId(), namaPeralatan: 'Bearing Conveyor Return', kodePeralatan: 'BRG-CV02', lokasi: 'Conveyor Return', jenisPelumas: 'Lithium Grease EP3', spesifikasi: 'NLGI Grade 3, -10°C s/d 150°C', volume: '100 gram', periode: 'bulanan', bulan: currentMonth, tanggalPelaksanaan: `${currentMonth}-03`, petugas: 'Eko Prasetyo', status: 'selesai' as const, kondisi: 'baik' as const, catatan: '', tindakLanjut: '', createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+    { id: generateId(), namaPeralatan: 'Pompa Hidrolik Packer A', kodePeralatan: 'PMP-HYD-PA', lokasi: 'Packer A', jenisPelumas: 'Hydraulic Oil HLP 46', spesifikasi: 'ISO VG 46, -15°C s/d 80°C', volume: '5 liter', periode: 'bulanan', bulan: currentMonth, tanggalPelaksanaan: `${currentMonth}-10`, petugas: 'Ahmad Fauzi', status: 'terjadwal' as const, kondisi: 'baik' as const, catatan: 'Cek level oli', tindakLanjut: '', createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+    { id: generateId(), namaPeralatan: 'Pompa Hidrolik Packer B', kodePeralatan: 'PMP-HYD-PB', lokasi: 'Packer B', jenisPelumas: 'Hydraulic Oil HLP 46', spesifikasi: 'ISO VG 46, -15°C s/d 80°C', volume: '5 liter', periode: 'bulanan', bulan: currentMonth, tanggalPelaksanaan: `${currentMonth}-10`, petugas: 'Ahmad Fauzi', status: 'terlewat' as const, kondisi: 'perlu_perhatian' as const, catatan: 'Pelumasan terlewat, ada kebocoran minor', tindakLanjut: 'Segera lakukan pelumasan dan cek kebocoran', createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+    { id: generateId(), namaPeralatan: 'Gearbox Reducer Packer A', kodePeralatan: 'GRB-PA', lokasi: 'Packer A', jenisPelumas: 'Gear Oil GL-5 85W-90', spesifikasi: 'API GL-5, SAE 85W-90', volume: '2 liter', periode: 'bulanan', bulan: currentMonth, tanggalPelaksanaan: `${currentMonth}-20`, petugas: 'Budi Santoso', status: 'terjadwal' as const, kondisi: 'baik' as const, catatan: 'Cek kualitas oli', tindakLanjut: '', createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+    { id: generateId(), namaPeralatan: 'Motor Conveyor Drive', kodePeralatan: 'MOT-CV-DRV', lokasi: 'Conveyor Drive', jenisPelumas: 'Lithium Grease EP2', spesifikasi: 'NLGI Grade 2', volume: '30 gram', periode: 'bulanan', bulan: currentMonth, tanggalPelaksanaan: `${currentMonth}-08`, petugas: 'Eko Prasetyo', status: 'selesai' as const, kondisi: 'baik' as const, catatan: '', tindakLanjut: '', createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
   ];
-  safetyIncidents.forEach((item) => saveData(KV_PREFIXES.safety, item));
-
-  // Finance sample data
-  const financeRecords = [
-    { id: generateId(), tanggal: '2026-02-28', jenis: 'pemasukan' as const, kategori: 'Penjualan', deskripsi: 'Penjualan semen 50kg x 8000 karung', jumlah: 680000000, metodePembayaran: 'Transfer Bank', referensi: 'INV-2026-0228', catatan: 'Pembayaran dari PT Bangun Jaya', createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
-    { id: generateId(), tanggal: '2026-02-28', jenis: 'pengeluaran' as const, kategori: 'Pembelian Material', deskripsi: 'Pembelian suku cadang bearing dan seal', jumlah: 5250000, metodePembayaran: 'Transfer Bank', referensi: 'PO-2026-0089', catatan: 'Pembelian dari PT Bearing Indonesia', createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
-    { id: generateId(), tanggal: '2026-02-27', jenis: 'pengeluaran' as const, kategori: 'Gaji', deskripsi: 'Gaji karyawan bulan Februari 2026', jumlah: 285000000, metodePembayaran: 'Transfer Bank', referensi: 'PAY-2026-02', catatan: 'Total gaji 35 karyawan', createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
-    { id: generateId(), tanggal: '2026-02-27', jenis: 'pengeluaran' as const, kategori: 'Utilitas', deskripsi: 'Tagihan listrik bulan Februari', jumlah: 45000000, metodePembayaran: 'Auto Debit', referensi: 'PLN-2026-02', catatan: 'Konsumsi listrik pabrik', createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
-    { id: generateId(), tanggal: '2026-02-25', jenis: 'pemasukan' as const, kategori: 'Penjualan', deskripsi: 'Penjualan semen 40kg x 5000 karung', jumlah: 350000000, metodePembayaran: 'Transfer Bank', referensi: 'INV-2026-0225', catatan: 'Pembayaran dari CV Mitra Konstruksi', createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
-    { id: generateId(), tanggal: '2026-02-24', jenis: 'pengeluaran' as const, kategori: 'Transportasi', deskripsi: 'Biaya pengiriman semen ke Aceh Utara', jumlah: 15000000, metodePembayaran: 'Tunai', referensi: 'SHP-2026-0224', catatan: '5 truk pengiriman', createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
-  ];
-  financeRecords.forEach((item) => saveData(KV_PREFIXES.finance, item));
-
-  // HR/Employee sample data
-  const employees = [
-    { id: generateId(), nama: 'Ahmad Fauzi', nip: 'YWM-001', jabatan: 'Operator Senior', divisi: 'Produksi', tanggalMasuk: '2020-03-15', gajiPokok: 5500000, status: 'aktif' as const, noTelepon: '0823-4567-8901', email: 'ahmad.fauzi@ywm.co.id', alamat: 'Lhokseumawe', createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
-    { id: generateId(), nama: 'Budi Santoso', nip: 'YWM-002', jabatan: 'Teknisi Maintenance', divisi: 'Perawatan', tanggalMasuk: '2019-07-01', gajiPokok: 6000000, status: 'aktif' as const, noTelepon: '0823-5678-9012', email: 'budi.santoso@ywm.co.id', alamat: 'Lhokseumawe', createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
-    { id: generateId(), nama: 'Citra Dewi', nip: 'YWM-003', jabatan: 'Staff Administrasi', divisi: 'Keuangan', tanggalMasuk: '2021-01-10', gajiPokok: 4500000, status: 'aktif' as const, noTelepon: '0823-6789-0123', email: 'citra.dewi@ywm.co.id', alamat: 'Banda Aceh', createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
-    { id: generateId(), nama: 'Dian Purnama', nip: 'YWM-004', jabatan: 'Operator Packer', divisi: 'Produksi', tanggalMasuk: '2022-05-20', gajiPokok: 5000000, status: 'aktif' as const, noTelepon: '0823-7890-1234', email: 'dian.purnama@ywm.co.id', alamat: 'Lhokseumawe', createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
-    { id: generateId(), nama: 'Eko Prasetyo', nip: 'YWM-005', jabatan: 'Kepala Teknisi', divisi: 'Perawatan', tanggalMasuk: '2018-02-01', gajiPokok: 8500000, status: 'aktif' as const, noTelepon: '0823-8901-2345', email: 'eko.prasetyo@ywm.co.id', alamat: 'Lhokseumawe', createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
-    { id: generateId(), nama: 'Fitri Handayani', nip: 'YWM-006', jabatan: 'HR Manager', divisi: 'SDM', tanggalMasuk: '2019-09-15', gajiPokok: 9000000, status: 'aktif' as const, noTelepon: '0823-9012-3456', email: 'fitri.handayani@ywm.co.id', alamat: 'Banda Aceh', createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
-    { id: generateId(), nama: 'Gunawan Wibowo', nip: 'YWM-007', jabatan: 'Operator Conveyor', divisi: 'Produksi', tanggalMasuk: '2023-03-01', gajiPokok: 4800000, status: 'aktif' as const, noTelepon: '0823-0123-4567', email: 'gunawan.wibowo@ywm.co.id', alamat: 'Lhokseumawe', createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
-    { id: generateId(), nama: 'Hendra Wijaya', nip: 'YWM-008', jabatan: 'Operator Silo', divisi: 'Produksi', tanggalMasuk: '2021-08-10', gajiPokok: 5200000, status: 'cuti' as const, noTelepon: '0823-1234-5678', email: 'hendra.wijaya@ywm.co.id', alamat: 'Aceh Utara', createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
-  ];
-  employees.forEach((item) => saveData(KV_PREFIXES.employee, item));
+  pispotRecords.forEach((item) => saveData(KV_PREFIXES.pispot, item));
 
   // Document sample data
   const documents = [
@@ -207,10 +167,68 @@ export function initializeSampleData(): void {
   const notifications = [
     { id: generateId(), judul: 'Stok Filter Oli di Bawah Minimum', pesan: 'Filter Oli Hydraulic (FLT-001) stok saat ini 8 pcs, minimum 10 pcs. Segera lakukan pemesanan ulang.', tipe: 'peringatan' as const, dibaca: false, modul: 'spare-parts', link: '/dashboard?module=spare-parts', createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
     { id: generateId(), judul: 'Work Order Kritis Aktif', pesan: 'Perbaikan Nozzle B3 Bocor sedang berjalan. Prioritas: KRITIS. Teknisi: Budi Santoso.', tipe: 'bahaya' as const, dibaca: false, modul: 'maintenance', link: '/dashboard?module=maintenance', createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
-    { id: generateId(), judul: 'Produksi Shift Pagi Di Atas Target', pesan: 'Selamat! Produksi shift pagi hari ini mencapai 178 ton (target 170 ton). Efisiensi 104.7%.', tipe: 'sukses' as const, dibaca: true, modul: 'production', link: '/dashboard?module=production', createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+    { id: generateId(), judul: 'Pelumasan Pompa Hidrolik Packer B Terlewat', pesan: 'Pelumasan Pompa Hidrolik Packer B (PMP-HYD-PB) bulan ini terlewat. Segera lakukan pelumasan.', tipe: 'bahaya' as const, dibaca: false, modul: 'pispot', link: '/dashboard?module=pispot', createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
     { id: generateId(), judul: 'Karyawan Alpha Hari Ini', pesan: 'Gunawan Wibowo (Operator Conveyor) tidak hadir tanpa keterangan hari ini.', tipe: 'peringatan' as const, dibaca: false, modul: 'team-activity', link: '/dashboard?module=team-activity', createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
-    { id: generateId(), judul: 'Insiden Keselamatan Dalam Investigasi', pesan: 'Kecelakaan terpeleset di Conveyor 2 masih dalam tahap investigasi. Pastikan area aman.', tipe: 'bahaya' as const, dibaca: false, modul: 'safety', link: '/dashboard?module=safety', createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
-    { id: generateId(), judul: 'Jadwal Perawatan Conveyor #3', pesan: 'Service rutin Conveyor #3 dijadwalkan pada 5 Maret 2026. Estimasi biaya Rp 2.500.000.', tipe: 'info' as const, dibaca: true, modul: 'maintenance', link: '/dashboard?module=maintenance', createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+    { id: generateId(), judul: 'Jadwal Perawatan Conveyor #3', pesan: 'Service rutin Conveyor #3 dijadwalkan. Estimasi biaya Rp 2.500.000.', tipe: 'info' as const, dibaca: true, modul: 'maintenance', link: '/dashboard?module=maintenance', createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
   ];
   notifications.forEach((item) => saveData(KV_PREFIXES.notification, item));
+
+  // Silo Calculation sample data (Kalkulasi Kekosongan)
+  const siloCalcData: Array<Omit<import('@/types/dashboard').SiloCalculation, 'id' | 'createdAt' | 'updatedAt'>> = [
+    {
+      silo: 'A', tanggal: today, jam: '07:30',
+      ukuran: [5.1, 5.55, 7.0, 7.0, 6.6, 5.65, 5.0],
+      jumlah: 41.9, tinggiRataRata: 5.9857, tSilinder: 12.0143, tConis: 4.6,
+      volumeSilinder: 1747.117, volumeConis: 222.962, volumeTotal: 1970.079,
+      kekosongan: 505.575, spaceSilo: 505.575, pengeluaran: 0,
+      keterangan: 'Sebelum bongkar', petugas: 'Hendra Wijaya',
+    },
+    {
+      silo: 'B', tanggal: today, jam: '07:30',
+      ukuran: [7.7, 9.2, 10.8, 11.6, 11.35, 9.75, 7.75],
+      jumlah: 68.15, tinggiRataRata: 9.7357, tSilinder: 8.2643, tConis: 2.9,
+      volumeSilinder: 1201.792, volumeConis: 140.563, volumeTotal: 1342.355,
+      kekosongan: 1049.178, spaceSilo: 1049.178, pengeluaran: 0,
+      keterangan: 'Sebelum bongkar', petugas: 'Hendra Wijaya',
+    },
+    {
+      silo: 'A', tanggal: today, jam: '15:00',
+      ukuran: [1.9, 1.75, 2.1, 2.2, 2.0, 1.9, 1.9],
+      jumlah: 13.75, tinggiRataRata: 1.9643, tSilinder: 16.0357, tConis: 4.6,
+      volumeSilinder: 2331.914, volumeConis: 222.962, volumeTotal: 2554.876,
+      kekosongan: 0, spaceSilo: -100, pengeluaran: 100,
+      keterangan: 'Sesudah bongkar', petugas: 'Ahmad Fauzi',
+    },
+    {
+      silo: 'B', tanggal: today, jam: '15:00',
+      ukuran: [1.65, 1.7, 1.75, 1.9, 1.85, 1.75, 1.6],
+      jumlah: 12.2, tinggiRataRata: 1.7429, tSilinder: 16.2571, tConis: 2.9,
+      volumeSilinder: 2364.114, volumeConis: 140.563, volumeTotal: 2504.677,
+      kekosongan: 0, spaceSilo: -50, pengeluaran: 50,
+      keterangan: 'Sesudah bongkar', petugas: 'Dian Purnama',
+    },
+  ];
+  siloCalcData.forEach((item) => {
+    saveData(KV_PREFIXES.siloCalculation, { ...item, id: generateId(), createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() });
+  });
+
+  // Silo Opname sample data (Berita Acara Opname)
+  const siloOpnameData: Array<Omit<import('@/types/dashboard').SiloOpname, 'id' | 'createdAt' | 'updatedAt'>> = [
+    {
+      tanggal: today, jam: '15:00', kapal: 'MV MADELIN FIRST',
+      opname1Tanggal: today, opname1Jam: '01:00',
+      opname1UkuranA: [5.1, 5.55, 7.0, 7.0, 6.6, 5.65, 5.0],
+      opname1UkuranB: [7.7, 9.2, 10.8, 11.6, 11.35, 9.75, 7.75],
+      opname1VolumeA: 1970.079, opname1VolumeB: 1342.355, opname1TotalVolume: 3312.434,
+      opname2Tanggal: today, opname2Jam: '15:00',
+      opname2UkuranA: [1.9, 1.75, 2.1, 2.2, 2.0, 1.9, 1.9],
+      opname2UkuranB: [1.65, 1.7, 1.75, 1.9, 1.85, 1.75, 1.6],
+      opname2VolumeA: 2554.876, opname2VolumeB: 2504.677, opname2TotalVolume: 5059.553,
+      pengeluaranZak: 230, semenCurahTerbongkar: 1977.119,
+      catatan: 'Pembongkaran semen curah dari kapal', petugas: 'Hendra Wijaya',
+    },
+  ];
+  siloOpnameData.forEach((item) => {
+    saveData(KV_PREFIXES.siloOpname, { ...item, id: generateId(), createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() });
+  });
 }

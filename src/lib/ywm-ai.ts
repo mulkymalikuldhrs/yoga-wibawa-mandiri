@@ -1,9 +1,12 @@
 // ============================================================
 // YWM AI Service — Backend API calls (no more Puter.js!)
 // Uses Vite middleware with z-ai-web-dev-sdk
+// Updated: 2026-05-29 — Added dashboard data context builder
 // ============================================================
 
 import type { AiMessage } from '@/types/dashboard';
+import { KV_PREFIXES } from '@/types/dashboard';
+import { getData as getLocalData } from '@/lib/dashboard-storage';
 
 const API_BASE = '/api';
 
@@ -139,6 +142,55 @@ export async function smartParse(
     return await res.json();
   } catch {
     return {};
+  }
+}
+
+// ── Build Dashboard Data Context ──
+// Reads current dashboard data from localStorage to give AI context
+export function buildDashboardContext(): string {
+  try {
+    const spareParts = getLocalData<{ id: string; nama: string; kode: string; stok: number; stokMinimum: number; satuan: string }>(KV_PREFIXES.sparePart);
+    const maintenance = getLocalData<{ id: string; judul: string; mesin: string; status: string; prioritas: string }>(KV_PREFIXES.maintenance);
+    const pispot = getLocalData<{ id: string; namaPeralatan: string; kodePeralatan: string; status: string; kondisi: string; bulan: string }>(KV_PREFIXES.pispot);
+    const team = getLocalData<{ id: string; namaKaryawan: string; divisi: string; status: string; tanggal: string }>(KV_PREFIXES.teamActivity);
+
+    const lowStockItems = spareParts.filter(p => p.stok <= p.stokMinimum);
+    const activeMaintenance = maintenance.filter(m => m.status === 'berjalan');
+    const criticalMaintenance = maintenance.filter(m => m.prioritas === 'kritis' && m.status !== 'selesai');
+    const todayStr = new Date().toISOString().split('T')[0];
+    const todayTeam = team.filter(t => t.tanggal === todayStr);
+    const absentToday = todayTeam.filter(t => t.status === 'izin' || t.status === 'sakit' || t.status === 'alpha');
+
+    const currentMonth = new Date().toISOString().slice(0, 7);
+    const pispotThisMonth = pispot.filter(p => p.bulan === currentMonth);
+    const pispotOverdue = pispotThisMonth.filter(p => p.status === 'terlewat');
+    const pispotNeedsAttention = pispotThisMonth.filter(p => p.kondisi === 'perlu_perhatian' || p.kondisi === 'rusak');
+
+    let context = `\n## DATA DASHBOARD TERKINI (Real-time)\n`;
+    context += `- Tanggal: ${todayStr}\n`;
+    context += `- Total Suku Cadang: ${spareParts.length} item\n`;
+    if (lowStockItems.length > 0) {
+      context += `- ⚠️ Stok Rendah (${lowStockItems.length} item): ${lowStockItems.map(p => `${p.nama} (${p.stok}/${p.stokMinimum} ${p.satuan})`).join(', ')}\n`;
+    }
+    context += `- Maintenance Aktif: ${activeMaintenance.length} WO\n`;
+    if (criticalMaintenance.length > 0) {
+      context += `- 🔴 WO Kritis: ${criticalMaintenance.map(m => m.judul).join(', ')}\n`;
+    }
+    context += `- Pispot Bulan Ini: ${pispotThisMonth.length} item\n`;
+    if (pispotOverdue.length > 0) {
+      context += `- 🔴 Pelumasan Terlewat: ${pispotOverdue.map(p => `${p.namaPeralatan} (${p.kodePeralatan})`).join(', ')}\n`;
+    }
+    if (pispotNeedsAttention.length > 0) {
+      context += `- ⚠️ Peralatan Perlu Perhatian: ${pispotNeedsAttention.map(p => `${p.namaPeralatan} (${p.kondisi})`).join(', ')}\n`;
+    }
+    context += `- Karyawan Hadir Hari Ini: ${todayTeam.filter(t => t.status === 'hadir' || t.status === 'lembur').length}/${todayTeam.length}\n`;
+    if (absentToday.length > 0) {
+      context += `  - Tidak Hadir: ${absentToday.map(t => `${t.namaKaryawan} (${t.status})`).join(', ')}\n`;
+    }
+
+    return context;
+  } catch {
+    return '\n## DATA DASHBOARD: Tidak dapat membaca data saat ini.\n';
   }
 }
 

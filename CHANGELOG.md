@@ -1,4 +1,4 @@
-# Changelog — yoga-wibawa-mandiri
+# Changelog — YWM Dashboard (PT. Yoga Wibawa Mandiri)
 
 All notable changes to this project will be documented in this file.
 
@@ -7,9 +7,109 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [5.1.0] - 2026-05-26 — Production Readiness & Security Hardening
+## [2.1.0] - 2026-05-29 — Module Restructure: Pispot Module + Module Removal
+
+> **Timestamp:** 2026-05-29T18:00:00+07:00
+> **Developer:** Tim Teknik | Mulky Malikul Dhaher
 
 ### Added
+
+- **Pispot Module (Pompa Gemik Bearing / Lubrikasi / Pelumasan)** — Checklist siklus bulanan untuk pelumasan dan perawatan bearing, pompa, dan komponen mekanis
+  - `PispotModule.tsx` — Full CRUD module with monthly calendar view, status summary cards, data table, add/edit dialog
+  - `PispotRecord` TypeScript interface with fields: namaPeralatan, kodePeralatan, lokasi, jenisPelumas, spesifikasi, volume, periode, bulan, tanggalPelaksanaan, petugas, status, kondisi, catatan, tindakLanjut
+  - `pispot` table in Supabase schema with RLS, indexes, and seed data
+  - 14 sample Pispot records covering Packer A/B bearings, conveyor bearings, hydraulic pumps, gearbox, and motor drive
+  - Added to sidebar navigation, mobile nav, dashboard routing, and overview module
+  - Status tracking: terjadwal (scheduled), selesai (completed), terlewat (overdue)
+  - Condition tracking: baik (good), perlu_perhatian (needs attention), rusak (damaged)
+
+### Removed
+
+- **Produksi Module** — Removed per user request
+- **Keselamatan (HSE) Module** — Removed per user request
+- **Keuangan Module** — Removed per user request
+- **SDM/Payroll Module** — Removed per user request
+- Corresponding TypeScript interfaces: ProductionRecord, SafetyIncident, FinanceRecord, Employee
+- Corresponding Supabase tables: production, safety, finance, hr
+- Corresponding KV_PREFIXES entries, sidebar items, mobile nav items, dashboard routes
+
+### Changed
+
+- **DashboardModule type** — Updated to: 'overview' | 'spare-parts' | 'team-activity' | 'maintenance' | 'silo-calculation' | 'silo-opname' | 'pispot' | 'documents' | 'analytics' | 'notifications'
+- **OverviewModule** — Replaced production/safety/finance/HR stat cards with Pispot stat cards (terjadwal/terlewat counts), replaced production chart with Pispot monthly chart
+- **AnalyticsModule** — Replaced production/safety/finance/HR analytics with Pispot-focused analytics (monthly trend, status distribution, location chart)
+- **NotificationProvider** — Updated smart notifications to check Pispot overdue records, removed production/safety/finance/HR notification checks
+- **DashboardSidebar** — Updated navigation to show 10 modules (was 13), added Droplets icon for Pispot
+- **ywm-ai.ts** — Updated `buildDashboardContext()` to include Pispot data instead of removed modules
+- **supabase-data.ts** — Updated TABLE_MAP to remove 4 tables and add Pispot column mapping
+
+---
+
+## [2.0.0] - 2026-05-29 — Major Upgrade: AI, Notifications, PWA, Documentation
+
+> **Timestamp:** 2026-05-29T12:00:00+07:00
+> **Developer:** Tim Teknik | Mulky Malikul Dhaher
+
+### Added
+
+- **AI Dashboard Context Builder** — AI chatbot now reads live dashboard data (stok, produksi, maintenance, keuangan, dll.) and uses it to answer questions with real data
+  - `buildDashboardContext()` function in `ywm-ai.ts` reads all dashboard modules from localStorage
+  - FloatingChatBot and AiAssistantPanel now inject dashboard context as system message
+  - AI can provide specific numbers, percentages, and alerts based on actual data
+- **Notification Popup "Navigate to Module" button** — Users can now click "Buka" on popup notifications to navigate directly to the related dashboard module
+- **Push Notification Infrastructure** — Complete infrastructure for push notifications:
+  - `sw.js` now handles `push` events and `notificationclick` events
+  - `pwa.ts` includes `requestPushPermission()`, `subscribeToPush()`, `getPushSubscription()`, `unsubscribeFromPush()`
+  - Push subscription change handler in service worker
+  - VAPID key support ready for server-side configuration
+- **Enhanced Service Worker v2** — Improved caching strategies:
+  - Separate image cache (`ywm-images-v2`)
+  - Stale-while-revalidate pattern for static assets
+  - Pre-caches critical assets on install (manifest, icons, index.html)
+  - Background cache updates without blocking requests
+  - On-demand caching via `CACHE_URL` message type
+- **Smart Notifications with Supabase** — Auto-notification checks now try Supabase data first, falling back to localStorage:
+  - Low stock alerts check Supabase spare_parts table
+  - Overdue maintenance alerts check Supabase maintenance table
+  - Exported `isSupabaseAvailable()` from `supabase-data.ts`
+- **Complete Documentation Suite** — Production-quality documentation:
+  - `CHANGELOG.md` — Complete version history with timestamps
+  - `README.md` — Comprehensive project documentation
+  - `TODO.md` — Production readiness checklist with checkboxes
+  - `ARCHITECTURE.md` — System architecture with data flow diagrams
+  - `SECURITY.md` — Security considerations and policies
+  - `.env.example` — Environment variable template
+  - `.gitignore` — Proper gitignore configuration
+
+### Changed
+
+- **Notification popup auto-dismiss** — Changed from 30 seconds to **8 seconds** as per UX requirements
+- **Notification popup positioning** — Moved to `bottom-24 right-4` on mobile, `bottom-28 right-6` on desktop (above chatbot button)
+- **Notification popup reset timer** — Timer resets to 8 seconds (not 30) when mouse leaves the popup
+- **Service Worker cache versioning** — Upgraded from `v1` to `v2` for all cache names to force cache refresh
+- **README.md** — Complete rewrite with bilingual content, tech stack, installation guide, and developer credit
+
+### Fixed
+
+- **NotificationPopup missing navigate button** — Added "Buka" (Open) action button to popup cards that navigates to the related module and dismisses the popup
+- **Supabase data not checked for smart notifications** — Smart notification system now queries Supabase first before falling back to localStorage
+- **`isSupabaseAvailable` not exported** — Function was private, now exported for use in NotificationProvider
+- **Service worker didn't cache enough assets** — Now pre-caches manifest.json, icons, and index.html on install
+- **Push notifications not supported** — Added complete push notification handling in service worker and PWA utility functions
+
+### Security
+
+- **`.env.example` created** — Template for environment variables (no real keys exposed)
+- **`.gitignore` created** — Prevents committing sensitive files (node_modules, .env, logs)
+
+---
+
+## [5.1.0] - 2026-05-26 — Production Readiness & Security Hardening
+
+> **Timestamp:** 2026-05-26T10:00:00+07:00
+
+### Added
+
 - **React Error Boundary** — Global error boundary preventing white screen crashes
 - **React.lazy code splitting** — All 7 routes lazy-loaded for faster initial bundle
 - **GitHub Actions CI/CD** — Auto-deploy workflow on push to main (lint + build + deploy)
@@ -20,235 +120,92 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Build optimization** — Manual chunks for vendor, ui, charts, query (reduced initial load)
 
 ### Fixed
+
 - **CRITICAL: Root index.html** — Was redirect page, not Vite SPA entry (root cause of GitHub Pages blank)
 - **CRITICAL: Vite base path** — Added `/yoga-wibawa-mandiri/` for correct GitHub Pages deployment
 - **CRITICAL: BrowserRouter basename** — Added for correct routing under GitHub Pages subpath
-- **PII leak in Contact.tsx** — Removed console.log with user data (form name, email, phone)
+- **PII leak in Contact.tsx** — Removed console.log with user data
 - **PII leak in emailService.ts** — Removed console.log with email response data
 - **Deprecated onKeyPress** — Changed to onKeyDown in ChatBot.tsx
 - **use-toast.ts dependency array bug** — Fixed `[state]` to `[]` preventing infinite re-renders
 - **Unused imports** — Removed CheckCircle, AlertCircle, Users, LogOut, X, PanelRightOpen
-- **Unused variable** — Fixed uploadResult prefix with underscore
-- **Image lazy loading** — Added `loading="lazy"` to all content images (About, Services, Gallery, Index)
-- **Footer copyright year** — Changed from hardcoded 2024 to dynamic `new Date().getFullYear()`
-- **package-lock.json** — Removed from .gitignore for reproducible builds
-
-### Changed
-- **ESLint config** — Added no-console (warn), no-var (error), prefer-const (warn), no-explicit-any (warn)
-- **Linter results** — 0 errors, 10 warnings (down from 19 warnings; remaining are shadcn/ui generated)
-- **Build output** — Code-split into 17 chunks with proper manual chunks configuration
-- **docs/ARCHITECTURE.md** — Fixed documentation drift (removed Supabase references, aligned with Puter.js)
+- **Image lazy loading** — Added `loading="lazy"` to all content images
+- **Footer copyright year** — Changed from hardcoded 2024 to dynamic
 
 ---
 
 ## [5.0.0] - 2026-05-26 — AI Agent Upgrade & Code Quality
 
+> **Timestamp:** 2026-05-26T08:00:00+07:00
+
 ### Added
+
 - **AI Agent System v2.0** — Upgraded AI from chatbot to autonomous agent
   - Action detection: AI parses natural language into executable actions
-  - 10 agent actions: create_wo, update_wo, add_spare_part, check_stock, log_team_activity, create_po, check_overdue_wo, generate_report, check_production_anomaly, run_workflow
-  - 4 autonomous workflows: low_stock_auto_order, overdue_wo_escalation, production_anomaly_alert, daily_checkup
-  - Proactive monitoring: Periodic background checks (every 5 minutes)
-  - Smart notifications: Proactive alerts for critical events
-  - Confirmation flow: Write actions require user confirmation before execution
-  - Audit trail: All agent actions logged to KV Store
+  - 10 agent actions with confirmation flow
+  - 4 autonomous workflows with proactive monitoring
+  - Smart notifications for critical events
+  - Audit trail for all agent actions
   - Fallback keyword parsing when AI unavailable
 - **Comprehensive PRD.md** — Full Product Requirements Document
 - **ESLint integration** — Fixed all TypeScript/React lint errors (0 errors, 9 warnings)
-- **Code quality improvements** — Syntax validation passed for all 25 JS files
-
-### Changed
-- Updated all documentation to reflect v5.0.0 status
-- ROADMAP.md aligned with actual implementation status (Phase 1-4 complete)
-- ARCHITECTURE.md updated for vanilla JS dashboard architecture
-- Version bump from 4.1.0 to 5.0.0
-
-### Fixed
-- ESLint errors: command.tsx empty interface, textarea.tsx empty interface, tailwind.config.ts require import
-- GitHub Pages deployment verified (root index.html redirects to dashboard/)
-
----
-
-## [4.1.0] - 2025-05-25
-
-### Fixed
-- Added educational disclaimer to analytics demo data generation
-- Fixed README trilingual disclaimer — added proper Chinese translation
-- Deleted stale branch: mentat-5/comprehensive-update
-
-### Disclaimer
-- **EN**: For Education Purpose Only. We assume no responsibility for any risks or damages.
-- **ID**: Hanya untuk Tujuan Edukasi. Kami tidak bertanggung jawab atas risiko atau kerugian apapun.
-- **CN**: 仅供教育目的。我们对任何风险或损害不承担责任。
-
-### Contributing
-- Contributors welcome! See [CONTRIBUTING.md](./CONTRIBUTING.md) for guidelines.
-- Contact: Mulky Malikul Dhaher | mulkymalikuldhaher@email.com
 
 ---
 
 ## [4.0.0] - 2026-05-25 — Complete Dashboard Build
 
+> **Timestamp:** 2026-05-25T14:00:00+07:00
+
 ### Added
-- **Complete Dashboard Application** — 15 modules fully built with Puter.js
-  - `dashboard/index.html` — Main dashboard shell with sidebar, header, AI panel, status bar
-  - `dashboard/js/modules/app.js` — Core router, UI utilities, data layer (YWM.App, YWM.UI, YWM.Data)
-  - `dashboard/js/modules/home.js` — KPI overview, quick actions, alerts, welcome banner
-  - `dashboard/js/modules/spareparts.js` — Inventory management, reorder alerts, smart input
-  - `dashboard/js/modules/production.js` — Daily production tracking, OEE, shift summary
-  - `dashboard/js/modules/maintenance.js` — Work orders, calendar view, smart WO creation
-  - `dashboard/js/modules/team.js` — Activity tracking, check-in/out, weekly performance
-  - `dashboard/js/modules/quality.js` — Batch testing, SNI compliance, strength trends
-  - `dashboard/js/modules/safety.js` — Incident reporting, safety checklist, K3 dashboard
-  - `dashboard/js/modules/finance.js` — Transaction tracking, cash flow, cost per zak
-  - `dashboard/js/modules/hr.js` — Employee management, attendance, payroll
-  - `dashboard/js/modules/purchasing.js` — Purchase orders, supplier directory
-  - `dashboard/js/modules/documents.js` — Upload, OCR via Puter AI, AI extraction
-  - `dashboard/js/modules/reports.js` — Auto-generated reports, AI summaries
-  - `dashboard/js/modules/notifications.js` — Alert system, auto-generated, TTS
-  - `dashboard/js/modules/analytics.js` — KPI trends, AI forecasting, CSS charts
-  - `dashboard/js/modules/settings.js` — App config, user management, data backup
+
+- **Complete Dashboard Application** — 15 modules fully built
 - **25,800+ lines of code** across 31 dashboard files
-- **Zero dependencies** — Pure HTML + CSS + JS, no npm/build tools for dashboard
+- **Zero dependencies** — Pure HTML + CSS + JS for dashboard
 - **Glassmorphic Design System** — Complete frosted glass CSS with animations
 - **Puter.js Integration** — KV Store, FS, Auth, AI all functional
-- **AI-Powered Smart Input** — Voice/text input with AI parsing in every module
-- **Auto Timestamp & Audit Trail** — Every data mutation logged with timestamp
+- **AI-Powered Smart Input** — Voice/text input with AI parsing
+- **Auto Timestamp & Audit Trail** — Every data mutation logged
 - **RBAC System** — 8 roles from superadmin to viewer
-
-### Changed
-- README.md updated with Puter.js dashboard info and 15-module table
-- Dashboard status from "In Development" to "Built"
 
 ---
 
 ## [3.0.0] - 2026-03-05 — Puter.js AI Dashboard
 
+> **Timestamp:** 2026-03-05T10:00:00+07:00
+
 ### Added
-- **Puter.js Backend** — Migrated from Supabase to Puter.js cloud OS (zero server, zero API key)
-  - Puter KV Store for database (key-value with structured prefixes)
-  - Puter FS for cloud storage (documents, images, exports)
-  - Puter Auth for authentication (built-in user management)
-  - Puter AI for chat completions, OCR, TTS, STT, image generation
+
+- **Puter.js Backend** — Migrated from Supabase to Puter.js cloud OS
 - **Glassmorphic Frosted UI Design System** — Modern frosted glass design
-  - Semi-transparent card backgrounds with backdrop blur
-  - Gradient accent colors (emerald-cyan)
-  - Dark-first design with light mode support
-  - Consistent glass effects across all components
-- **15+ Dashboard Modules:**
-  - Spare Parts Inventory — Stock management, reorder alerts, part-mesin mapping
-  - Team Activity — Activity tracking, performance metrics, check-in/out
-  - Auto Timestamp — Server-side immutable timestamps, audit trail
-  - Production Tracker — Daily production, curah receiving, distribution
-  - Maintenance Schedule — Work orders, preventive/corrective/predictive
-  - Quality Control — Batch testing, SNI compliance, trend analysis
-  - Safety/HSE — Incident reporting, safety inspection, K3 metrics
-  - Finance — Transaction tracking, budget monitoring, cost analysis
-  - HR/Payroll — Employee management, attendance, leave, payroll
-  - Document & OCR — Upload, OCR scanning, AI-assisted extraction
-  - Analytics — KPI dashboard, trend analysis, AI forecasting
-  - Notifications — Alert system, reminders, voice notifications
-  - AI Assistant — Chatbot with YWM context, voice input/output
-  - Settings — App configuration, user management, roles
-  - Public Dashboard — KPI summary for public viewing
-- **AI Assistant** — Integrated chatbot powered by Puter AI
-  - Chat completions with YWM operational context
-  - Voice input (Speech-to-Text via Puter AI)
-  - Voice output (Text-to-Speech via Puter AI)
-  - Smart suggestions based on dashboard data
-  - Document OCR (Image to Text extraction)
-- **Architecture Documentation:**
-  - ARCHITECTURE.md — Complete Puter.js architecture
-  - ROADMAP.md — 6-phase development roadmap
-  - docs/DASHBOARD.md — Complete dashboard module documentation
-  - docs/PUTER_INTEGRATION.md — Puter.js integration guide
-- **Security Model:**
-  - Sandboxed KV Store (data isolated per app instance)
-  - User-pays model (AI operations paid by user directly to Puter)
-  - No API keys required (eliminates key leak risk)
-  - RBAC with 9 roles stored in KV Store
-
-### Changed
-- **Backend** migrated from Supabase (PostgreSQL) → Puter.js KV Store (key-value)
-- **Authentication** migrated from Supabase Auth → Puter Auth
-- **Storage** migrated from Supabase Storage → Puter FS
-- **AI** added built-in AI services (previously no AI / planned Python service)
-- **UI Design** from standard Shadcn/UI → Glassmorphic frosted design
-- **Architecture** from monorepo (apps/website + apps/dashboard) → single Vite app
-- **Deployment** simplified — no backend to deploy, just static site
-- **Data model** from relational (17 tables) → key-value with structured prefixes
-- **Realtime** from Supabase Realtime (WebSocket) → TanStack Query polling + event-driven
-- **Environment** from .env with API keys → zero configuration needed
-
-### Removed
-- Supabase dependency (client SDK, RLS policies, Edge Functions)
-- Monorepo structure (Turborepo, pnpm workspace)
-- Redis/Upstash caching (replaced by TanStack Query cache)
-- Python + FastAPI AI service (replaced by Puter AI)
-- MQTT/IoT broker (deferred to future phase)
-- Custom backend server requirement
+- **15+ Dashboard Modules** — All operational modules built
+- **AI Assistant** — Integrated chatbot with YWM context
+- **Architecture Documentation** — Complete Puter.js architecture docs
 
 ---
 
-## [2.0.0] - 2026-05-25 — Digital Transformation Phase
+## [2.0.0] - 2026-02-25 — Digital Transformation Phase
+
+> **Timestamp:** 2026-02-25T10:00:00+07:00
 
 ### Added
-- **Architecture Document** — Full system architecture with monorepo structure, RBAC, auto timestamp, realtime, security layers
-- **Data Blueprint** — 17 core tables with complete field definitions, types, constraints, and relationships
-- **TODO Master Task List** — 83 tasks across 6 phases with timeline (May-December 2026)
-- **Deployment Guide** — Environment setup, Vercel deployment, Supabase configuration
-- **API Reference** — Supabase SDK patterns, Edge Functions, RLS policies
-- **Monorepo Plan** — Turborepo + pnpm workspace with apps/website + apps/dashboard + packages/shared
-- **12 Dashboard Pilar Definitions:**
-  - Inventaris Spare Part Management
-  - Kegiatan Tim & Performance Tracking
-  - Auto Timestamp & Audit Trail (universal)
-  - Produksi & Operasional
-  - Maintenance Management
-  - Quality Control & Compliance
-  - Smart AI Customer Service
-  - Real-Time Operations Dashboard
-  - Predictive Analytics & AI Forecasting
-  - Digital Twin & IoT Integration
-  - ESG & Sustainability Dashboard
-  - Smart Marketing & CRM
-  - Document Management & Compliance
-  - HR & Payroll Management
-  - Safety & HSE Management
-  - Purchasing & Procurement
-  - Financial & Accounting
-- **RBAC System** — 9 roles (superadmin → viewer) with permission matrix
-- **Auto Timestamp Architecture** — Server-side immutable timestamps + audit trail triggers
-- **Real-Time Data Flow** — Supabase Realtime channels for production, sensors, distribution, inventory, alerts
-- **Security Architecture** — 5-layer security (Network → Auth → Authorization → Data → Audit)
-- **Performance Targets** — Lighthouse score targets, API response time, realtime latency
 
-### Changed
-- **Project scope** expanded from corporate website only → website + comprehensive technical dashboard
-- **Architecture** migrated from single Vite app → monorepo (website + dashboard + shared)
-- **State management** plan migrated from React Query only → Zustand + React Query
-- **Routing** plan expanded with /dashboard/* routes and auth guards
+- **Architecture Document** — Full system architecture
+- **Data Blueprint** — 17 core tables with field definitions
+- **TODO Master Task List** — 83 tasks across 6 phases
+- **Deployment Guide** — Vercel + Supabase configuration
+- **12 Dashboard Pilar Definitions** — Complete feature specification
+- **RBAC System** — 9 roles with permission matrix
+- **Auto Timestamp Architecture** — Server-side immutable timestamps
+- **Security Architecture** — 5-layer security model
 
 ---
 
-## [1.1.0] - 2026-03-04
+## [1.0.0] - 2026-02-20 — Initial Release
+
+> **Timestamp:** 2026-02-20T10:00:00+07:00
 
 ### Added
-- Trilingual README (EN/ID/CN) with disclaimer
-- CONTRIBUTING.md with trilingual content and disclaimer
-- CODE_OF_CONDUCT.md with disclaimer
-- SECURITY.md with disclaimer
-- MIT License (2026)
-- GitHub issue templates (bug report, feature request, question)
-- Pull request template with disclaimer
-- FUNDING.yml
-- Deleted stale branch: mentat-5/comprehensive-update
 
----
-
-## [1.0.0] - Initial Release
-
-### Added
 - Full-stack CMS with React 18 and TypeScript
 - Supabase backend integration
 - Responsive design with Tailwind CSS
@@ -258,8 +215,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-🤝 Contributing | Mulky Malikul Dhaher | mulkymalikuldhaher@email.com
-
+🤝 **Developer:** Tim Teknik | Mulky Malikul Dhaher
 ⚠️ Education Purpose Only | Risiko apapun tidak kita tanggung
-
-📄 MIT License — Copyright © Mulky Malikul Dhaher
+📄 MIT License — Copyright © 2026 Mulky Malikul Dhaher

@@ -220,7 +220,7 @@ export default function AiAssistantPanel({ isOpen, onToggle }: AiAssistantPanelP
       {!isOpen && (
         <button
           onClick={onToggle}
-          className="fixed right-4 top-4 z-30 bg-cyan-500/20 backdrop-blur-xl border border-cyan-500/30 rounded-xl p-2.5 text-cyan-400 hover:bg-cyan-500/30 transition-all shadow-[0_0_20px_rgba(0,212,255,0.15)]"
+          className="fixed right-4 top-4 z-30 bg-cyan-100/80 backdrop-blur-xl border border-cyan-200/50 rounded-xl p-2.5 text-cyan-600 hover:bg-cyan-100 transition-all shadow-[0_0_15px_rgba(6,182,212,0.12)]"
           title="Buka Panel AI"
         >
           <MessageSquare size={20} />
@@ -230,21 +230,21 @@ export default function AiAssistantPanel({ isOpen, onToggle }: AiAssistantPanelP
       {/* Panel */}
       <div
         className={cn(
-          'h-screen sticky top-0 backdrop-blur-xl bg-white/5 border-l border-white/10 transition-all duration-300 flex flex-col z-20',
+          'h-screen sticky top-0 backdrop-blur-xl bg-white/50 border-l border-white/60 transition-all duration-300 flex flex-col z-20',
           isOpen ? 'w-[380px]' : 'w-0 overflow-hidden'
         )}
       >
         {/* Header */}
-        <div className="px-4 py-3 border-b border-white/10 flex items-center justify-between flex-shrink-0">
+        <div className="px-4 py-3 border-b border-white/60 flex items-center justify-between flex-shrink-0">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-cyan-500/20 flex items-center justify-center">
-              <Bot size={18} className="text-cyan-400" />
+            <div className="w-8 h-8 rounded-lg bg-cyan-100/80 flex items-center justify-center">
+              <Bot size={18} className="text-cyan-600" />
             </div>
             <div>
-              <h2 className="text-white font-semibold text-sm">Asisten AI</h2>
+              <h2 className="text-slate-800 font-semibold text-sm">Asisten AI</h2>
               <div className="flex items-center gap-1.5">
                 <div className={cn('w-1.5 h-1.5 rounded-full', aiReady ? 'bg-emerald-400' : 'bg-yellow-400 animate-pulse')} />
-                <span className="text-white/40 text-xs">
+                <span className="text-slate-400 text-xs">
                   {aiReady ? 'Online' : 'Menunggu server AI...'}
                 </span>
               </div>
@@ -252,7 +252,7 @@ export default function AiAssistantPanel({ isOpen, onToggle }: AiAssistantPanelP
           </div>
           <button
             onClick={onToggle}
-            className="p-1.5 rounded-lg text-white/50 hover:text-white hover:bg-white/5 transition-all"
+            className="p-1.5 rounded-lg text-slate-500 hover:text-slate-700 hover:bg-white/600 transition-all"
             title="Tutup Panel"
           >
             <PanelRightClose size={16} />
@@ -260,15 +260,15 @@ export default function AiAssistantPanel({ isOpen, onToggle }: AiAssistantPanelP
         </div>
 
         {/* Quick Actions */}
-        <div className="px-4 py-3 border-b border-white/5 flex-shrink-0">
-          <p className="text-white/30 text-xs mb-2">Aksi Cepat</p>
+        <div className="px-4 py-3 border-b border-white/60 flex-shrink-0">
+          <p className="text-slate-400 text-xs mb-2">Aksi Cepat</p>
           <div className="flex flex-wrap gap-1.5">
             {QUICK_ACTIONS.map((action) => (
               <button
                 key={action.label}
                 onClick={() => handleQuickAction(action.prompt)}
                 disabled={isStreaming || !aiReady}
-                className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-white/5 border border-white/10 text-white/60 hover:text-white hover:bg-white/10 transition-all text-xs disabled:opacity-50"
+                className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-white/50 border border-white/60 text-slate-500 hover:text-slate-800 hover:bg-white/60 transition-all text-xs disabled:opacity-50"
               >
                 {action.icon}
                 {action.label}
@@ -291,27 +291,27 @@ export default function AiAssistantPanel({ isOpen, onToggle }: AiAssistantPanelP
                 className={cn(
                   'w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0',
                   msg.role === 'user'
-                    ? 'bg-cyan-500/20'
-                    : 'bg-purple-500/20'
+                    ? 'bg-cyan-100/80'
+                    : 'bg-purple-100/80'
                 )}
               >
                 {msg.role === 'user' ? (
-                  <User size={14} className="text-cyan-400" />
+                  <User size={14} className="text-cyan-600" />
                 ) : (
-                  <Bot size={14} className="text-purple-400" />
+                  <Bot size={14} className="text-purple-600" />
                 )}
               </div>
               <div
                 className={cn(
                   'max-w-[80%] rounded-2xl px-3.5 py-2.5 text-sm leading-relaxed',
                   msg.role === 'user'
-                    ? 'bg-cyan-500/15 border border-cyan-500/20 text-white'
-                    : 'bg-white/5 border border-white/10 text-white/80'
+                    ? 'bg-cyan-50/80 border border-cyan-200/50 text-slate-800'
+                    : 'bg-white/50 border border-white/60 text-slate-600'
                 )}
               >
                 <p className="whitespace-pre-wrap">{msg.content}</p>
                 {msg.content === '' && isStreaming && (
-                  <div className="flex items-center gap-1 text-white/40">
+                  <div className="flex items-center gap-1 text-slate-400">
                     <Loader2 size={12} className="animate-spin" />
                     <span className="text-xs">Mengetik...</span>
                   </div>
@@ -323,9 +323,9 @@ export default function AiAssistantPanel({ isOpen, onToggle }: AiAssistantPanelP
         </div>
 
         {/* Input */}
-        <div className="p-3 border-t border-white/10 flex-shrink-0">
-          <div className="flex items-end gap-2 bg-white/5 border border-white/10 rounded-xl p-2 
-            focus-within:border-cyan-500/30 transition-all">
+        <div className="p-3 border-t border-white/60 flex-shrink-0">
+          <div className="flex items-end gap-2 bg-white/50 border border-white/60 rounded-xl p-2 
+            focus-within:border-cyan-200/50 transition-all">
             <textarea
               ref={inputRef}
               value={input}
@@ -334,15 +334,15 @@ export default function AiAssistantPanel({ isOpen, onToggle }: AiAssistantPanelP
               placeholder={aiReady ? 'Ketik pesan...' : 'Menunggu server AI...'}
               disabled={!aiReady || isStreaming}
               rows={1}
-              className="flex-1 bg-transparent text-white text-sm placeholder:text-white/30 resize-none outline-none max-h-24 min-h-[32px]"
+              className="flex-1 bg-transparent text-slate-800 text-sm placeholder:text-slate-400 resize-none outline-none max-h-24 min-h-[32px]"
             />
             <button
               onClick={toggleRecording}
               className={cn(
                 'p-2 rounded-lg transition-all',
                 isRecording
-                  ? 'bg-red-500/20 text-red-400'
-                  : 'text-white/30 hover:text-white/60 hover:bg-white/5'
+                  ? 'bg-red-500/20 text-red-500'
+                  : 'text-slate-400 hover:text-slate-500 hover:bg-white/50'
               )}
               title={isRecording ? 'Berhenti merekam' : 'Input suara'}
             >
@@ -351,7 +351,7 @@ export default function AiAssistantPanel({ isOpen, onToggle }: AiAssistantPanelP
             <button
               onClick={handleSend}
               disabled={!input.trim() || isStreaming || !aiReady}
-              className="p-2 rounded-lg bg-cyan-500/20 text-cyan-400 hover:bg-cyan-500/30 transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+              className="p-2 rounded-lg bg-cyan-100/80 text-cyan-600 hover:bg-cyan-100 transition-all disabled:opacity-30 disabled:cursor-not-allowed"
               title="Kirim"
             >
               <Send size={16} />
