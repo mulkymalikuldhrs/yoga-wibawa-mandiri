@@ -1,19 +1,20 @@
 # 🏗️ YWM Dashboard — PT. Yoga Wibawa Mandiri
 
-[![Version](https://img.shields.io/badge/Version-2.0.0-brightgreen)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/Version-6.0.0-brightgreen)](CHANGELOG.md)
 [![AI Powered](https://img.shields.io/badge/AI-Powered%20by%20z--ai-blue)](https://z-ai.dev)
 [![PWA Ready](https://img.shields.io/badge/PWA-Installable-orange)]()
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.5-blue)]()
 [![React](https://img.shields.io/badge/React-18.3-61dafb)]()
 
+> **Last updated:** 2026-05-29  
 > **Terakhir Diperbarui:** 2026-05-29  
-> **Developer:** Tim Teknik | Mulky Malikul Dhaher
+> **Developer:** ⚡ Tim Teknik | Mulky Malikul Dhaher ⚡
 
 ---
 
 ## 🇮🇩 Tentang Proyek
 
-**YWM Dashboard** adalah platform digital komprehensif untuk **PT. Yoga Wibawa Mandiri**, perusahaan pengantongan Semen Padang yang berlokasi di Pelabuhan Krueng Geukueh, Lhokseumawe, Aceh. Dashboard ini mencakup 13 modul operasional dengan AI Assistant terintegrasi, sistem notifikasi cerdas, dan dukungan PWA (Progressive Web App).
+**YWM Dashboard** adalah platform digital komprehensif untuk **PT. Yoga Wibawa Mandiri**, perusahaan pengantongan Semen Padang yang berlokasi di Pelabuhan Krueng Geukueh, Lhokseumawe, Aceh. Dashboard ini mencakup **14 modul operasional** dengan AI Assistant terintegrasi, katalog produk Semen Padang, WhatsApp integration, sistem notifikasi cerdas dengan push + beep, dan dukungan PWA (Progressive Web App).
 
 ### Profil Perusahaan
 
@@ -23,7 +24,7 @@
 | **Lokasi** | Pelabuhan Krueng Geukueh, Lhokseumawe, Aceh |
 | **Bisnis** | Pengantongan semen Semen Padang |
 | **Kapasitas** | 500 ton/hari |
-| **Kontak** | +62 823-0443-3145 |
+| **Kontak** | +6285322624038 |
 | **Email** | info@ywm.co.id |
 
 ### Komponen Platform
@@ -31,40 +32,44 @@
 | Komponen | Deskripsi | Status |
 |----------|-----------|--------|
 | **Website Korporat** | Website publik (profil, layanan, galeri, kontak) | ✅ Aktif |
-| **AI Dashboard** | Dashboard operasional 13 modul dengan AI | ✅ Aktif |
+| **AI Dashboard** | Dashboard operasional 14 modul dengan AI | ✅ Aktif |
 | **AI Chatbot** | Asisten AI yang bisa baca data dashboard & input data | ✅ Aktif |
 | **Notifikasi Cerdas** | Popup toast + center + auto-alert dari data | ✅ Aktif |
 | **PWA** | Installable, offline-ready, push notification ready | ✅ Aktif |
 
 ---
 
-## 📋 Fitur Dashboard — 13 Modul
+## 📋 Modul Dashboard — 14 Modul
 
 | # | Modul | Deskripsi | KV Prefix |
 |---|-------|-----------|----------|
-| 1 | **Ringkasan** | KPI overview, quick actions, alert summary | — |
+| 1 | **Ringkasan (Overview)** | KPI overview, quick actions, alert summary, Pispot stat cards | — |
 | 2 | **Suku Cadang** | Inventaris spare part, stok minimum alert, pemasok | `ywm_spare_` |
 | 3 | **Tim & Aktivitas** | Kehadiran, kegiatan karyawan, lembur, absensi | `ywm_team_` |
 | 4 | **Perawatan** | Work Order, jadwal preventif/korektif, estimasi biaya | `ywm_maint_` |
-| 5 | **Produksi** | Pencatatan per shift (pagi/siang/malam), target vs aktual | `ywm_prod_` |
-| 6 | **Kalkulasi Silo** | Perhitungan kekosongan silo A & B, volume, tonase | `ywm_silo_calc_` |
-| 7 | **Opname Silo** | Berita acara opname silo (sebelum/sesudah bongkar) | `ywm_silo_opname_` |
-| 8 | **Keselamatan** | Insiden, inspeksi, severity level, K3 | `ywm_safety_` |
+| 5 | **Kalkulasi Silo** | Perhitungan kekosongan silo A & B, volume, tonase | `ywm_silo_calc_` |
+| 6 | **Opname Silo** | Berita acara opname silo (sebelum/sesudah bongkar) | `ywm_silo_opname_` |
+| 7 | **Pispot** | Pompa Gemik Bearing / Lubrikasi / Pelumasan — checklist siklus bulanan | `ywm_pispot_` |
+| 8 | **Produksi** | Pencatatan per shift (pagi/siang/malam), target vs aktual | `ywm_prod_` |
 | 9 | **Keuangan** | Pemasukan/pengeluaran, laporan bulanan, budget | `ywm_finance_` |
-| 10 | **SDM** | Data karyawan, gaji, cuti, status aktif | `ywm_hr_` |
-| 11 | **Dokumen** | Penyimpanan dokumen, kategorisasi | `ywm_doc_` |
-| 12 | **Analitik** | Grafik dan analisis tren operasional | — |
-| 13 | **Notifikasi** | Alert dan pengingat, popup toast, AI reply | `ywm_notif_` |
+| 10 | **Safety / HSE** | Insiden, inspeksi, severity level, K3 | `ywm_safety_` |
+| 11 | **HR / Karyawan** | Data karyawan, gaji, cuti, status aktif | `ywm_hr_` |
+| 12 | **Dokumen** | Penyimpanan dokumen, kategorisasi | `ywm_doc_` |
+| 13 | **Analitik** | Grafik dan analisis tren operasional (Pispot-focused) | — |
+| 14 | **Notifikasi** | Alert dan pengingat, popup toast, push + beep, AI reply | `ywm_notif_` |
 
 ---
 
-## 🤖 AI Assistant Features
+## 🤖 AI Chatbot
 
 | Fitur | Deskripsi |
 |-------|-----------|
 | **Chat Cerdas** | AI yang memahami konteks operasional YWM (peralatan, modul, proses) |
 | **Baca Data Dashboard** | AI membaca data real-time (stok, produksi, maintenance, dll.) untuk menjawab pertanyaan spesifik |
 | **Input Data via Bahasa Natural** | Cukup ketik "tambah spare part bearing 6205 stok 50", AI akan parse dan simpan |
+| **Konfirmasi Data** | Konfirmasi sebelum AI mengubah data (DataInputCard) — user harus approve setiap perubahan |
+| **Dashboard Context** | AI mendapat konteks dashboard lengkap di AiAssistantPanel (stok, produksi, maintenance, dll.) |
+| **On/Off Toggle** | AI chatbot bisa diaktifkan/nonaktifkan via toggle di FloatingChatBot |
 | **Voice Input** | Input suara menggunakan Web Speech API (bahasa Indonesia) |
 | **Streaming Response** | Respons AI ditampilkan secara real-time (SSE streaming) |
 | **Peringatan Proaktif** | AI otomatis memperingatkan stok rendah, WO overdue, anomali produksi |
@@ -72,15 +77,42 @@
 
 ---
 
-## 🔔 Sistem Notifikasi
+## 🛒 Katalog Produk
+
+Halaman **Services** menampilkan katalog produk Semen Padang yang tersedia:
+
+| Produk | Kemasan | Deskripsi |
+|--------|---------|----------|
+| **Semen Padang PCC** | Zak 40kg | Portland Composite Cement dalam kemasan zak 40kg |
+| **Semen Padang PCC** | Bulk/Curah | Portland Composite Cement dalam pengiriman bulk/tanker |
+
+Setiap produk memiliki tombol **"Pesan via WhatsApp"** yang langsung mengarahkan ke nomor **+6285322624038** dengan pesan template yang sudah terisi.
+
+---
+
+## 💬 WhatsApp Integration
+
+| Fitur | Deskripsi |
+|-------|-----------|
+| **Pesan dari Katalog** | Tombol "Pesan via WhatsApp" di setiap produk di halaman Services |
+| **Nomor Resmi** | +6285322624038 — nomor WhatsApp resmi YWM |
+| **Template Pesan** | Pesan otomatis terisi dengan detail produk yang dipilih |
+| **Direct Link** | `https://wa.me/6285322624038?text=...` — langsung buka WhatsApp |
+
+---
+
+## 🔔 Notifikasi
 
 | Fitur | Deskripsi |
 |-------|-----------|
 | **Popup Toast** | Notifikasi muncul di kanan bawah (di atas tombol chatbot) |
 | **Auto-dismiss 8 detik** | Popup otomatis hilang setelah 8 detik, pause saat di-hover |
+| **Browser Push Notification** | Push notification ke browser dengan **beep sound** saat notifikasi masuk |
+| **Beep Sound** | Suara notifikasi otomatis dimainkan saat push notification diterima |
+| **Welcome Notifications** | Notifikasi selamat datang saat pertama kali membuka dashboard |
+| **Smart Auto-Check** | Auto-check stok rendah & WO overdue setiap 60 detik |
 | **Tombol Aksi** | Baca, Buka Modul, Balas AI, Tutup |
 | **Balas AI** | Kirim balasan ke notifikasi, AI akan memproses dan menjawab |
-| **Notifikasi Cerdas** | Auto-check stok rendah & WO overdue setiap 60 detik |
 | **Supabase + localStorage** | Cek data dari Supabase dulu, fallback ke localStorage |
 | **Tipe Notifikasi** | Info (cyan), Peringatan (amber), Bahaya (red), Sukses (emerald) |
 
@@ -220,7 +252,7 @@ CREATE POLICY "Allow all for anon" ON spare_parts FOR ALL USING (true);
 
 ```bash
 git add .
-git commit -m "feat: YWM Dashboard v2.0.0"
+git commit -m "feat: YWM Dashboard v6.0.0"
 git push origin main
 ```
 
@@ -360,7 +392,8 @@ Kontribusi dipersilakan! Lihat [CONTRIBUTING.md](CONTRIBUTING.md) untuk panduan.
 
 ## 📬 Contact
 
-**Tim Teknik | Mulky Malikul Dhaher**  
+⚡ **Tim Teknik | Mulky Malikul Dhaher** ⚡  
+WhatsApp: +6285322624038  
 Email: mulkymalikuldhaher@email.com  
 GitHub: [https://github.com/mulkymalikuldhrs](https://github.com/mulkymalikuldhrs)
 

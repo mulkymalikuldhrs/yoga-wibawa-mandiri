@@ -1,6 +1,6 @@
 # TODO — YWM Dashboard
 _Last updated: 2026-05-29_
-_Developer: Tim Teknik | Mulky Malikul Dhaher_
+_Developer: ⚡ Tim Teknik | Mulky Malikul Dhaher ⚡_
 
 ---
 
@@ -16,17 +16,18 @@ _Developer: Tim Teknik | Mulky Malikul Dhaher_
 - [x] PWA manifest.json configured
 - [x] Error Boundary for crash prevention
 
-### Features — 13 Dashboard Modules
+### Features — 14 Dashboard Modules
 - [x] Overview (Ringkasan) module
 - [x] Spare Parts (Suku Cadang) module
 - [x] Team Activity (Tim & Aktivitas) module
 - [x] Maintenance (Perawatan) module
-- [x] Production (Produksi) module
+- [x] Pispot (Pompa Gemik Bearing / Lubrikasi) module
+- [x] Production (Produksi) module — re-added in v6.0.0
 - [x] Silo Calculation (Kalkulasi Silo) module
 - [x] Silo Opname (Opname Silo) module
-- [x] Safety / HSE (Keselamatan) module
-- [x] Finance (Keuangan) module
-- [x] HR & Payroll (SDM) module
+- [x] Safety / HSE (Keselamatan) module — re-added in v6.0.0
+- [x] Finance (Keuangan) module — re-added in v6.0.0
+- [x] HR / Karyawan (SDM) module — re-added in v6.0.0
 - [x] Documents (Dokumen) module
 - [x] Analytics (Analitik) module
 - [x] Notifications (Notifikasi) module
@@ -42,6 +43,9 @@ _Developer: Tim Teknik | Mulky Malikul Dhaher_
 - [x] Data input confirmation card
 - [x] Fallback responses when AI offline
 - [x] System prompt with YWM operational context
+- [x] AI chatbot on/off toggle di FloatingChatBot (v6.0.0)
+- [x] Dashboard context di AiAssistantPanel (v6.0.0)
+- [x] Konfirmasi sebelum AI mengubah data (DataInputCard) (v6.0.0)
 - [ ] OCR document scanning via AI
 - [ ] Text-to-speech output
 
@@ -59,8 +63,10 @@ _Developer: Tim Teknik | Mulky Malikul Dhaher_
 - [x] Notification types: info, peringatan, bahaya, sukses
 - [x] Progress bar showing auto-dismiss timer
 - [x] Max 3 visible popups
-- [ ] Push notifications (needs VAPID key server-side)
-- [ ] WhatsApp integration for alerts
+- [x] Browser push notification dengan beep sound (v6.0.0)
+- [x] Welcome notifications + smart auto-check (v6.0.0)
+- [ ] Push notifications with VAPID key
+- [x] WhatsApp integration for product catalog (+6285322624038) (v6.0.0)
 
 ### PWA
 - [x] manifest.json with proper icons (192x192, 512x512)
@@ -109,7 +115,7 @@ _Developer: Tim Teknik | Mulky Malikul Dhaher_
 - [x] Input validation (Zod schemas in modules)
 - [x] .env.example template (no real keys)
 - [x] .gitignore for sensitive files
-- [ ] Supabase RLS policies on all tables
+- [ ] Supabase RLS proper auth policies
 - [ ] Authentication system (NextAuth.js or Supabase Auth)
 - [ ] Rate limiting on API endpoints
 - [ ] CSRF protection
@@ -140,19 +146,23 @@ _Developer: Tim Teknik | Mulky Malikul Dhaher_
 ## Future Features (Backlog)
 
 ### High Priority
-- [ ] Authentication system with role-based access
 - [ ] Push notifications with VAPID key
-- [ ] Dark mode support
-- [ ] Real-time data sync (Supabase Realtime)
+- [ ] Supabase RLS proper auth policies
+- [ ] DocumentsModule: real file upload (currently simulated)
+- [ ] DocumentsModule: OCR functionality
+- [ ] DocumentsModule: "Lihat" (View) button functionality
 
 ### Medium Priority
 - [ ] Document OCR via AI
 - [ ] Text-to-speech for notifications
 - [ ] Report generation (PDF, Excel)
 - [ ] Background sync for offline data
-- [ ] WhatsApp integration for alerts
+- [ ] Puppeteer browser testing
 
 ### Low Priority
+- [ ] Logo YWM dari kop surat asli
+- [ ] Dashboard color consistency with website brand
+- [ ] Real product images for Semen Padang
 - [ ] Digital Twin / IoT integration
 - [ ] Predictive analytics (ML models)
 - [ ] Multi-language support (EN/CN)
@@ -165,6 +175,16 @@ _Developer: Tim Teknik | Mulky Malikul Dhaher_
 ### Known Issues
 - [ ] None currently tracked
 
+### Fixed in v6.0.0
+- [x] Infinite AI init retry loop yang menyebabkan Vercel build timeout
+- [x] Nomor telepon placeholder di Contact, Location, Footer → +6285322624038
+- [x] Google Maps menampilkan lokasi palsu → sekarang Pelabuhan Krueng Geukueh
+- [x] 50kg → 40kg di seluruh website
+- [x] PWA manifest background_color gelap → terang (#f0f9ff)
+- [x] ChatBot.tsx cn() import dari @/lib/utils
+- [x] Notifikasi dummy → welcome notifications + smart auto-check
+- [x] About page org chart → nama asli
+
 ### Fixed in v2.0.0
 - [x] Notification popup auto-dismiss was 30s (now 8s)
 - [x] No "Navigate to Module" button on popup notifications
@@ -176,6 +196,7 @@ _Developer: Tim Teknik | Mulky Malikul Dhaher_
 
 ---
 
-_Timestamp: 2026-05-29T12:00:00+07:00_  
-_Developer: Tim Teknik | Mulky Malikul Dhaher_  
+_Timestamp: 2026-05-29_  
+_Developer: ⚡ Tim Teknik | Mulky Malikul Dhaher ⚡_  
+_WhatsApp: +6285322624038_  
 _Email: mulkymalikuldhaher@email.com_

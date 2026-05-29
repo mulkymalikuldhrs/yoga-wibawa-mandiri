@@ -7,6 +7,43 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [6.0.0] - 2026-05-29
+
+### BREAKING CHANGES
+- Semua kemasan sekarang 40kg (bukan 50kg)
+- Nomor telepon/WhatsApp diubah ke +6285322624038
+
+### Added
+- 4 modul baru di dashboard: Produksi, Keuangan, Safety/HSE, HR/Karyawan
+- 4 tabel Supabase baru: production, finance, safety_incident, employee
+- Katalog produk Semen Padang (PCC Zak 40kg + Bulk/Curah) di halaman Services
+- Pesan via WhatsApp (+6285322624038) dari katalog produk
+- Browser push notification dengan beep sound
+- AI chatbot on/off toggle di FloatingChatBot
+- Konfirmasi sebelum AI mengubah data (DataInputCard)
+- Dashboard context di AiAssistantPanel
+- Navigasi untuk 4 modul baru di sidebar dan mobile nav
+
+### Fixed
+- Infinite AI init retry loop yang menyebabkan Vercel build timeout
+- Nomor telepon placeholder di Contact, Location, Footer
+- Google Maps menampilkan lokasi palsu → sekarang Pelabuhan Krueng Geukueh
+- 50kg → 40kg di seluruh website
+- PWA manifest background_color gelap → terang (#f0f9ff)
+- ChatBot.tsx cn() import dari @/lib/utils
+- Notifikasi dummy → welcome notifications + smart auto-check
+- About page org chart → nama asli
+
+### Removed
+- Puter.js SDK dari index.html (tidak lagi digunakan)
+- Dead social media links di Footer
+- Semen Padang black logo file yang tidak terpakai
+
+### Developer Credit
+- Tim Teknik | Mulky Malikul Dhaher
+
+---
+
 ## [2.1.0] - 2026-05-29 — Module Restructure: Pispot Module + Module Removal
 
 > **Timestamp:** 2026-05-29T18:00:00+07:00

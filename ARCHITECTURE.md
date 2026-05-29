@@ -1,6 +1,6 @@
 # 🏗️ ARSITEKTUR SISTEM — YWM Dashboard
 _Last updated: 2026-05-29_
-_Developer: Tim Teknik | Mulky Malikul Dhaher_
+_Developer: ⚡ Tim Teknik | Mulky Malikul Dhaher ⚡_
 
 ---
 
@@ -32,7 +32,7 @@ YWM Dashboard adalah platform operasional komprehensif untuk PT. Yoga Wibawa Man
 │  │  ┌─────────────┐  ┌──────────────┐  ┌──────────────────────┐│  │
 │  │  │  Dashboard   │  │  AI          │  │  Notification        ││  │
 │  │  │  Modules     │  │  Assistant   │  │  System              ││  │
-│  │  │  (13 modul)  │  │  (z-ai SDK)  │  │  (Popup + Center)   ││  │
+│  │  │  (14 modul)  │  │  (z-ai SDK)  │  │  (Popup + Center)   ││  │
 │  │  └──────┬───────┘  └──────┬───────┘  └──────────┬──────────┘│  │
 │  │         │                  │                      │           │  │
 │  │  ┌──────┴──────────────────┴──────────────────────┴──────────┐│  │
@@ -100,6 +100,7 @@ App.tsx
 │   │           ├── SparePartsModule.tsx
 │   │           ├── TeamActivityModule.tsx
 │   │           ├── MaintenanceModule.tsx
+│   │           ├── PispotModule.tsx
 │   │           ├── ProductionModule.tsx
 │   │           ├── SiloCalculationModule.tsx
 │   │           ├── SiloOpnameModule.tsx
@@ -126,6 +127,7 @@ FloatingChatBot / AiAssistantPanel
     │
     ├── buildDashboardContext() → Read all localStorage data
     │   ├── spare parts (stok, minimum)
+    │   ├── pispot (status, kondisi)
     │   ├── production (target, aktual)
     │   ├── maintenance (status, prioritas)
     │   ├── safety (severity, status)
@@ -212,12 +214,13 @@ supabase-data.ts
 | Table | Fields | KV Prefix |
 |-------|--------|-----------|
 | `spare_parts` | nama, kode, kategori, stok, stok_minimum, satuan, lokasi, harga, pemasok | `ywm_spare_` |
+| `pispot` | nama_peralatan, kode_peralatan, lokasi, jenis_pelumas, spesifikasi, volume, periode, bulan, tanggal_pelaksanaan, petugas, status, kondisi, catatan, tindak_lanjut | `ywm_pispot_` |
 | `production` | tanggal, shift, mesin, target, aktual, satuan, kualitas | `ywm_prod_` |
 | `maintenance` | judul, mesin, jenis, prioritas, status, tanggal_mulai, teknisi, estimasi_biaya | `ywm_maint_` |
 | `team_activity` | nama_karyawan, divisi, aktivitas, status, jam_masuk, jam_keluar | `ywm_team_` |
-| `safety` | judul, tanggal, lokasi, severity, status, pelapor, korban, deskripsi | `ywm_safety_` |
+| `safety_incident` | judul, tanggal, lokasi, severity, status, pelapor, korban, deskripsi, kategori_insiden, tindakan_perbaikan | `ywm_safety_` |
 | `finance` | tanggal, jenis, kategori, deskripsi, jumlah, metode_pembayaran | `ywm_finance_` |
-| `hr` | nama, nip, jabatan, divisi, tanggal_masuk, gaji_pokok, status | `ywm_hr_` |
+| `employee` | nama, nip, jabatan, divisi, tanggal_masuk, gaji_pokok, status, no_telepon, alamat | `ywm_hr_` |
 | `documents` | nama, jenis, kategori, ukuran, url, ocr_text | `ywm_doc_` |
 | `notifications` | judul, pesan, tipe, dibaca, modul, action_url | `ywm_notif_` |
 | `silo_calculation` | silo, tanggal, ukuran[], volume, kekosongan, pengeluaran | `ywm_silo_calc_` |
@@ -297,6 +300,7 @@ data: [DONE]
 │           ┌───────────▼───────────┐                              │
 │           │  buildDashboardContext()│                             │
 │           │  - Spare parts data    │                             │
+│           │  - Pispot data         │                             │
 │           │  - Production data     │                             │
 │           │  - Maintenance data    │                             │
 │           │  - Safety data         │                             │
@@ -376,6 +380,7 @@ data: [DONE]
 
 ---
 
-_Timestamp: 2026-05-29T12:00:00+07:00_  
-_Developer: Tim Teknik | Mulky Malikul Dhaher_  
+_Timestamp: 2026-05-29_  
+_Developer: ⚡ Tim Teknik | Mulky Malikul Dhaher ⚡_  
+_WhatsApp: +6285322624038_  
 _Email: mulkymalikuldhaher@email.com_
