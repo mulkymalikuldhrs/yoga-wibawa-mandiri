@@ -15,6 +15,7 @@ const Services = lazy(() => import("./pages/Services"));
 const Gallery = lazy(() => import("./pages/Gallery"));
 const Location = lazy(() => import("./pages/Location"));
 const Contact = lazy(() => import("./pages/Contact"));
+const Dashboard = lazy(() => import("./pages/Dashboard"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient({
@@ -32,7 +33,7 @@ const App = () => (
       <TooltipProvider>
         <Toaster />
         <Sonner />
-        <BrowserRouter basename="/yoga-wibawa-mandiri">
+        <BrowserRouter>
           <Suspense fallback={<LoadingSpinner />}>
             <Routes>
               <Route path="/" element={<Index />} />
@@ -41,6 +42,7 @@ const App = () => (
               <Route path="/galeri" element={<Gallery />} />
               <Route path="/lokasi" element={<Location />} />
               <Route path="/kontak" element={<Contact />} />
+              <Route path="/dashboard" element={<Dashboard />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </Suspense>

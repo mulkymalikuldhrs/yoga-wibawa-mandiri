@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover" />
     <title>PT Yoga Wibawa Mandiri — Digital Platform</title>
     <meta name="description" content="PT Yoga Wibawa Mandiri — Platform digital operasional terpadu untuk perusahaan pengantongan Semen Padang di Lhokseumawe, Aceh. AI-Powered Dashboard & Corporate Website." />
     <meta name="keywords" content="YWM, Yoga Wibawa Mandiri, semen, pengantongan, Lhokseumawe, Aceh, Semen Padang, dashboard, AI" />
@@ -13,7 +13,7 @@
     <meta http-equiv="X-Frame-Options" content="SAMEORIGIN" />
     <meta http-equiv="X-XSS-Protection" content="1; mode=block" />
     <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin" />
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://js.puter.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://images.unsplash.com https://*.github.io; connect-src 'self' https://api.puter.com https://*.puter.com; frame-ancestors 'self';" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.puter.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://images.unsplash.com https://*.github.io; connect-src 'self' https://api.puter.com https://*.puter.com https://*.vercel.app https://teknikywm.vercel.app; frame-ancestors 'self';" />
 
     <!-- Open Graph -->
     <meta property="og:title" content="PT Yoga Wibawa Mandiri — Digital Platform" />
@@ -21,8 +21,24 @@
     <meta property="og:type" content="website" />
     <meta property="og:locale" content="id_ID" />
 
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/manifest.json" />
+
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#0ea5e9" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="YWM Dashboard" />
+    <meta name="application-name" content="YWM Dashboard" />
+    <meta name="msapplication-TileColor" content="#0ea5e9" />
+    <meta name="msapplication-navbutton-color" content="#0ea5e9" />
+
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png" />
+    <link rel="icon" type="image/png" sizes="512x512" href="/icon-512.png" />
+    <link rel="apple-touch-icon" href="/icon-192.png" />
 
     <!-- Puter.js SDK -->
     <script src="https://js.puter.com/v2/" defer></script>

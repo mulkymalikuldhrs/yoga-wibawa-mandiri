@@ -103,3 +103,366 @@ All colors MUST be HSL.
     @apply bg-background text-foreground;
   }
 }
+
+/* ============================================================
+   Custom Scrollbar — Thin, translucent for dark theme
+   ============================================================ */
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.custom-scrollbar::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+/* Firefox scrollbar */
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
+}
+
+/* ============================================================
+   Smooth Scroll Behavior
+   ============================================================ */
+
+html {
+  scroll-behavior: smooth;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ============================================================
+   Glassmorphic Utility Classes
+   ============================================================ */
+
+@layer utilities {
+  /* Glass background with frosted effect */
+  .glass {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  /* Glass with stronger blur */
+  .glass-heavy {
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(40px);
+    -webkit-backdrop-filter: blur(40px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+  }
+
+  /* Glass with cyan accent */
+  .glass-accent {
+    background: rgba(6, 182, 212, 0.08);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(6, 182, 212, 0.2);
+  }
+
+  /* Glass with danger/red accent */
+  .glass-danger {
+    background: rgba(239, 68, 68, 0.08);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(239, 68, 68, 0.2);
+  }
+
+  /* Glass with success/green accent */
+  .glass-success {
+    background: rgba(16, 185, 129, 0.08);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(16, 185, 129, 0.2);
+  }
+
+  /* Glow effect */
+  .glow-cyan {
+    box-shadow: 0 0 20px rgba(6, 182, 212, 0.15), 0 0 40px rgba(6, 182, 212, 0.05);
+  }
+
+  .glow-cyan-strong {
+    box-shadow: 0 0 30px rgba(6, 182, 212, 0.25), 0 0 60px rgba(6, 182, 212, 0.1);
+  }
+
+  /* Text glow */
+  .text-glow-cyan {
+    text-shadow: 0 0 10px rgba(6, 182, 212, 0.5);
+  }
+
+  /* Noise texture overlay */
+  .noise-overlay::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+    border-radius: inherit;
+  }
+
+  /* Safe area insets for PWA */
+  .safe-top {
+    padding-top: env(safe-area-inset-top);
+  }
+
+  .safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  .safe-left {
+    padding-left: env(safe-area-inset-left);
+  }
+
+  .safe-right {
+    padding-right: env(safe-area-inset-right);
+  }
+
+  /* Full safe area padding */
+  .safe-area {
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+  }
+}
+
+/* ============================================================
+   Animation Classes for Notifications
+   ============================================================ */
+
+@keyframes notification-slide-in {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes notification-slide-out {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}
+
+@keyframes notification-pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+@keyframes glow-pulse {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(6, 182, 212, 0.15);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(6, 182, 212, 0.3);
+  }
+}
+
+.animate-notification-in {
+  animation: notification-slide-in 0.3s ease-out forwards;
+}
+
+.animate-notification-out {
+  animation: notification-slide-out 0.3s ease-in forwards;
+}
+
+.animate-notification-pulse {
+  animation: notification-pulse 2s ease-in-out infinite;
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+.animate-shimmer {
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.05), transparent);
+  background-size: 200% 100%;
+  animation: shimmer 2s infinite;
+}
+
+.animate-glow-pulse {
+  animation: glow-pulse 3s ease-in-out infinite;
+}
+
+/* ============================================================
+   Mobile-Specific Media Queries
+   ============================================================ */
+
+/* Prevent text selection on interactive elements on touch devices */
+@media (hover: none) and (pointer: coarse) {
+  button, a, [role="button"] {
+    -webkit-user-select: none;
+    user-select: none;
+  }
+}
+
+/* Adjust font sizes for smaller screens */
+@media (max-width: 640px) {
+  html {
+    font-size: 14px;
+  }
+
+  /* Ensure minimum touch target size */
+  button, a, [role="button"] {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* Smaller button touch targets for icon-only buttons */
+  button[aria-label] {
+    min-width: 40px;
+    min-height: 40px;
+  }
+
+  /* Reduce padding on mobile for cards */
+  .glass, .glass-heavy, .glass-accent {
+    border-radius: 1rem;
+  }
+}
+
+/* Tablet adjustments */
+@media (min-width: 641px) and (max-width: 1024px) {
+  html {
+    font-size: 15px;
+  }
+}
+
+/* Landscape mobile adjustments */
+@media (max-width: 768px) and (orientation: landscape) {
+  .mobile-landscape-compact {
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+  }
+}
+
+/* ============================================================
+   PWA-Specific Styles
+   ============================================================ */
+
+/* PWA standalone mode adjustments */
+@media (display-mode: standalone) {
+  /* Hide elements that are not needed in PWA mode */
+  .pwa-hide {
+    display: none !important;
+  }
+
+  /* Add safe area insets for notch devices */
+  body {
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+  }
+
+  /* Ensure content doesn't go under the status bar */
+  .dashboard-header {
+    padding-top: max(0.75rem, env(safe-area-inset-top));
+  }
+}
+
+/* iOS Safari PWA specific */
+@supports (-webkit-touch-callout: none) {
+  /* Prevent rubber-banding on iOS */
+  body {
+    overscroll-behavior: none;
+  }
+
+  /* Fix iOS safe area */
+  .ios-safe-bottom {
+    padding-bottom: max(1rem, env(safe-area-inset-bottom));
+  }
+}
+
+/* ============================================================
+   Selection & Focus Styles
+   ============================================================ */
+
+::selection {
+  background: rgba(6, 182, 212, 0.3);
+  color: white;
+}
+
+:focus-visible {
+  outline: 2px solid rgba(6, 182, 212, 0.5);
+  outline-offset: 2px;
+}
+
+/* Remove focus ring for mouse users */
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* ============================================================
+   Dark Theme Body Override for Dashboard
+   ============================================================ */
+
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ============================================================
+   Print Styles
+   ============================================================ */
+
+@media print {
+  .no-print {
+    display: none !important;
+  }
+
+  body {
+    background: white;
+    color: black;
+  }
+
+  .glass, .glass-heavy, .glass-accent {
+    background: white;
+    backdrop-filter: none;
+    border: 1px solid #e5e7eb;
+  }
+}

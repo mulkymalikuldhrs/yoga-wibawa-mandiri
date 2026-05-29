@@ -42,6 +42,7 @@ interface DashboardSidebarProps {
   collapsed: boolean;
   onToggleCollapse: () => void;
   unreadCount: number;
+  onNotificationClick?: () => void;
 }
 
 export default function DashboardSidebar({
@@ -50,11 +51,13 @@ export default function DashboardSidebar({
   collapsed,
   onToggleCollapse,
   unreadCount,
+  onNotificationClick,
 }: DashboardSidebarProps) {
   return (
     <aside
       className={cn(
         'h-screen sticky top-0 backdrop-blur-xl bg-white/5 border-r border-white/10 transition-all duration-300 flex flex-col z-20',
+        'hidden md:flex',
         collapsed ? 'w-[72px]' : 'w-[260px]'
       )}
     >
@@ -75,25 +78,39 @@ export default function DashboardSidebar({
       <nav className="flex-1 py-3 overflow-y-auto custom-scrollbar">
         {MODULES.map((mod) => {
           const isActive = activeModule === mod.id;
+          const isNotif = mod.id === 'notifications';
           return (
             <button
               key={mod.id}
-              onClick={() => onModuleChange(mod.id)}
+              onClick={() => {
+                if (isNotif && onNotificationClick) {
+                  onNotificationClick();
+                } else {
+                  onModuleChange(mod.id);
+                }
+              }}
               className={cn(
                 'w-full flex items-center gap-3 px-4 py-2.5 mx-2 rounded-xl transition-all duration-200 text-left',
                 'max-w-[calc(100%-16px)]',
-                isActive
+                isActive && !isNotif
                   ? 'bg-cyan-500/20 text-cyan-400 shadow-[0_0_15px_rgba(0,212,255,0.1)]'
                   : 'text-white/60 hover:text-white hover:bg-white/5'
               )}
               title={collapsed ? mod.label : undefined}
             >
-              <span className="flex-shrink-0">{mod.icon}</span>
+              <span className="flex-shrink-0 relative">
+                {mod.icon}
+                {isNotif && unreadCount > 0 && collapsed && (
+                  <span className="absolute -top-1 -right-1 w-3.5 h-3.5 bg-red-500 text-white text-[8px] font-bold rounded-full flex items-center justify-center">
+                    {unreadCount > 9 ? '9+' : unreadCount}
+                  </span>
+                )}
+              </span>
               {!collapsed && (
                 <span className="text-sm truncate">{mod.label}</span>
               )}
-              {!collapsed && mod.id === 'notifications' && unreadCount > 0 && (
-                <span className="ml-auto bg-red-500/80 text-white text-xs px-2 py-0.5 rounded-full">
+              {!collapsed && isNotif && unreadCount > 0 && (
+                <span className="ml-auto bg-red-500/80 text-white text-xs px-2 py-0.5 rounded-full animate-pulse">
                   {unreadCount}
                 </span>
               )}
