@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { MapPin, Phone, Mail, Clock, Facebook, Instagram, Linkedin, Code } from 'lucide-react';
+import { MapPin, Phone, Mail, Clock, Code, MessageCircle } from 'lucide-react';
 
 const Footer = () => {
   const navigationItems = [
@@ -50,18 +50,16 @@ const Footer = () => {
               </div>
             </div>
 
-            {/* Social Media */}
-            <div className="flex space-x-4">
-              <a href="#" className="w-10 h-10 bg-cyan-600 rounded-lg flex items-center justify-center hover:bg-cyan-700 transition-colors">
-                <Facebook size={20} />
-              </a>
-              <a href="#" className="w-10 h-10 bg-cyan-600 rounded-lg flex items-center justify-center hover:bg-cyan-700 transition-colors">
-                <Instagram size={20} />
-              </a>
-              <a href="#" className="w-10 h-10 bg-cyan-600 rounded-lg flex items-center justify-center hover:bg-cyan-700 transition-colors">
-                <Linkedin size={20} />
-              </a>
-            </div>
+            {/* WhatsApp Contact */}
+            <a
+              href="https://wa.me/6285322624038"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-5 py-2.5 rounded-lg transition-colors font-medium"
+            >
+              <MessageCircle size={18} />
+              Chat WhatsApp
+            </a>
           </div>
 
           {/* Quick Links */}
@@ -109,7 +107,7 @@ const Footer = () => {
               </div>
               <div className="flex items-center space-x-3">
                 <Phone className="text-cyan-400" size={18} />
-                <p className="text-gray-300 text-sm">+62 651 123456</p>
+                <p className="text-gray-300 text-sm">+6285322624038</p>
               </div>
               <div className="flex items-center space-x-3">
                 <Mail className="text-cyan-400" size={18} />

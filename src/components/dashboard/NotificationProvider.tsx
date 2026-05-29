@@ -22,6 +22,51 @@ import {
 import { chatWithAiStream } from '@/lib/ywm-ai';
 import type { AiMessage } from '@/types/dashboard';
 
+// ── Notification beep sound (Web Audio API) ──
+function playNotificationBeep() {
+  try {
+    const audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
+    const oscillator = audioCtx.createOscillator();
+    const gainNode = audioCtx.createGain();
+    oscillator.connect(gainNode);
+    gainNode.connect(audioCtx.destination);
+    oscillator.frequency.setValueAtTime(800, audioCtx.currentTime);
+    oscillator.type = 'sine';
+    gainNode.gain.setValueAtTime(0.3, audioCtx.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+    oscillator.start(audioCtx.currentTime);
+    oscillator.stop(audioCtx.currentTime + 0.3);
+  } catch (e) {
+    // AudioContext not available
+  }
+}
+
+// ── Browser push notification ──
+function showBrowserNotification(title: string, body: string, url?: string) {
+  if (!('Notification' in window)) return;
+
+  if (Notification.permission === 'default') {
+    Notification.requestPermission();
+  }
+
+  if (Notification.permission === 'granted') {
+    const notification = new Notification(title, {
+      body,
+      icon: '/icon-192.png',
+      badge: '/icon-192.png',
+      tag: 'ywm-notification',
+    });
+
+    notification.onclick = () => {
+      window.focus();
+      if (url) {
+        window.location.href = url;
+      }
+      notification.close();
+    };
+  }
+}
+
 // ── Popup notification (ephemeral, shown in toast) ──
 export interface PopupNotification extends Notification {
   popupId: string; // unique ID for the popup instance
@@ -63,47 +108,23 @@ export function useNotifications(): NotificationContextValue {
   return ctx;
 }
 
-// ── Sample notifications to seed on first load ──
-const SAMPLE_NOTIFICATIONS: Omit<Notification, 'id' | 'createdAt' | 'updatedAt'>[] = [
+// ── Welcome notifications to seed on first load (minimal) ──
+const WELCOME_NOTIFICATIONS: Omit<Notification, 'id' | 'createdAt' | 'updatedAt'>[] = [
   {
-    judul: 'Stok Bearing SKF 6205 mendekati batas minimum',
-    pesan: 'Stok Bearing SKF 6205 (BRG-001) saat ini 5 dari minimum 5 pcs. Segera lakukan pemesanan ulang untuk menghindari kehabisan stok.',
-    tipe: 'peringatan',
-    dibaca: false,
-    modul: 'spare-parts',
-    link: '/dashboard?module=spare-parts',
-  },
-  {
-    judul: 'Work Order WO-2026-015 overdue 3 hari',
-    pesan: 'Work Order "Perbaikan Nozzle B3 Bocor" sudah melewati batas waktu 3 hari. Prioritas: KRITIS. Segera tindak lanjuti.',
-    tipe: 'bahaya',
-    dibaca: false,
-    modul: 'maintenance',
-    link: '/dashboard?module=maintenance',
-  },
-  {
-    judul: 'Pelumasan Pompa Hidrolik Packer B terlewat',
-    pesan: 'Pelumasan Pompa Hidrolik Packer B (PMP-HYD-PB) bulan ini terlewat. Kondisi peralatan perlu perhatian. Segera lakukan pelumasan.',
-    tipe: 'bahaya',
-    dibaca: false,
-    modul: 'pispot',
-    link: '/dashboard?module=pispot',
-  },
-  {
-    judul: '3 karyawan izin hari ini',
-    pesan: 'Eko Prasetyo (Perawatan), Fitri Handayani (SDM), dan Gunawan Wibowo (Produksi) tidak masuk hari ini. Perlu penjadwalan ulang shift.',
+    judul: 'Selamat Datang di YWM Dashboard! 👋',
+    pesan: 'Dashboard PT. Yoga Wibawa Mandiri siap digunakan. Anda akan menerima notifikasi otomatis untuk stok rendah, maintenance overdue, dan pelumasan terlewat.',
     tipe: 'info',
     dibaca: false,
-    modul: 'team-activity',
-    link: '/dashboard?module=team-activity',
+    modul: 'overview',
+    link: '/dashboard?module=overview',
   },
   {
-    judul: 'Jadwal pelumasan Bearing Conveyor Utama selesai',
-    pesan: 'Pelumasan rutin Bearing Conveyor Utama (BRG-CV01) telah dilaksanakan oleh Eko Prasetyo. Kondisi peralatan: Baik.',
+    judul: 'Tips: Gunakan Asisten AI',
+    pesan: 'Klik tombol chat di pojok kanan bawah untuk bertanya atau input data menggunakan bahasa natural. AI siap membantu operasional harian Anda.',
     tipe: 'sukses',
-    dibaca: true,
-    modul: 'pispot',
-    link: '/dashboard?module=pispot',
+    dibaca: false,
+    modul: 'overview',
+    link: '/dashboard?module=overview',
   },
 ];
 
@@ -134,11 +155,11 @@ export function NotificationProvider({
       );
       setNotifications(items);
 
-      // Seed sample notifications if empty
+      // Seed welcome notifications if empty
       if (items.length === 0 && !initializedRef.current) {
         initializedRef.current = true;
         const now = new Date().toISOString();
-        const seeded: Notification[] = SAMPLE_NOTIFICATIONS.map((s, i) => ({
+        const seeded: Notification[] = WELCOME_NOTIFICATIONS.map((s, i) => ({
           ...s,
           id: generateId(),
           createdAt: new Date(
@@ -149,10 +170,10 @@ export function NotificationProvider({
         seeded.forEach((n) => saveData(KV_PREFIXES.notification, n));
         setNotifications(seeded);
 
-        // Show unread popups on first load
+        // Show welcome popups on first load
         const unreadPopups = seeded
           .filter((n) => !n.dibaca)
-          .slice(0, 3)
+          .slice(0, 2)
           .map((n) => ({
             ...n,
             popupId: `popup_${n.id}_${Date.now()}`,
@@ -204,6 +225,12 @@ export function NotificationProvider({
 
       saveData(KV_PREFIXES.notification, notification);
       reloadNotifications();
+
+      // Play notification beep sound
+      playNotificationBeep();
+
+      // Show browser push notification
+      showBrowserNotification(notification.judul, notification.pesan, notification.link);
 
       // Add popup for new notification (max 3 visible)
       const popup: PopupNotification = {

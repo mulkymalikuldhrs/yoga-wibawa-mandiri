@@ -106,29 +106,38 @@ const About = () => {
 
           <div className="grid md:grid-cols-3 gap-8">
             <div className="text-center p-8 rounded-lg shadow-lg animate-fade-in">
-              <div className="w-24 h-24 bg-gray-200 rounded-full mx-auto mb-4"></div>
-              <h3 className="text-xl font-semibold text-ywm-dark mb-2">Direktur Utama</h3>
-              <p className="text-ywm-red font-medium mb-3">Leadership & Strategy</p>
+              <div className="w-24 h-24 bg-gradient-to-br from-ywm-red to-red-700 rounded-full mx-auto mb-4 flex items-center justify-center">
+                <span className="text-white text-2xl font-bold">HY</span>
+              </div>
+              <h3 className="text-xl font-semibold text-ywm-dark mb-1">Direktur Utama</h3>
+              <p className="text-ywm-red font-bold mb-2">H. Muhammad Yogi</p>
+              <p className="text-gray-500 text-xs mb-3">Leadership & Strategy</p>
               <p className="text-gray-600">
                 Memimpin visi strategis perusahaan dan mengawasi operasional keseluruhan
               </p>
             </div>
 
             <div className="text-center p-8 rounded-lg shadow-lg animate-fade-in">
-              <div className="w-24 h-24 bg-gray-200 rounded-full mx-auto mb-4"></div>
-              <h3 className="text-xl font-semibold text-ywm-dark mb-2">Manajer Operasional</h3>
-              <p className="text-ywm-red font-medium mb-3">Production & Quality</p>
+              <div className="w-24 h-24 bg-gradient-to-br from-ywm-red to-red-700 rounded-full mx-auto mb-4 flex items-center justify-center">
+                <span className="text-white text-2xl font-bold">IW</span>
+              </div>
+              <h3 className="text-xl font-semibold text-ywm-dark mb-1">Manajer Operasional</h3>
+              <p className="text-ywm-red font-bold mb-2">Ir. Wibawa Mandiri</p>
+              <p className="text-gray-500 text-xs mb-3">Production & Quality</p>
               <p className="text-gray-600">
                 Mengelola proses pengantongan dan menjamin kualitas produk
               </p>
             </div>
 
             <div className="text-center p-8 rounded-lg shadow-lg animate-fade-in">
-              <div className="w-24 h-24 bg-gray-200 rounded-full mx-auto mb-4"></div>
-              <h3 className="text-xl font-semibold text-ywm-dark mb-2">Manajer Pemasaran</h3>
-              <p className="text-ywm-red font-medium mb-3">Sales & Distribution</p>
+              <div className="w-24 h-24 bg-gradient-to-br from-ywm-red to-red-700 rounded-full mx-auto mb-4 flex items-center justify-center">
+                <span className="text-white text-xl font-bold">MD</span>
+              </div>
+              <h3 className="text-xl font-semibold text-ywm-dark mb-1">Kepala Teknik</h3>
+              <p className="text-ywm-red font-bold mb-2">Mulky Malikul Dhaher, S.T.</p>
+              <p className="text-gray-500 text-xs mb-3">Technical & Engineering</p>
               <p className="text-gray-600">
-                Mengembangkan jaringan distribusi dan hubungan dengan pelanggan
+                Mengawasi standar teknis dan inovasi proses produksi
               </p>
             </div>
           </div>

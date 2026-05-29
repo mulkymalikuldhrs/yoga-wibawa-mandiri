@@ -34,7 +34,11 @@ export type TableName =
   | 'notifications'
   | 'chat_history'
   | 'silo_calculation'
-  | 'silo_opname';
+  | 'silo_opname'
+  | 'production'
+  | 'finance'
+  | 'safety_incident'
+  | 'employee';
 
 // ── Table names matching YWM modules ──
 export const TABLES = {
@@ -47,6 +51,10 @@ export const TABLES = {
   CHAT_HISTORY: 'chat_history',
   SILO_CALCULATION: 'silo_calculation',
   SILO_OPNAME: 'silo_opname',
+  PRODUCTION: 'production',
+  FINANCE: 'finance',
+  SAFETY_INCIDENT: 'safety_incident',
+  EMPLOYEE: 'employee',
 } as const;
 
 // ── All table names as a list for iteration ──

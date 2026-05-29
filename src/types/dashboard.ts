@@ -201,6 +201,57 @@ export interface SiloOpname extends WithId, Timestamped {
   petugas: string;
 }
 
+// --- Production (Produksi) ---
+export interface ProductionRecord extends WithId, Timestamped {
+  tanggal: string;
+  shift: 'pagi' | 'siang' | 'malam';
+  mesin: string;
+  target: number;
+  aktual: number;
+  satuan: string;
+  kualitas: 'A' | 'B' | 'C';
+  catatan: string;
+}
+
+// --- Finance (Keuangan) ---
+export interface FinanceRecord extends WithId, Timestamped {
+  tanggal: string;
+  jenis: 'pemasukan' | 'pengeluaran';
+  kategori: string;
+  deskripsi: string;
+  jumlah: number;
+  metodePembayaran: string;
+  referensi: string;
+  catatan: string;
+}
+
+// --- Safety/HSE ---
+export interface SafetyIncident extends WithId, Timestamped {
+  judul: string;
+  tanggal: string;
+  lokasi: string;
+  severity: 'ringan' | 'sedang' | 'berat' | 'fatal';
+  status: 'dilaporkan' | 'investigasi' | 'selesai' | 'ditutup';
+  pelapor: string;
+  korban: string;
+  deskripsi: string;
+  tindakan: string;
+}
+
+// --- Employee (Karyawan) ---
+export interface Employee extends WithId, Timestamped {
+  nama: string;
+  nip: string;
+  jabatan: string;
+  divisi: string;
+  tanggalMasuk: string;
+  gajiPokok: number;
+  status: 'aktif' | 'cuti' | 'resign';
+  noTelepon: string;
+  email: string;
+  alamat: string;
+}
+
 // --- Dashboard Module Enum ---
 export type DashboardModule =
   | 'overview'
@@ -212,7 +263,11 @@ export type DashboardModule =
   | 'silo-opname'
   | 'documents'
   | 'analytics'
-  | 'notifications';
+  | 'notifications'
+  | 'production'
+  | 'finance'
+  | 'safety'
+  | 'hr';
 
 export interface DashboardModuleInfo {
   id: DashboardModule;
@@ -233,6 +288,10 @@ export const KV_PREFIXES = {
   dashboardConfig: 'ywm_config_',
   siloCalculation: 'ywm_silo_calc_',
   siloOpname: 'ywm_silo_opname_',
+  production: 'ywm_prod_',
+  finance: 'ywm_fin_',
+  safety: 'ywm_safety_',
+  employee: 'ywm_emp_',
 } as const;
 
 // --- Dashboard Stats ---

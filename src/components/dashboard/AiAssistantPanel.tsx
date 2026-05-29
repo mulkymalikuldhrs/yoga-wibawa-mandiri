@@ -6,7 +6,8 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { cn } from '@/lib/utils';
 import type { AiMessage } from '@/types/dashboard';
-import { chatWithAiStream, checkAIHealth, parseDataInputAction } from '@/lib/ywm-ai';
+import { chatWithAiStream, checkAIHealth, parseDataInputAction, buildDashboardContext } from '@/lib/ywm-ai';
+import { saveData, generateId } from '@/lib/supabase-data';
 import {
   Send,
   Mic,
@@ -22,6 +23,8 @@ import {
   PanelRightClose,
   Database,
   CheckCircle2,
+  XCircle,
+  AlertCircle,
 } from 'lucide-react';
 
 interface AiAssistantPanelProps {
@@ -34,6 +37,70 @@ const QUICK_ACTIONS = [
   { label: 'Cek Stok Rendah', icon: <Sparkles size={14} />, prompt: 'Suku cadang mana yang stoknya mendekati batas minimum? Tampilkan daftar lengkap.' },
   { label: 'Jadwal Perawatan', icon: <FileSearch size={14} />, prompt: 'Apa jadwal perawatan mesin minggu ini? Ada WO yang overdue?' },
 ];
+
+// ── Data Input Confirmation Component ──
+function DataInputCard({
+  module,
+  action,
+  data,
+  onConfirm,
+  onCancel,
+}: {
+  module: string;
+  action?: string;
+  data: Record<string, unknown>;
+  onConfirm: () => void;
+  onCancel: () => void;
+}) {
+  const moduleLabels: Record<string, string> = {
+    'spare-parts': 'Spare Parts',
+    production: 'Produksi',
+    maintenance: 'Maintenance',
+    'team-activity': 'Tim & Aktivitas',
+    safety: 'Safety / HSE',
+    finance: 'Keuangan',
+    hr: 'HR & Payroll',
+  };
+
+  return (
+    <div className="mt-2 rounded-xl border border-amber-200/50 bg-amber-50/80 p-3">
+      <div className="flex items-center gap-2 mb-2">
+        <AlertCircle size={16} className="text-amber-600" />
+        <span className="text-amber-700 font-semibold text-sm">Konfirmasi Input Data</span>
+      </div>
+      <p className="text-xs text-amber-700 mb-2">
+        AI ingin melakukan: <strong>{action || 'create'}</strong> pada modul <strong>{moduleLabels[module] || module}</strong> dengan data:
+      </p>
+      <div className="space-y-1 text-xs text-slate-600 mb-3">
+        {Object.entries(data).slice(0, 8).map(([key, value]) => (
+          <div key={key} className="flex justify-between">
+            <span className="text-slate-500">{key}:</span>
+            <span className="text-slate-700 font-medium">{String(value ?? '-')}</span>
+          </div>
+        ))}
+        {Object.keys(data).length > 8 && (
+          <div className="text-slate-400 text-center">...dan {Object.keys(data).length - 8} field lainnya</div>
+        )}
+      </div>
+      <div className="flex gap-2">
+        <button
+          onClick={onConfirm}
+          className="flex-1 py-1.5 rounded-lg bg-emerald-100/80 text-emerald-600 text-xs font-medium hover:bg-emerald-500/30 transition-all"
+        >
+          <CheckCircle2 size={12} className="inline mr-1" />
+          Konfirmasi
+        </button>
+        <button
+          onClick={onCancel}
+          className="flex-1 py-1.5 rounded-lg bg-red-50/80 text-red-500 text-xs font-medium hover:bg-red-100/80 transition-all"
+        >
+          <XCircle size={12} className="inline mr-1" />
+          Batal
+        </button>
+      </div>
+    </div>
+  );
+}
 
 export default function AiAssistantPanel({ isOpen, onToggle }: AiAssistantPanelProps) {
   const [messages, setMessages] = useState<AiMessage[]>([
@@ -49,6 +116,11 @@ export default function AiAssistantPanel({ isOpen, onToggle }: AiAssistantPanelP
   const [isStreaming, setIsStreaming] = useState(false);
   const [aiReady, setAiReady] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
+  const [pendingDataInput, setPendingDataInput] = useState<{
+    module: string;
+    action?: string;
+    data: Record<string, unknown>;
+  } | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
@@ -103,8 +175,17 @@ export default function AiAssistantPanel({ isOpen, onToggle }: AiAssistantPanelP
     try {
       const chatMessages = [...messages, userMessage].filter(m => m.id !== 'welcome');
 
+      // Add dashboard data context as a system message
+      const dashboardContext = buildDashboardContext();
+      const contextMessage: AiMessage = {
+        id: 'dashboard_context',
+        role: 'system',
+        content: `Berikut data dashboard YWM terkini yang bisa Anda gunakan untuk menjawab pertanyaan user:${dashboardContext}`,
+        timestamp: new Date().toISOString(),
+      };
+
       await chatWithAiStream(
-        chatMessages,
+        [contextMessage, ...chatMessages],
         (chunk) => {
           setMessages((prev) =>
             prev.map((m) =>
@@ -116,6 +197,21 @@ export default function AiAssistantPanel({ isOpen, onToggle }: AiAssistantPanelP
         },
         () => {
           setIsStreaming(false);
+          // After streaming, check if the response contains a data input action
+          setMessages((prev) => {
+            const lastMsg = prev.find((m) => m.id === assistantId);
+            if (lastMsg?.content) {
+              const action = parseDataInputAction(lastMsg.content);
+              if (action.isDataInput && action.module && action.data) {
+                setPendingDataInput({
+                  module: action.module,
+                  action: action.action,
+                  data: action.data,
+                });
+              }
+            }
+            return prev;
+          });
         },
         (error) => {
           setMessages((prev) =>
@@ -164,8 +260,17 @@ export default function AiAssistantPanel({ isOpen, onToggle }: AiAssistantPanelP
 
         const chatMessages = [...messages, userMessage].filter(m => m.id !== 'welcome');
 
+        // Add dashboard data context
+        const dashboardContext = buildDashboardContext();
+        const contextMessage: AiMessage = {
+          id: 'dashboard_context',
+          role: 'system',
+          content: `Berikut data dashboard YWM terkini yang bisa Anda gunakan untuk menjawab pertanyaan user:${dashboardContext}`,
+          timestamp: new Date().toISOString(),
+        };
+
         chatWithAiStream(
-          chatMessages,
+          [contextMessage, ...chatMessages],
           (chunk) => {
             setMessages((prev) =>
               prev.map((m) =>
@@ -173,7 +278,24 @@ export default function AiAssistantPanel({ isOpen, onToggle }: AiAssistantPanelP
               )
             );
           },
-          () => setIsStreaming(false),
+          () => {
+            setIsStreaming(false);
+            // After streaming, check for data input action
+            setMessages((prev) => {
+              const lastMsg = prev.find((m) => m.id === assistantId);
+              if (lastMsg?.content) {
+                const action = parseDataInputAction(lastMsg.content);
+                if (action.isDataInput && action.module && action.data) {
+                  setPendingDataInput({
+                    module: action.module,
+                    action: action.action,
+                    data: action.data,
+                  });
+                }
+              }
+              return prev;
+            });
+          },
           () => setIsStreaming(false)
         ).catch(() => setIsStreaming(false));
       }, 100);
@@ -203,6 +325,57 @@ export default function AiAssistantPanel({ isOpen, onToggle }: AiAssistantPanelP
     recognition.onend = () => setIsRecording(false);
     recognition.start();
   }, [isRecording]);
+
+  // ── Handle data input confirmation ──
+  const handleConfirmDataInput = useCallback(() => {
+    if (!pendingDataInput) return;
+
+    const modulePrefixMap: Record<string, string> = {
+      'spare-parts': 'ywm_sparePart_',
+      'production': 'ywm_production_',
+      'maintenance': 'ywm_maintenance_',
+      'team-activity': 'ywm_teamActivity_',
+      'safety': 'ywm_safety_',
+      'finance': 'ywm_finance_',
+      'hr': 'ywm_employee_',
+    };
+    const prefix = modulePrefixMap[pendingDataInput.module] || `ywm_${pendingDataInput.module}_`;
+
+    const record = {
+      ...pendingDataInput.data,
+      id: generateId(),
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+    saveData(prefix, record);
+
+    const confirmMsg: AiMessage = {
+      id: Date.now().toString(36),
+      role: 'assistant',
+      content: `✅ **Data berhasil disimpan ke modul ${pendingDataInput.module}!**\n\nData telah tersimpan dan bisa dilihat di halaman modul yang bersangkutan.`,
+      timestamp: new Date().toISOString(),
+    };
+
+    setMessages((prev) => [...prev, confirmMsg]);
+    setPendingDataInput(null);
+  }, [pendingDataInput]);
+
+  const handleCancelDataInput = useCallback(() => {
+    setPendingDataInput(null);
+    const cancelMsg: AiMessage = {
+      id: Date.now().toString(36),
+      role: 'assistant',
+      content: '❌ Input data dibatalkan. Ketikkan data yang ingin Anda masukkan kapan saja.',
+      timestamp: new Date().toISOString(),
+    };
+    setMessages((prev) => [...prev, cancelMsg]);
+  }, []);
+
+  // ── Format message content (remove ACTION blocks from display) ──
+  const formatContent = (content: string) => {
+    let cleaned = content.replace(/```ACTION:INPUT_DATA[\s\S]*?```/g, '');
+    return cleaned;
+  };
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
@@ -309,7 +482,7 @@ export default function AiAssistantPanel({ isOpen, onToggle }: AiAssistantPanelP
                     : 'bg-white/50 border border-white/60 text-slate-600'
                 )}
               >
-                <p className="whitespace-pre-wrap">{msg.content}</p>
+                <p className="whitespace-pre-wrap">{formatContent(msg.content)}</p>
                 {msg.content === '' && isStreaming && (
                   <div className="flex items-center gap-1 text-slate-400">
                     <Loader2 size={12} className="animate-spin" />
@@ -319,6 +492,23 @@ export default function AiAssistantPanel({ isOpen, onToggle }: AiAssistantPanelP
               </div>
             </div>
           ))}
+
+          {/* Data input confirmation card */}
+          {pendingDataInput && (
+            <div className="flex gap-2">
+              <div className="w-7 h-7 rounded-lg bg-amber-100/80 flex items-center justify-center flex-shrink-0">
+                <Database size={14} className="text-amber-600" />
+              </div>
+              <DataInputCard
+                module={pendingDataInput.module}
+                action={pendingDataInput.action}
+                data={pendingDataInput.data}
+                onConfirm={handleConfirmDataInput}
+                onCancel={handleCancelDataInput}
+              />
+            </div>
+          )}
+
           <div ref={messagesEndRef} />
         </div>
 

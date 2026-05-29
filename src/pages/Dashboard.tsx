@@ -23,6 +23,10 @@ const SiloOpnameModule = lazy(() => import('@/components/dashboard/modules/SiloO
 const DocumentsModule = lazy(() => import('@/components/dashboard/modules/DocumentsModule'));
 const AnalyticsModule = lazy(() => import('@/components/dashboard/modules/AnalyticsModule'));
 const NotificationsModule = lazy(() => import('@/components/dashboard/modules/NotificationsModule'));
+const ProductionModule = lazy(() => import('@/components/dashboard/modules/ProductionModule'));
+const FinanceModule = lazy(() => import('@/components/dashboard/modules/FinanceModule'));
+const SafetyModule = lazy(() => import('@/components/dashboard/modules/SafetyModule'));
+const HrModule = lazy(() => import('@/components/dashboard/modules/HrModule'));
 
 const MODULE_MAP: Record<DashboardModule, React.LazyExoticComponent<React.ComponentType>> = {
   overview: OverviewModule,
@@ -35,6 +39,10 @@ const MODULE_MAP: Record<DashboardModule, React.LazyExoticComponent<React.Compon
   documents: DocumentsModule,
   analytics: AnalyticsModule,
   notifications: NotificationsModule,
+  production: ProductionModule,
+  finance: FinanceModule,
+  safety: SafetyModule,
+  hr: HrModule,
 };
 
 export default function Dashboard() {

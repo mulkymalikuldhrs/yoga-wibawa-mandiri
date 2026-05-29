@@ -24,12 +24,15 @@ import {
   MicOff,
   CheckCircle2,
   AlertCircle,
+  XCircle,
   Zap,
   Wrench,
   Package,
   Shield,
   TrendingUp,
   Users,
+  Power,
+  PowerOff,
 } from 'lucide-react';
 
 // ── Quick Actions ──
@@ -75,11 +78,13 @@ const QUICK_ACTIONS = [
 // ── Data Input Confirmation Component ──
 function DataInputCard({
   module,
+  action,
   data,
   onConfirm,
   onCancel,
 }: {
   module: string;
+  action?: string;
   data: Record<string, unknown>;
   onConfirm: () => void;
   onCancel: () => void;
@@ -95,31 +100,38 @@ function DataInputCard({
   };
 
   return (
-    <div className="mt-2 rounded-xl border border-cyan-200/50 bg-cyan-50/80 p-3">
+    <div className="mt-2 rounded-xl border border-amber-200/50 bg-amber-50/80 p-3">
       <div className="flex items-center gap-2 mb-2">
-        <Database size={16} className="text-cyan-600" />
-        <span className="text-cyan-600 font-semibold text-sm">Input Data: {moduleLabels[module] || module}</span>
+        <AlertCircle size={16} className="text-amber-600" />
+        <span className="text-amber-700 font-semibold text-sm">Konfirmasi Input Data</span>
       </div>
-      <div className="space-y-1 text-xs text-slate-600">
-        {Object.entries(data).map(([key, value]) => (
+      <p className="text-xs text-amber-700 mb-2">
+        AI ingin melakukan: <strong>{action || 'create'}</strong> pada modul <strong>{moduleLabels[module] || module}</strong> dengan data:
+      </p>
+      <div className="space-y-1 text-xs text-slate-600 mb-3">
+        {Object.entries(data).slice(0, 8).map(([key, value]) => (
           <div key={key} className="flex justify-between">
             <span className="text-slate-500">{key}:</span>
             <span className="text-slate-700 font-medium">{String(value ?? '-')}</span>
           </div>
         ))}
+        {Object.keys(data).length > 8 && (
+          <div className="text-slate-400 text-center">...dan {Object.keys(data).length - 8} field lainnya</div>
+        )}
       </div>
-      <div className="flex gap-2 mt-3">
+      <div className="flex gap-2">
         <button
           onClick={onConfirm}
-          className="flex-1 py-1.5 rounded-lg bg-cyan-100/80 text-cyan-600 text-xs font-medium hover:bg-cyan-500/30 transition-all"
+          className="flex-1 py-1.5 rounded-lg bg-emerald-100/80 text-emerald-600 text-xs font-medium hover:bg-emerald-500/30 transition-all"
         >
           <CheckCircle2 size={12} className="inline mr-1" />
-          Simpan
+          Konfirmasi
         </button>
         <button
           onClick={onCancel}
-          className="flex-1 py-1.5 rounded-lg bg-white/50 text-slate-500 text-xs font-medium hover:bg-white/60 transition-all"
+          className="flex-1 py-1.5 rounded-lg bg-red-50/80 text-red-500 text-xs font-medium hover:bg-red-100/80 transition-all"
         >
+          <XCircle size={12} className="inline mr-1" />
           Batal
         </button>
       </div>
@@ -128,6 +140,24 @@ function DataInputCard({
 }
 
 export default function FloatingChatBot() {
+  // ── On/Off toggle state (persisted in localStorage) ──
+  const [chatEnabled, setChatEnabled] = useState<boolean>(() => {
+    try {
+      const stored = localStorage.getItem('ywm_chatbot_enabled');
+      return stored === null ? true : stored === 'true';
+    } catch {
+      return true;
+    }
+  });
+
+  const toggleChatEnabled = useCallback(() => {
+    setChatEnabled((prev) => {
+      const next = !prev;
+      try { localStorage.setItem('ywm_chatbot_enabled', String(next)); } catch { /* ignore */ }
+      return next;
+    });
+  }, []);
+
   // ── State ──
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<AiMessage[]>([
@@ -146,6 +176,7 @@ export default function FloatingChatBot() {
   const [showQuickActions, setShowQuickActions] = useState(true);
   const [pendingDataInput, setPendingDataInput] = useState<{
     module: string;
+    action?: string;
     data: Record<string, unknown>;
   } | null>(null);
   const [isRecording, setIsRecording] = useState(false);
@@ -201,7 +232,7 @@ export default function FloatingChatBot() {
 
   // ── Send message ──
   const handleSend = useCallback(async () => {
-    if (!input.trim() || isStreaming || !aiReady) return;
+    if (!input.trim() || isStreaming || !aiReady || !chatEnabled) return;
 
     const userMessage: AiMessage = {
       id: Date.now().toString(36),
@@ -274,6 +305,7 @@ export default function FloatingChatBot() {
           if (action.isDataInput && action.module && action.data) {
             setPendingDataInput({
               module: action.module,
+              action: action.action,
               data: action.data,
             });
           }
@@ -290,7 +322,7 @@ export default function FloatingChatBot() {
       );
       setIsStreaming(false);
     }
-  }, [input, isStreaming, aiReady, messages]);
+  }, [input, isStreaming, aiReady, chatEnabled, messages]);
 
   // ── Quick action ──
   const handleQuickAction = useCallback(
@@ -342,7 +374,24 @@ export default function FloatingChatBot() {
               )
             );
           },
-          () => setIsStreaming(false),
+          () => {
+            setIsStreaming(false);
+            // After streaming, check for data input action
+            setMessages((prev) => {
+              const lastMsg = prev.find((m) => m.id === assistantId);
+              if (lastMsg?.content) {
+                const action = parseDataInputAction(lastMsg.content);
+                if (action.isDataInput && action.module && action.data) {
+                  setPendingDataInput({
+                    module: action.module,
+                    action: action.action,
+                    data: action.data,
+                  });
+                }
+              }
+              return prev;
+            });
+          },
           (error) => {
             setMessages((prev) =>
               prev.map((m) =>
@@ -526,25 +575,42 @@ export default function FloatingChatBot() {
                 <div className="flex items-center gap-1.5">
                   <div className={cn(
                     'w-1.5 h-1.5 rounded-full',
+                    !chatEnabled ? 'bg-slate-300' :
                     checkingAI ? 'bg-yellow-400 animate-pulse' :
                     aiReady ? 'bg-emerald-400' : 'bg-red-400'
                   )} />
                   <span className="text-slate-400 text-xs">
-                    {checkingAI ? 'Menghubungkan...' : aiReady ? 'Online — Siap membantu' : 'Offline — Cek server AI'}
+                    {!chatEnabled ? 'Dinonaktifkan' :
+                    checkingAI ? 'Menghubungkan...' : aiReady ? 'Online — Siap membantu' : 'Offline — Cek server AI'}
                   </span>
                 </div>
               </div>
             </div>
-            <button
-              onClick={() => setIsOpen(false)}
-              className="p-1.5 rounded-lg text-slate-400 hover:text-slate-800 hover:bg-white/60 transition-all"
-            >
-              <X size={16} />
-            </button>
+            <div className="flex items-center gap-1">
+              {/* On/Off Toggle */}
+              <button
+                onClick={toggleChatEnabled}
+                className={cn(
+                  'p-1.5 rounded-lg transition-all',
+                  chatEnabled
+                    ? 'text-emerald-500 hover:bg-emerald-50/80'
+                    : 'text-slate-300 hover:bg-white/60'
+                )}
+                title={chatEnabled ? 'Nonaktifkan Chatbot' : 'Aktifkan Chatbot'}
+              >
+                {chatEnabled ? <Power size={14} /> : <PowerOff size={14} />}
+              </button>
+              <button
+                onClick={() => setIsOpen(false)}
+                className="p-1.5 rounded-lg text-slate-400 hover:text-slate-800 hover:bg-white/60 transition-all"
+              >
+                <X size={16} />
+              </button>
+            </div>
           </div>
 
           {/* ── Quick Actions (shown when no messages besides welcome) ── */}
-          {showQuickActions && messages.length <= 1 && (
+          {chatEnabled && showQuickActions && messages.length <= 1 && (
             <div className="px-4 py-3 border-b border-white/60 flex-shrink-0">
               <p className="text-slate-400 text-xs mb-2">Aksi Cepat</p>
               <div className="grid grid-cols-2 gap-1.5">
@@ -567,77 +633,89 @@ export default function FloatingChatBot() {
 
           {/* ── Messages ── */}
           <div ref={chatContainerRef} className="flex-1 overflow-y-auto p-4 space-y-3 custom-scrollbar">
-            {messages.map((msg) => (
-              <div
-                key={msg.id}
-                className={cn(
-                  'flex gap-2',
-                  msg.role === 'user' ? 'flex-row-reverse' : 'flex-row'
-                )}
-              >
-                {/* Avatar */}
-                <div
-                  className={cn(
-                    'w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0',
-                    msg.role === 'user'
-                      ? 'bg-cyan-100/80'
-                      : 'bg-purple-100/80'
-                  )}
-                >
-                  {msg.role === 'user' ? (
-                    <User size={14} className="text-cyan-600" />
-                  ) : (
-                    <Bot size={14} className="text-purple-600" />
-                  )}
-                </div>
-
-                {/* Message bubble */}
-                <div
-                  className={cn(
-                    'max-w-[82%] rounded-2xl px-3.5 py-2.5 text-sm leading-relaxed',
-                    msg.role === 'user'
-                      ? 'bg-cyan-50/80 border border-cyan-200/50 text-slate-800'
-                      : 'bg-white/50 border border-white/60 text-slate-600'
-                  )}
-                >
-                  <p className="whitespace-pre-wrap">{formatContent(msg.content)}</p>
-                  
-                  {/* Streaming indicator */}
-                  {msg.content === '' && isStreaming && (
-                    <div className="flex items-center gap-1.5 text-slate-400">
-                      <Loader2 size={12} className="animate-spin" />
-                      <span className="text-xs">AI sedang berpikir...</span>
+            {!chatEnabled ? (
+              <div className="flex flex-col items-center justify-center h-full text-center py-8">
+                <PowerOff size={32} className="text-slate-300 mb-3" />
+                <p className="text-slate-400 text-sm font-medium">Chatbot dinonaktifkan</p>
+                <p className="text-slate-300 text-xs mt-1">Klik tombol ⏻ di header untuk mengaktifkan</p>
+              </div>
+            ) : (
+              <>
+                {messages.map((msg) => (
+                  <div
+                    key={msg.id}
+                    className={cn(
+                      'flex gap-2',
+                      msg.role === 'user' ? 'flex-row-reverse' : 'flex-row'
+                    )}
+                  >
+                    {/* Avatar */}
+                    <div
+                      className={cn(
+                        'w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0',
+                        msg.role === 'user'
+                          ? 'bg-cyan-100/80'
+                          : 'bg-purple-100/80'
+                      )}
+                    >
+                      {msg.role === 'user' ? (
+                        <User size={14} className="text-cyan-600" />
+                      ) : (
+                        <Bot size={14} className="text-purple-600" />
+                      )}
                     </div>
-                  )}
 
-                  {/* Show typing cursor while streaming */}
-                  {msg.content !== '' && isStreaming && msg.id.includes('_stream') && (
-                    <span className="inline-block w-1.5 h-4 bg-cyan-400/60 animate-pulse ml-0.5 align-text-bottom" />
-                  )}
-                </div>
-              </div>
-            ))}
+                    {/* Message bubble */}
+                    <div
+                      className={cn(
+                        'max-w-[82%] rounded-2xl px-3.5 py-2.5 text-sm leading-relaxed',
+                        msg.role === 'user'
+                          ? 'bg-cyan-50/80 border border-cyan-200/50 text-slate-800'
+                          : 'bg-white/50 border border-white/60 text-slate-600'
+                      )}
+                    >
+                      <p className="whitespace-pre-wrap">{formatContent(msg.content)}</p>
+                      
+                      {/* Streaming indicator */}
+                      {msg.content === '' && isStreaming && (
+                        <div className="flex items-center gap-1.5 text-slate-400">
+                          <Loader2 size={12} className="animate-spin" />
+                          <span className="text-xs">AI sedang berpikir...</span>
+                        </div>
+                      )}
 
-            {/* Data input confirmation card */}
-            {pendingDataInput && (
-              <div className="flex gap-2">
-                <div className="w-7 h-7 rounded-lg bg-cyan-100/80 flex items-center justify-center flex-shrink-0">
-                  <Database size={14} className="text-cyan-600" />
-                </div>
-                <DataInputCard
-                  module={pendingDataInput.module}
-                  data={pendingDataInput.data}
-                  onConfirm={handleConfirmDataInput}
-                  onCancel={handleCancelDataInput}
-                />
-              </div>
+                      {/* Show typing cursor while streaming */}
+                      {msg.content !== '' && isStreaming && msg.id.includes('_stream') && (
+                        <span className="inline-block w-1.5 h-4 bg-cyan-400/60 animate-pulse ml-0.5 align-text-bottom" />
+                      )}
+                    </div>
+                  </div>
+                ))}
+
+                {/* Data input confirmation card */}
+                {pendingDataInput && (
+                  <div className="flex gap-2">
+                    <div className="w-7 h-7 rounded-lg bg-amber-100/80 flex items-center justify-center flex-shrink-0">
+                      <AlertCircle size={14} className="text-amber-600" />
+                    </div>
+                    <DataInputCard
+                      module={pendingDataInput.module}
+                      action={pendingDataInput.action}
+                      data={pendingDataInput.data}
+                      onConfirm={handleConfirmDataInput}
+                      onCancel={handleCancelDataInput}
+                    />
+                  </div>
+                )}
+
+                <div ref={messagesEndRef} />
+              </>
             )}
-
-            <div ref={messagesEndRef} />
           </div>
 
           {/* ── Input Area ── */}
           <div className="p-3 border-t border-white/60 flex-shrink-0">
+            {chatEnabled ? (
             <div className="flex items-end gap-2 bg-white/50 border border-white/60 rounded-xl p-2 
               focus-within:border-cyan-200/50 focus-within:bg-white/60 transition-all">
               <textarea
@@ -680,6 +758,11 @@ export default function FloatingChatBot() {
                 <Send size={16} />
               </button>
             </div>
+            ) : (
+              <div className="text-center py-2 text-slate-300 text-xs">
+                Chatbot dinonaktifkan — klik ⏻ untuk mengaktifkan
+              </div>
+            )}
             {/* Status bar */}
             <div className="flex items-center justify-between mt-1.5 px-1">
               <span className="text-slate-400 text-[10px]">Powered by YWM AI</span>

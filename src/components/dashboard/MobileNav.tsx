@@ -26,6 +26,10 @@ import {
   Bell,
   Menu,
   ExternalLink,
+  Factory,
+  Wallet,
+  ShieldCheck,
+  UserCog,
 } from 'lucide-react';
 import InstallPWAButton from './InstallPWAButton';
 
@@ -40,6 +44,10 @@ const MODULES: { id: DashboardModule; label: string; icon: React.ReactNode }[] =
   { id: 'documents', label: 'Dokumen & OCR', icon: <FileText size={20} /> },
   { id: 'analytics', label: 'Analitik', icon: <BarChart3 size={20} /> },
   { id: 'notifications', label: 'Notifikasi', icon: <Bell size={20} /> },
+  { id: 'production', label: 'Produksi', icon: <Factory size={20} /> },
+  { id: 'finance', label: 'Keuangan', icon: <Wallet size={20} /> },
+  { id: 'safety', label: 'Keselamatan (HSE)', icon: <ShieldCheck size={20} /> },
+  { id: 'hr', label: 'SDM / Payroll', icon: <UserCog size={20} /> },
 ];
 
 interface MobileNavProps {

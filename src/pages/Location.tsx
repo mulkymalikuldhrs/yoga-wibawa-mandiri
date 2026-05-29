@@ -30,7 +30,7 @@ const Location = () => {
           {/* Google Maps Embed */}
           <div className="rounded-lg overflow-hidden shadow-2xl mb-12">
             <iframe
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d127414.36341234567!2d97.1234567!3d5.1234567!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2sPelabuhan%20Krueng%20Geukueh!5e0!3m2!1sen!2sid!4v1234567890123"
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3967.5!2d97.1354!3d5.1871!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3046d5e5e5e5e5e5%3A0x0!2sPelabuhan%20Krueng%20Geukueh!5e0!3m2!1sen!2sid!4v1700000000000"
               width="100%"
               height="400"
               style={{ border: 0 }}
@@ -104,8 +104,8 @@ const Location = () => {
                   <div>
                     <h4 className="font-semibold text-ywm-dark">Kontak</h4>
                     <p className="text-gray-600">
-                      Telepon: +62 61 456789<br />
-                      Fax: +62 61 456790<br />
+                      Telepon: +6285322624038<br />
+                      WhatsApp: wa.me/6285322624038<br />
                       Email: info@ywm.co.id
                     </p>
                   </div>

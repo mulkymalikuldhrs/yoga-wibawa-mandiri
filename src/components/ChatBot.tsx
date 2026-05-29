@@ -5,6 +5,7 @@
 
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { MessageCircle, X, Send, Bot, User, Loader2, Phone } from 'lucide-react';
+import { cn } from '@/lib/utils';
 import { chatWithAiStream, checkAIHealth } from '@/lib/ywm-ai';
 
 interface Message {
@@ -130,22 +131,22 @@ const ChatBot = () => {
     const message = userMessage.toLowerCase();
     
     if (message.includes('halo') || message.includes('hai') || message.includes('hello')) {
-      return 'Halo! Saya AI Assistant PT. Yoga Wibawa Mandiri. Saya siap membantu Anda dengan informasi tentang produk semen dan layanan kami 24/7.\n\n📞 Untuk komunikasi langsung: +62 823-0443-3145';
+      return 'Halo! Saya AI Assistant PT. Yoga Wibawa Mandiri. Saya siap membantu Anda dengan informasi tentang produk semen dan layanan kami 24/7.\n\n📞 Untuk komunikasi langsung: +6285322624038';
     }
     if (message.includes('hubungi') || message.includes('kontak') || message.includes('telepon')) {
-      return '📞 Hubungi kami:\n\n🏭 Tim Pengantongan: +62 823-0443-3145\n📧 Email: info@ywm.co.id';
+      return '📞 Hubungi kami:\n\n🏭 Tim Pengantongan: +6285322624038\n📧 Email: info@ywm.co.id';
     }
     if (message.includes('semen') || message.includes('produk')) {
-      return 'Kami menyediakan semen berkualitas tinggi dari Semen Padang dengan kapasitas produksi hingga 500 ton per hari. Tersedia dalam kemasan 40kg dan 50kg.\n\n📞 Info detail: +62 823-0443-3145';
+      return 'Kami menyediakan semen berkualitas tinggi dari Semen Padang dengan kapasitas produksi hingga 500 ton per hari. Tersedia dalam kemasan 40kg.\n\n📞 Info detail: +6285322624038';
     }
     if (message.includes('harga') || message.includes('pesan') || message.includes('order')) {
-      return 'Untuk informasi harga terbaru dan pemesanan:\n\n📞 Hubungi: +62 823-0443-3145\n📧 Email: sales@ywm.co.id';
+      return 'Untuk informasi harga terbaru dan pemesanan:\n\n📞 Hubungi: +6285322624038\n📧 Email: sales@ywm.co.id';
     }
     if (message.includes('lokasi') || message.includes('alamat')) {
-      return 'Pabrik kami berlokasi di Pelabuhan Krueng Geukueh, Lhokseumawe, Aceh.\n\n📞 Untuk kunjungan: +62 823-0443-3145';
+      return 'Pabrik kami berlokasi di Pelabuhan Krueng Geukueh, Lhokseumawe, Aceh.\n\n📞 Untuk kunjungan: +6285322624038';
     }
     
-    return 'Terima kasih atas pertanyaan Anda.\n\n📞 Untuk bantuan langsung: +62 823-0443-3145\n📧 Email: info@ywm.co.id\n\nTim kami siap melayani Anda!';
+    return 'Terima kasih atas pertanyaan Anda.\n\n📞 Untuk bantuan langsung: +6285322624038\n📧 Email: info@ywm.co.id\n\nTim kami siap melayani Anda!';
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -156,7 +157,7 @@ const ChatBot = () => {
   };
 
   const handlePhoneClick = () => {
-    window.open('tel:+6282304433145', '_self');
+    window.open('https://wa.me/6285322624038', '_blank');
   };
 
   return (
@@ -202,7 +203,7 @@ const ChatBot = () => {
               <button
                 onClick={handlePhoneClick}
                 className="bg-green-500 hover:bg-green-600 p-2 rounded-full transition-colors"
-                title="Hubungi +62 823-0443-3145"
+                title="Hubungi via WhatsApp"
               >
                 <Phone size={16} />
               </button>
@@ -289,7 +290,7 @@ const ChatBot = () => {
                 className="text-xs text-green-600 hover:text-green-800 font-medium flex items-center space-x-1"
               >
                 <Phone size={12} />
-                <span>+62 823-0443-3145</span>
+                <span>+6285322624038</span>
               </button>
             </div>
           </div>
@@ -299,9 +300,6 @@ const ChatBot = () => {
   );
 };
 
-// Helper for cn (since we may not have it in the public website context)
-function cn(...classes: (string | boolean | undefined)[]) {
-  return classes.filter(Boolean).join(' ');
-}
+
 
 export default ChatBot;

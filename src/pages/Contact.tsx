@@ -338,7 +338,7 @@ const Contact = () => {
                     </div>
                     <div className="flex items-center space-x-3">
                       <Phone className="text-ywm-red" size={20} />
-                      <p className="text-gray-700">+62 61 456789</p>
+                      <p className="text-gray-700">+6285322624038</p>
                     </div>
                     <div className="flex items-center space-x-3">
                       <Mail className="text-ywm-red" size={20} />
@@ -362,7 +362,7 @@ const Contact = () => {
                     </div>
                     <div className="flex items-center space-x-3">
                       <Phone className="text-ywm-red" size={20} />
-                      <p className="text-gray-700">+62 651 123456</p>
+                      <p className="text-gray-700">+6285322624038</p>
                     </div>
                     <div className="flex items-center space-x-3">
                       <Mail className="text-ywm-red" size={20} />
@@ -419,7 +419,7 @@ const Contact = () => {
                 <Phone className="text-ywm-red" size={24} />
                 <div className="text-left">
                   <p className="font-semibold text-ywm-dark">Hotline 24 Jam</p>
-                  <p className="text-gray-600">+62 851 xxxx xxxx</p>
+                  <p className="text-gray-600">+6285322624038</p>
                 </div>
               </div>
               <div className="flex items-center space-x-3">

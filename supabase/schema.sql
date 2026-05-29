@@ -199,6 +199,77 @@ CREATE TABLE IF NOT EXISTS silo_opname (
 );
 
 -- ─────────────────────────────────────────────
+-- 10. PRODUCTION (Produksi)
+-- ─────────────────────────────────────────────
+CREATE TABLE IF NOT EXISTS production (
+  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+  tanggal DATE DEFAULT CURRENT_DATE,
+  shift TEXT CHECK (shift IN ('pagi', 'siang', 'malam')) DEFAULT 'pagi',
+  mesin TEXT,
+  target INTEGER DEFAULT 0,
+  aktual INTEGER DEFAULT 0,
+  satuan TEXT DEFAULT 'zak',
+  kualitas TEXT CHECK (kualitas IN ('A', 'B', 'C')) DEFAULT 'A',
+  catatan TEXT,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- ─────────────────────────────────────────────
+-- 11. FINANCE (Keuangan)
+-- ─────────────────────────────────────────────
+CREATE TABLE IF NOT EXISTS finance (
+  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+  tanggal DATE DEFAULT CURRENT_DATE,
+  jenis TEXT CHECK (jenis IN ('pemasukan', 'pengeluaran')) DEFAULT 'pemasukan',
+  kategori TEXT,
+  deskripsi TEXT,
+  jumlah NUMERIC(15,2) DEFAULT 0,
+  metode_pembayaran TEXT,
+  referensi TEXT,
+  catatan TEXT,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- ─────────────────────────────────────────────
+-- 12. SAFETY INCIDENT (Kecelakaan/HSE)
+-- ─────────────────────────────────────────────
+CREATE TABLE IF NOT EXISTS safety_incident (
+  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+  judul TEXT NOT NULL,
+  tanggal DATE DEFAULT CURRENT_DATE,
+  lokasi TEXT,
+  severity TEXT CHECK (severity IN ('ringan', 'sedang', 'berat', 'fatal')) DEFAULT 'ringan',
+  status TEXT CHECK (status IN ('dilaporkan', 'investigasi', 'selesai', 'ditutup')) DEFAULT 'dilaporkan',
+  pelapor TEXT,
+  korban TEXT,
+  deskripsi TEXT,
+  tindakan TEXT,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- ─────────────────────────────────────────────
+-- 13. EMPLOYEE (Karyawan)
+-- ─────────────────────────────────────────────
+CREATE TABLE IF NOT EXISTS employee (
+  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+  nama TEXT NOT NULL,
+  nip TEXT UNIQUE,
+  jabatan TEXT,
+  divisi TEXT,
+  tanggal_masuk DATE,
+  gaji_pokok NUMERIC(15,2) DEFAULT 0,
+  status TEXT CHECK (status IN ('aktif', 'cuti', 'resign')) DEFAULT 'aktif',
+  no_telepon TEXT,
+  email TEXT,
+  alamat TEXT,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- ─────────────────────────────────────────────
 -- ENABLE ROW LEVEL SECURITY (RLS)
 -- ─────────────────────────────────────────────
 ALTER TABLE spare_parts ENABLE ROW LEVEL SECURITY;
@@ -210,6 +281,10 @@ ALTER TABLE notifications ENABLE ROW LEVEL SECURITY;
 ALTER TABLE chat_history ENABLE ROW LEVEL SECURITY;
 ALTER TABLE silo_calculation ENABLE ROW LEVEL SECURITY;
 ALTER TABLE silo_opname ENABLE ROW LEVEL SECURITY;
+ALTER TABLE production ENABLE ROW LEVEL SECURITY;
+ALTER TABLE finance ENABLE ROW LEVEL SECURITY;
+ALTER TABLE safety_incident ENABLE ROW LEVEL SECURITY;
+ALTER TABLE employee ENABLE ROW LEVEL SECURITY;
 
 -- ─────────────────────────────────────────────
 -- PUBLIC POLICIES (for now — internal app)
@@ -260,6 +335,15 @@ CREATE INDEX IF NOT EXISTS idx_silo_calculation_silo ON silo_calculation(silo);
 CREATE INDEX IF NOT EXISTS idx_silo_calculation_tanggal ON silo_calculation(tanggal);
 CREATE INDEX IF NOT EXISTS idx_silo_opname_tanggal ON silo_opname(tanggal);
 CREATE INDEX IF NOT EXISTS idx_silo_opname_kapal ON silo_opname(kapal);
+CREATE INDEX IF NOT EXISTS idx_production_tanggal ON production(tanggal);
+CREATE INDEX IF NOT EXISTS idx_production_shift ON production(shift);
+CREATE INDEX IF NOT EXISTS idx_finance_tanggal ON finance(tanggal);
+CREATE INDEX IF NOT EXISTS idx_finance_jenis ON finance(jenis);
+CREATE INDEX IF NOT EXISTS idx_safety_incident_tanggal ON safety_incident(tanggal);
+CREATE INDEX IF NOT EXISTS idx_safety_incident_severity ON safety_incident(severity);
+CREATE INDEX IF NOT EXISTS idx_safety_incident_status ON safety_incident(status);
+CREATE INDEX IF NOT EXISTS idx_employee_divisi ON employee(divisi);
+CREATE INDEX IF NOT EXISTS idx_employee_status ON employee(status);
 
 -- ─────────────────────────────────────────────
 -- AUTO-UPDATE updated_at TRIGGER
