@@ -9,31 +9,26 @@ import ZAI from "z-ai-web-dev-sdk";
 // ============================================================
 
 let zaiInstance: any = null;
-let aiInitPromise: Promise<any> | null = null;
+let aiInitAttempted = false;
 
 async function initAI() {
   if (zaiInstance) return zaiInstance;
-  if (aiInitPromise) return aiInitPromise;
 
-  aiInitPromise = (async () => {
-    try {
-      zaiInstance = await ZAI.create();
-      console.log('[YWM AI] z-ai-web-dev-sdk initialized successfully');
-      return zaiInstance;
-    } catch (err: any) {
-      console.error('[YWM AI] Init failed:', err.message);
-      aiInitPromise = null;
-      // Retry after 3 seconds
-      await new Promise(r => setTimeout(r, 3000));
-      return initAI();
-    }
-  })();
+  // Only attempt init once — no infinite retry loop
+  if (aiInitAttempted) return null;
+  aiInitAttempted = true;
 
-  return aiInitPromise;
+  try {
+    zaiInstance = await ZAI.create();
+    console.log('[YWM AI] z-ai-web-dev-sdk initialized successfully');
+    return zaiInstance;
+  } catch (err: any) {
+    console.warn('[YWM AI] Init skipped:', err.message);
+    return null;
+  }
 }
 
-// Initialize on startup
-initAI();
+// Do NOT auto-init on startup — let it init lazily when first API call comes in
 
 const YWM_SYSTEM_PROMPT = `Kamu adalah asisten AI cerdas dan proaktif untuk PT. Yoga Wibawa Mandiri (YWM), perusahaan pengantongan Semen Padang di Pelabuhan Krueng Geukueh, Lhokseumawe, Aceh.
 
