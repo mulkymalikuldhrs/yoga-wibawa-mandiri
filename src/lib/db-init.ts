@@ -94,13 +94,13 @@ async function _doInitialize(): Promise<DbInitStatus> {
     status.error = connectionCheck.error;
 
     if (!connectionCheck.connected) {
-      console.warn('[YWM DB Init] Supabase not connected. Running in localStorage-only mode.');
+      if (import.meta.env.DEV) console.warn('[YWM DB Init] Supabase not connected. Running in localStorage-only mode.');
       return status;
     }
 
-    console.info(`[YWM DB Init] Connected to Supabase. ${connectionCheck.tables.length} tables exist, ${connectionCheck.missingTables.length} missing.`);
+    if (import.meta.env.DEV) console.info(`[YWM DB Init] Connected to Supabase. ${connectionCheck.tables.length} tables exist, ${connectionCheck.missingTables.length} missing.`);
   } catch (err) {
-    console.warn('[YWM DB Init] Connection check failed:', err);
+    if (import.meta.env.DEV) console.warn('[YWM DB Init] Connection check failed:', err);
     status.error = err instanceof Error ? err.message : 'Connection check failed';
     status.missingTables = [...ALL_TABLE_NAMES];
     return status;
@@ -109,7 +109,7 @@ async function _doInitialize(): Promise<DbInitStatus> {
   // Step 2: Try to create missing tables
   if (status.missingTables.length > 0) {
     try {
-      console.info(`[YWM DB Init] Attempting to create ${status.missingTables.length} missing tables...`);
+      if (import.meta.env.DEV) console.info(`[YWM DB Init] Attempting to create ${status.missingTables.length} missing tables...`);
       const createResults = await autoCreateTables();
 
       // Recalculate existing/missing
@@ -125,37 +125,37 @@ async function _doInitialize(): Promise<DbInitStatus> {
       }
 
       if (status.missingTables.length > 0) {
-        console.warn(
+        if (import.meta.env.DEV) console.warn(
           `[YWM DB Init] Could not create ${status.missingTables.length} tables: ${status.missingTables.join(', ')}. ` +
           `Please run supabase/schema.sql in the Supabase SQL Editor.`
         );
       } else {
-        console.info('[YWM DB Init] All tables created successfully.');
+        if (import.meta.env.DEV) console.info('[YWM DB Init] All tables created successfully.');
       }
     } catch (err) {
-      console.warn('[YWM DB Init] Auto-create tables failed:', err);
+      if (import.meta.env.DEV) console.warn('[YWM DB Init] Auto-create tables failed:', err);
     }
   }
 
   // Step 3: Migrate localStorage data to Supabase
   if (status.existingTables.length > 0) {
     try {
-      console.info('[YWM DB Init] Migrating localStorage data to Supabase...');
+      if (import.meta.env.DEV) console.info('[YWM DB Init] Migrating localStorage data to Supabase...');
       const migrationResults = await syncLocalToSupabase();
       const totalMigrated = Object.values(migrationResults).reduce((sum, count) => sum + count, 0);
       status.migratedRecords = totalMigrated;
 
       if (totalMigrated > 0) {
-        console.info(`[YWM DB Init] Migrated ${totalMigrated} records to Supabase:`, migrationResults);
+        if (import.meta.env.DEV) console.info(`[YWM DB Init] Migrated ${totalMigrated} records to Supabase:`, migrationResults);
       } else {
-        console.info('[YWM DB Init] No localStorage data to migrate.');
+        if (import.meta.env.DEV) console.info('[YWM DB Init] No localStorage data to migrate.');
       }
     } catch (err) {
-      console.warn('[YWM DB Init] Data migration failed:', err);
+      if (import.meta.env.DEV) console.warn('[YWM DB Init] Data migration failed:', err);
     }
   }
 
-  console.info('[YWM DB Init] Initialization complete:', {
+  if (import.meta.env.DEV) console.info('[YWM DB Init] Initialization complete:', {
     connected: status.connected,
     tables: status.existingTables.length,
     missing: status.missingTables.length,

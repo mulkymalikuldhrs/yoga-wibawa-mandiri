@@ -11,6 +11,7 @@ import {
   Plus, Search, FileText, Upload, File, FileCheck, FileWarning, Trash2, Eye, ScanLine,
 } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
+import DeleteConfirmDialog from '@/components/dashboard/DeleteConfirmDialog';
 
 const JENIS_CONFIG: Record<string, { color: string; bg: string; label: string; icon: React.ReactNode }> = {
   kontrak: { color: 'text-blue-600', bg: 'bg-blue-100/80', label: 'Kontrak', icon: <FileCheck size={14} /> },
@@ -282,19 +283,12 @@ export default function DocumentsModule() {
         </DialogContent>
       </Dialog>
 
-      {/* Delete Confirm */}
-      <Dialog open={!!deleteConfirm} onOpenChange={() => setDeleteConfirm(null)}>
-        <DialogContent className="bg-white/90 border-white/60 backdrop-blur-xl max-w-sm">
-          <DialogHeader>
-            <DialogTitle className="text-slate-800">Hapus Dokumen?</DialogTitle>
-            <DialogDescription className="text-slate-400">Dokumen yang dihapus tidak dapat dikembalikan.</DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <button onClick={() => setDeleteConfirm(null)} className="px-4 py-2 rounded-xl bg-white/[0.07] border border-white/[0.12] text-slate-600 text-sm hover:bg-white/50 transition-all">Batal</button>
-            <button onClick={() => deleteConfirm && handleDelete(deleteConfirm)} className="px-4 py-2 rounded-xl bg-red-500/80 text-white text-sm hover:bg-red-500 transition-all">Hapus</button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <DeleteConfirmDialog
+        open={!!deleteConfirm}
+        onOpenChange={() => setDeleteConfirm(null)}
+        title="Hapus Dokumen?"
+        onConfirm={() => deleteConfirm && handleDelete(deleteConfirm)}
+      />
       </>)}
     </div>
   );

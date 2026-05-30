@@ -1,10 +1,12 @@
 // ============================================================
 // Vercel Serverless Function — /api/db/data
 // CRUD operations for YWM dashboard data via Supabase
+// Updated: Added input validation & sanitization
 // ============================================================
 
 import { createClient } from '@supabase/supabase-js';
 import type { VercelRequest, VercelResponse } from '@vercel/node';
+import { sanitizeData, validateData } from '../shared/validation';
 
 const VALID_TABLES = [
   'spare_parts', 'production', 'maintenance',
@@ -20,14 +22,14 @@ function getSupabase() {
 }
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-  // CORS
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  // CORS headers (uses configurable origin instead of wildcard)
+  setCorsHeaders(req, res);
 
-  if (req.method === 'OPTIONS') {
-    return res.status(200).end();
-  }
+  // Handle CORS preflight
+  if (handleCorsPreflightRequest(req, res)) return;
+
+  // Auth check
+  if (!requireAuth(req, res)) return;
 
   const supabase = getSupabase();
   if (!supabase) {
@@ -80,9 +82,16 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         return res.status(400).json({ error: 'Data required for insert' });
       }
 
+      // Sanitize and validate input data
+      const sanitizedInsertData = sanitizeData(table, data);
+      const validationError = validateData(sanitizedInsertData);
+      if (validationError) {
+        return res.status(400).json({ error: validationError });
+      }
+
       const { data: inserted, error } = await supabase
         .from(table)
-        .insert(data)
+        .insert(sanitizedInsertData)
         .select();
 
       if (error) return res.status(500).json({ error: error.message });
@@ -99,9 +108,16 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         return res.status(400).json({ error: 'ID and data required for update' });
       }
 
+      // Sanitize and validate input data
+      const sanitizedUpdateData = sanitizeData(table, data);
+      const validationError = validateData(sanitizedUpdateData);
+      if (validationError) {
+        return res.status(400).json({ error: validationError });
+      }
+
       const { data: updated, error } = await supabase
         .from(table)
-        .update({ ...data, updated_at: new Date().toISOString() })
+        .update({ ...sanitizedUpdateData, updated_at: new Date().toISOString() })
         .eq('id', id)
         .select();
 

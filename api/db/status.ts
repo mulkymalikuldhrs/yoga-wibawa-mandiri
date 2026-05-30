@@ -5,16 +5,18 @@
 
 import { createClient } from '@supabase/supabase-js';
 import type { VercelRequest, VercelResponse } from '@vercel/node';
+import { setCorsHeaders, handleCorsPreflightRequest } from '../shared/cors';
+import { requireAuth } from '../shared/auth';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-  // CORS
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  // CORS headers (uses configurable origin instead of wildcard)
+  setCorsHeaders(req, res);
 
-  if (req.method === 'OPTIONS') {
-    return res.status(200).end();
-  }
+  // Handle CORS preflight
+  if (handleCorsPreflightRequest(req, res)) return;
+
+  // Auth check
+  if (!requireAuth(req, res)) return;
 
   const supabaseUrl = process.env.VITE_SUPABASE_URL || '';
   const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.VITE_SUPABASE_ANON_KEY || '';

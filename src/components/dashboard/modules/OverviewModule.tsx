@@ -4,7 +4,6 @@
 // ============================================================
 
 import { useState, useEffect } from 'react';
-import { useSearchParams } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import GlassCard from '@/components/dashboard/GlassCard';
 import { getData, formatRupiah } from '@/lib/supabase-data';
@@ -22,6 +21,7 @@ import {
   SILO_CONFIG,
   type DashboardModule,
 } from '@/types/dashboard';
+import { useDashboardContext } from '@/contexts/DashboardContext';
 import {
   Package,
   AlertTriangle,
@@ -106,10 +106,7 @@ function SiloGauge({ label, percentage, tonnage, color }: { label: string; perce
 }
 
 export default function OverviewModule() {
-  const [, setSearchParams] = useSearchParams();
-  const navigateToModule = (mod: DashboardModule) => {
-    setSearchParams({ module: mod });
-  };
+  const { onModuleChange: navigateToModule } = useDashboardContext();
 
   const [stats, setStats] = useState({
     // Produksi

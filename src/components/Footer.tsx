@@ -42,13 +42,16 @@ const Footer = () => {
             </div>
 
             {/* YWM AI Dashboard Badge */}
-            <div className="flex items-center space-x-3 mb-6 p-3 bg-gradient-to-r from-cyan-600 to-purple-600 rounded-lg">
+            <Link
+              to="/dashboard"
+              className="flex items-center space-x-3 mb-6 p-3 bg-gradient-to-r from-cyan-600 to-purple-600 rounded-lg hover:from-cyan-700 hover:to-purple-700 transition-all"
+            >
               <Code className="text-white" size={20} />
               <div>
-                <p className="text-white font-semibold text-sm">YWM AI Dashboard</p>
+                <p className="text-white font-semibold text-sm">🤖 AI Dashboard</p>
                 <p className="text-cyan-100 text-xs">AI-Powered Operations Management</p>
               </div>
-            </div>
+            </Link>
 
             {/* WhatsApp Contact */}
             <a

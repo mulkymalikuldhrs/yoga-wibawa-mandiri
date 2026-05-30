@@ -28,6 +28,7 @@ const ChatBot = () => {
   const [inputMessage, setInputMessage] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const [aiReady, setAiReady] = useState(false);
+  const [aiWarning, setAiWarning] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // Check AI backend health
@@ -36,13 +37,19 @@ const ChatBot = () => {
     async function check() {
       try {
         const health = await checkAIHealth();
-        if (mounted) setAiReady(health.ai === 'ready');
+        if (mounted) {
+          setAiReady(health.ai === 'ready');
+          setAiWarning(health.ai !== 'ready');
+        }
       } catch {
-        if (mounted) setAiReady(false);
+        if (mounted) {
+          setAiReady(false);
+          setAiWarning(true);
+        }
       }
     }
     check();
-    const interval = setInterval(check, 15000);
+    const interval = setInterval(check, 30000);
     return () => { mounted = false; clearInterval(interval); };
   }, []);
 
@@ -195,7 +202,7 @@ const ChatBot = () => {
               <div>
                 <h3 className="font-semibold">AI Assistant YWM</h3>
                 <p className="text-sm text-gray-200">
-                  {aiReady ? 'Online — Siap membantu' : 'Menghubungkan...'}
+                  {aiReady ? 'Online — Siap membantu' : aiWarning ? 'Koneksi tidak stabil — Coba kirim pesan' : 'Menghubungkan...'}
                 </p>
               </div>
             </div>

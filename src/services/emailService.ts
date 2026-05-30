@@ -54,7 +54,7 @@ export const sendContactEmail = async (formData: ContactFormData): Promise<boole
     }
     return response.status === 200;
   } catch (error) {
-    console.error('Failed to send email:', error);
+    if (import.meta.env.DEV) console.error('Failed to send email:', error);
     return false;
   }
 };
@@ -82,7 +82,7 @@ export const sendContactEmailFormspree = async (formData: ContactFormData): Prom
 
     return response.ok;
   } catch (error) {
-    console.error('Failed to send email via Formspree:', error);
+    if (import.meta.env.DEV) console.error('Failed to send email via Formspree:', error);
     return false;
   }
 };

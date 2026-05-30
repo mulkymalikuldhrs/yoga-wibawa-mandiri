@@ -362,9 +362,9 @@ export async function getData<T extends { id: string }>(prefix: string): Promise
       if (!error && data) {
         return data.map((row) => toCamelCase<T>(tableName, row));
       }
-      console.warn(`[YWM Data] Supabase fetch failed for ${tableName}, falling back to localStorage:`, error?.message);
+      if (import.meta.env.DEV) console.warn(`[YWM Data] Supabase fetch failed for ${tableName}, falling back to localStorage:`, error?.message);
     } catch (err) {
-      console.warn(`[YWM Data] Supabase error for ${tableName}, falling back to localStorage:`, err);
+      if (import.meta.env.DEV) console.warn(`[YWM Data] Supabase error for ${tableName}, falling back to localStorage:`, err);
     }
   }
 
@@ -419,7 +419,7 @@ export async function saveData<T extends { id: string }>(prefix: string, data: T
         .update({ ...snakeData, updated_at: new Date().toISOString() })
         .eq('id', data.id);
       if (error) {
-        console.warn(`[YWM Data] Supabase update failed for ${tableName}:`, error.message);
+        if (import.meta.env.DEV) console.warn(`[YWM Data] Supabase update failed for ${tableName}:`, error.message);
       }
     } else {
       // Insert new record
@@ -427,11 +427,11 @@ export async function saveData<T extends { id: string }>(prefix: string, data: T
         .from(tableName)
         .insert({ ...snakeData, updated_at: new Date().toISOString() });
       if (error) {
-        console.warn(`[YWM Data] Supabase insert failed for ${tableName}:`, error.message);
+        if (import.meta.env.DEV) console.warn(`[YWM Data] Supabase insert failed for ${tableName}:`, error.message);
       }
     }
   } catch (err) {
-    console.warn(`[YWM Data] Supabase save error for ${tableName}:`, err);
+    if (import.meta.env.DEV) console.warn(`[YWM Data] Supabase save error for ${tableName}:`, err);
   }
 }
 
@@ -459,10 +459,10 @@ export async function deleteData(prefix: string, id: string): Promise<void> {
       .eq('id', id);
 
     if (error) {
-      console.warn(`[YWM Data] Supabase delete failed for ${tableName}:`, error.message);
+      if (import.meta.env.DEV) console.warn(`[YWM Data] Supabase delete failed for ${tableName}:`, error.message);
     }
   } catch (err) {
-    console.warn(`[YWM Data] Supabase delete error for ${tableName}:`, err);
+    if (import.meta.env.DEV) console.warn(`[YWM Data] Supabase delete error for ${tableName}:`, err);
   }
 }
 
@@ -479,7 +479,7 @@ export async function syncLocalToSupabase(): Promise<Record<string, number>> {
   const results: Record<string, number> = {};
   const available = await isSupabaseAvailable();
   if (!available) {
-    console.warn('[YWM Sync] Supabase not available, skipping sync');
+    if (import.meta.env.DEV) console.warn('[YWM Sync] Supabase not available, skipping sync');
     return results;
   }
 
@@ -500,17 +500,17 @@ export async function syncLocalToSupabase(): Promise<Record<string, number>> {
         if (!error) {
           migrated++;
         } else {
-          console.warn(`[YWM Sync] Failed to upsert record ${item.id} to ${tableName}:`, error.message);
+          if (import.meta.env.DEV) console.warn(`[YWM Sync] Failed to upsert record ${item.id} to ${tableName}:`, error.message);
         }
       } catch (err) {
-        console.warn(`[YWM Sync] Error syncing record ${item.id} to ${tableName}:`, err);
+        if (import.meta.env.DEV) console.warn(`[YWM Sync] Error syncing record ${item.id} to ${tableName}:`, err);
       }
     }
 
     results[tableName] = migrated;
   }
 
-  console.info('[YWM Sync] Migration complete:', results);
+  if (import.meta.env.DEV) console.info('[YWM Sync] Migration complete:', results);
   return results;
 }
 

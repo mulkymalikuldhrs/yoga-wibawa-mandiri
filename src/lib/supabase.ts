@@ -9,7 +9,7 @@ const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || '';
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
 
 if (!supabaseUrl || !supabaseAnonKey) {
-  console.warn('[YWM Supabase] Missing environment variables. Database features disabled.');
+  if (import.meta.env.DEV) console.warn('[YWM Supabase] Missing environment variables. Database features disabled.');
 }
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
@@ -144,7 +144,7 @@ export async function dbSelect(table: string, options?: {
 
   const { data, error } = await query;
   if (error) {
-    console.error(`[YWM DB] Select error on ${table}:`, error.message);
+    if (import.meta.env.DEV) console.error(`[YWM DB] Select error on ${table}:`, error.message);
     throw error;
   }
   return data;
@@ -160,7 +160,7 @@ export async function dbInsert(table: string, records: Record<string, unknown> |
     .select();
 
   if (error) {
-    console.error(`[YWM DB] Insert error on ${table}:`, error.message);
+    if (import.meta.env.DEV) console.error(`[YWM DB] Insert error on ${table}:`, error.message);
     throw error;
   }
   return data;
@@ -177,7 +177,7 @@ export async function dbUpdate(table: string, id: string, updates: Record<string
     .select();
 
   if (error) {
-    console.error(`[YWM DB] Update error on ${table}:`, error.message);
+    if (import.meta.env.DEV) console.error(`[YWM DB] Update error on ${table}:`, error.message);
     throw error;
   }
   return data;
@@ -193,7 +193,7 @@ export async function dbDelete(table: string, id: string) {
     .eq('id', id);
 
   if (error) {
-    console.error(`[YWM DB] Delete error on ${table}:`, error.message);
+    if (import.meta.env.DEV) console.error(`[YWM DB] Delete error on ${table}:`, error.message);
     throw error;
   }
 }
@@ -237,15 +237,15 @@ export async function ensureTableExists(tableName: TableName): Promise<boolean> 
     const { error } = await supabase.rpc('ensure_table_exists', { table_name: tableName });
 
     if (error) {
-      console.warn(`[YWM DB] Could not auto-create table ${tableName}:`, error.message);
-      console.info(`[YWM DB] Please run the schema.sql in Supabase SQL Editor to create the ${tableName} table.`);
+      if (import.meta.env.DEV) console.warn(`[YWM DB] Could not auto-create table ${tableName}:`, error.message);
+      if (import.meta.env.DEV) console.info(`[YWM DB] Please run the schema.sql in Supabase SQL Editor to create the ${tableName} table.`);
       return false;
     }
 
-    console.info(`[YWM DB] Table ${tableName} created successfully`);
+    if (import.meta.env.DEV) console.info(`[YWM DB] Table ${tableName} created successfully`);
     return true;
   } catch (err) {
-    console.warn(`[YWM DB] Error creating table ${tableName}:`, err);
+    if (import.meta.env.DEV) console.warn(`[YWM DB] Error creating table ${tableName}:`, err);
     return false;
   }
 }

@@ -131,7 +131,7 @@ const Contact = () => {
         }
       }
     } catch (error) {
-      console.error('Form submission error:', error);
+      if (import.meta.env.DEV) console.error('Form submission error:', error);
       
       toast({
         title: "❌ Gagal Mengirim",

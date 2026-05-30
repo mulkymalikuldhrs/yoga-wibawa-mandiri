@@ -6,6 +6,7 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { cn } from '@/lib/utils';
 import type { AiMessage } from '@/types/dashboard';
+import { KV_PREFIXES } from '@/types/dashboard';
 import { chatWithAiStream, checkAIHealth, parseDataInputAction, buildDashboardContext } from '@/lib/ywm-ai';
 import { saveData, generateId } from '@/lib/supabase-data';
 import {
@@ -25,18 +26,8 @@ import {
   CheckCircle2,
   XCircle,
   AlertCircle,
+  RefreshCw,
 } from 'lucide-react';
-
-interface AiAssistantPanelProps {
-  isOpen: boolean;
-  onToggle: () => void;
-}
-
-const QUICK_ACTIONS = [
-  { label: 'Ringkasan Hari Ini', icon: <Zap size={14} />, prompt: 'Beri ringkasan operasional hari ini untuk PT. Yoga Wibawa Mandiri. Apa saja yang perlu diperhatikan?' },
-  { label: 'Cek Stok Rendah', icon: <Sparkles size={14} />, prompt: 'Suku cadang mana yang stoknya mendekati batas minimum? Tampilkan daftar lengkap.' },
-  { label: 'Jadwal Perawatan', icon: <FileSearch size={14} />, prompt: 'Apa jadwal perawatan mesin minggu ini? Ada WO yang overdue?' },
-];
 
 // ── Data Input Confirmation Component ──
 function DataInputCard({
@@ -102,6 +93,17 @@ function DataInputCard({
   );
 }
 
+interface AiAssistantPanelProps {
+  isOpen: boolean;
+  onToggle: () => void;
+}
+
+const QUICK_ACTIONS = [
+  { label: 'Ringkasan Hari Ini', icon: <Zap size={14} />, prompt: 'Beri ringkasan operasional hari ini untuk PT. Yoga Wibawa Mandiri. Apa saja yang perlu diperhatikan?' },
+  { label: 'Cek Stok Rendah', icon: <Sparkles size={14} />, prompt: 'Suku cadang mana yang stoknya mendekati batas minimum? Tampilkan daftar lengkap.' },
+  { label: 'Jadwal Perawatan', icon: <FileSearch size={14} />, prompt: 'Apa jadwal perawatan mesin minggu ini? Ada WO yang overdue?' },
+];
+
 export default function AiAssistantPanel({ isOpen, onToggle }: AiAssistantPanelProps) {
   const [messages, setMessages] = useState<AiMessage[]>([
     {
@@ -115,6 +117,7 @@ export default function AiAssistantPanel({ isOpen, onToggle }: AiAssistantPanelP
   const [input, setInput] = useState('');
   const [isStreaming, setIsStreaming] = useState(false);
   const [aiReady, setAiReady] = useState(false);
+  const [aiWarning, setAiWarning] = useState(false); // Warning state: health check failed but allow interaction
   const [isRecording, setIsRecording] = useState(false);
   const [pendingDataInput, setPendingDataInput] = useState<{
     module: string;
@@ -125,19 +128,39 @@ export default function AiAssistantPanel({ isOpen, onToggle }: AiAssistantPanelP
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
   // Check AI backend health
+  // When health check fails, show warning but still allow interaction
   useEffect(() => {
     let mounted = true;
     async function check() {
       try {
         const health = await checkAIHealth();
-        if (mounted) setAiReady(health.ai === 'ready');
+        if (mounted) {
+          setAiReady(health.ai === 'ready');
+          setAiWarning(health.ai !== 'ready');
+        }
       } catch {
-        if (mounted) setAiReady(false);
+        if (mounted) {
+          // Health check failed — show warning but don't fully disable
+          setAiReady(false);
+          setAiWarning(true);
+        }
       }
     }
     check();
-    const interval = setInterval(check, 15000);
+    const interval = setInterval(check, 30000);
     return () => { mounted = false; clearInterval(interval); };
+  }, []);
+
+  // ── Retry AI connection manually ──
+  const retryAIConnection = useCallback(async () => {
+    try {
+      const health = await checkAIHealth();
+      setAiReady(health.ai === 'ready');
+      setAiWarning(health.ai !== 'ready');
+    } catch {
+      setAiReady(false);
+      setAiWarning(true);
+    }
   }, []);
 
   const scrollToBottom = useCallback(() => {
@@ -149,7 +172,8 @@ export default function AiAssistantPanel({ isOpen, onToggle }: AiAssistantPanelP
   }, [messages, scrollToBottom]);
 
   const handleSend = useCallback(async () => {
-    if (!input.trim() || isStreaming || !aiReady) return;
+    if (!input.trim() || isStreaming) return;
+    // Allow sending even if health check failed (aiWarning mode)
 
     const userMessage: AiMessage = {
       id: Date.now().toString(36),
@@ -330,14 +354,15 @@ export default function AiAssistantPanel({ isOpen, onToggle }: AiAssistantPanelP
   const handleConfirmDataInput = useCallback(() => {
     if (!pendingDataInput) return;
 
+    // Use KV_PREFIXES from dashboard types — single source of truth
     const modulePrefixMap: Record<string, string> = {
-      'spare-parts': 'ywm_sparePart_',
-      'production': 'ywm_production_',
-      'maintenance': 'ywm_maintenance_',
-      'team-activity': 'ywm_teamActivity_',
-      'safety': 'ywm_safety_',
-      'finance': 'ywm_finance_',
-      'hr': 'ywm_employee_',
+      'spare-parts': KV_PREFIXES.sparePart,
+      'production': KV_PREFIXES.production,
+      'maintenance': KV_PREFIXES.maintenance,
+      'team-activity': KV_PREFIXES.teamActivity,
+      'safety': KV_PREFIXES.safety,
+      'finance': KV_PREFIXES.finance,
+      'hr': KV_PREFIXES.employee,
     };
     const prefix = modulePrefixMap[pendingDataInput.module] || `ywm_${pendingDataInput.module}_`;
 
@@ -418,7 +443,7 @@ export default function AiAssistantPanel({ isOpen, onToggle }: AiAssistantPanelP
               <div className="flex items-center gap-1.5">
                 <div className={cn('w-1.5 h-1.5 rounded-full', aiReady ? 'bg-emerald-400' : 'bg-yellow-400 animate-pulse')} />
                 <span className="text-slate-400 text-xs">
-                  {aiReady ? 'Online' : 'Menunggu server AI...'}
+                  {aiReady ? 'Online — Siap membantu' : aiWarning ? 'Koneksi tidak stabil' : 'Menunggu server AI...'}
                 </span>
               </div>
             </div>
@@ -440,7 +465,7 @@ export default function AiAssistantPanel({ isOpen, onToggle }: AiAssistantPanelP
               <button
                 key={action.label}
                 onClick={() => handleQuickAction(action.prompt)}
-                disabled={isStreaming || !aiReady}
+                disabled={isStreaming}
                 className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-white/50 border border-white/60 text-slate-500 hover:text-slate-800 hover:bg-white/60 transition-all text-xs disabled:opacity-50"
               >
                 {action.icon}
@@ -510,6 +535,19 @@ export default function AiAssistantPanel({ isOpen, onToggle }: AiAssistantPanelP
           )}
 
           <div ref={messagesEndRef} />
+
+          {/* Retry connection button when AI is in warning state */}
+          {aiWarning && !aiReady && !isStreaming && (
+            <div className="flex justify-center py-2">
+              <button
+                onClick={retryAIConnection}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-amber-50/80 border border-amber-200/50 text-amber-600 text-xs font-medium hover:bg-amber-100/80 transition-all"
+              >
+                <RefreshCw size={12} />
+                Coba Koneksi Ulang
+              </button>
+            </div>
+          )}
         </div>
 
         {/* Input */}
@@ -521,8 +559,8 @@ export default function AiAssistantPanel({ isOpen, onToggle }: AiAssistantPanelP
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={handleKeyDown}
-              placeholder={aiReady ? 'Ketik pesan...' : 'Menunggu server AI...'}
-              disabled={!aiReady || isStreaming}
+              placeholder={isStreaming ? 'AI sedang menjawab...' : aiWarning && !aiReady ? 'Koneksi tidak stabil — coba kirim pesan...' : 'Ketik pesan...'}
+              disabled={isStreaming}
               rows={1}
               className="flex-1 bg-transparent text-slate-800 text-sm placeholder:text-slate-400 resize-none outline-none max-h-24 min-h-[32px]"
             />
@@ -540,7 +578,7 @@ export default function AiAssistantPanel({ isOpen, onToggle }: AiAssistantPanelP
             </button>
             <button
               onClick={handleSend}
-              disabled={!input.trim() || isStreaming || !aiReady}
+              disabled={!input.trim() || isStreaming}
               className="p-2 rounded-lg bg-cyan-100/80 text-cyan-600 hover:bg-cyan-100 transition-all disabled:opacity-30 disabled:cursor-not-allowed"
               title="Kirim"
             >

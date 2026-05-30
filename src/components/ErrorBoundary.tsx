@@ -22,7 +22,7 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo): void {
     // Log error for debugging (no PII)
-    console.error('[ErrorBoundary]', error.message, errorInfo.componentStack);
+    if (import.meta.env.DEV) console.error('[ErrorBoundary]', error.message, errorInfo.componentStack);
   }
 
   handleReset = (): void => {

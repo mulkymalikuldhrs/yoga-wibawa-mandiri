@@ -1,11 +1,13 @@
 // ============================================================
 // Vercel Serverless Function — /api/health
 // Checks AI SDK & Supabase availability
+// Public endpoint — auth is skipped
 // ============================================================
 
 import ZAI from 'z-ai-web-dev-sdk';
 import { createClient } from '@supabase/supabase-js';
 import type { VercelRequest, VercelResponse } from '@vercel/node';
+import { setCorsHeaders, handleCorsPreflightRequest } from '../shared/cors';
 
 // Keep AI instance warm across invocations
 let zaiInstance: any = null;
@@ -21,14 +23,13 @@ async function getAI() {
 }
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-  // CORS headers
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  // CORS headers (uses configurable origin instead of wildcard)
+  setCorsHeaders(req, res);
 
-  if (req.method === 'OPTIONS') {
-    return res.status(200).end();
-  }
+  // Handle CORS preflight
+  if (handleCorsPreflightRequest(req, res)) return;
+
+  // NOTE: /api/health is a public endpoint — no auth required
 
   const ai = await getAI();
 

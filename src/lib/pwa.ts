@@ -37,7 +37,7 @@ export interface BeforeInstallPromptEvent extends Event {
 export function registerSW(): void {
   if (typeof window === 'undefined') return;
   if (!('serviceWorker' in navigator)) {
-    console.warn('[YWM PWA] Service Worker not supported');
+    if (import.meta.env.DEV) console.warn('[YWM PWA] Service Worker not supported');
     return;
   }
 
@@ -48,12 +48,12 @@ export function registerSW(): void {
         scope: '/',
       });
 
-      console.log('[YWM PWA] Service Worker registered:', registration.scope);
+      if (import.meta.env.DEV) console.log('[YWM PWA] Service Worker registered:', registration.scope);
 
       // Check for updates periodically
       setInterval(() => {
         registration.update().catch((err) => {
-          console.warn('[YWM PWA] SW update check failed:', err);
+          if (import.meta.env.DEV) console.warn('[YWM PWA] SW update check failed:', err);
         });
       }, 60 * 60 * 1000); // Check every hour
 
@@ -66,17 +66,17 @@ export function registerSW(): void {
           if (newWorker.state === 'installed') {
             if (navigator.serviceWorker.controller) {
               // New content available — notify user
-              console.log('[YWM PWA] Konten baru tersedia, silakan refresh.');
+              if (import.meta.env.DEV) console.log('[YWM PWA] Konten baru tersedia, silakan refresh.');
               // Send message to skip waiting
               newWorker.postMessage({ type: 'SKIP_WAITING' });
             } else {
-              console.log('[YWM PWA] Konten di-cache untuk penggunaan offline.');
+              if (import.meta.env.DEV) console.log('[YWM PWA] Konten di-cache untuk penggunaan offline.');
             }
           }
         });
       });
     } catch (error) {
-      console.error('[YWM PWA] Service Worker registration failed:', error);
+      if (import.meta.env.DEV) console.error('[YWM PWA] Service Worker registration failed:', error);
     }
   });
 
@@ -92,12 +92,12 @@ export function registerSW(): void {
   window.addEventListener('beforeinstallprompt', (e) => {
     e.preventDefault();
     deferredPrompt = e as BeforeInstallPromptEvent;
-    console.log('[YWM PWA] Install prompt captured');
+    if (import.meta.env.DEV) console.log('[YWM PWA] Install prompt captured');
   });
 
   // Listen for appinstalled event
   window.addEventListener('appinstalled', () => {
-    console.log('[YWM PWA] App installed successfully');
+    if (import.meta.env.DEV) console.log('[YWM PWA] App installed successfully');
     deferredPrompt = null;
   });
 }
@@ -112,9 +112,9 @@ export async function unregisterSW(): Promise<void> {
   try {
     const registration = await navigator.serviceWorker.ready;
     await registration.unregister();
-    console.log('[YWM PWA] Service Worker unregistered');
+    if (import.meta.env.DEV) console.log('[YWM PWA] Service Worker unregistered');
   } catch (error) {
-    console.error('[YWM PWA] Failed to unregister SW:', error);
+    if (import.meta.env.DEV) console.error('[YWM PWA] Failed to unregister SW:', error);
   }
 }
 
@@ -139,18 +139,18 @@ export function isPWAInstalled(): boolean {
  */
 export async function showInstallPrompt(): Promise<boolean> {
   if (!deferredPrompt) {
-    console.log('[YWM PWA] No install prompt available');
+    if (import.meta.env.DEV) console.log('[YWM PWA] No install prompt available');
     return false;
   }
 
   try {
     await deferredPrompt.prompt();
     const { outcome } = await deferredPrompt.userChoice;
-    console.log('[YWM PWA] Install prompt outcome:', outcome);
+    if (import.meta.env.DEV) console.log('[YWM PWA] Install prompt outcome:', outcome);
     deferredPrompt = null;
     return outcome === 'accepted';
   } catch (error) {
-    console.error('[YWM PWA] Install prompt error:', error);
+    if (import.meta.env.DEV) console.error('[YWM PWA] Install prompt error:', error);
     return false;
   }
 }
@@ -185,12 +185,12 @@ export function isPushSupported(): boolean {
  */
 export async function requestPushPermission(): Promise<NotificationPermission> {
   if (!isPushSupported()) {
-    console.warn('[YWM PWA] Push notifications not supported');
+    if (import.meta.env.DEV) console.warn('[YWM PWA] Push notifications not supported');
     return 'denied';
   }
 
   const permission = await Notification.requestPermission();
-  console.log('[YWM PWA] Push permission:', permission);
+  if (import.meta.env.DEV) console.log('[YWM PWA] Push permission:', permission);
   return permission;
 }
 
@@ -206,7 +206,7 @@ export async function getPushSubscription(): Promise<PushSubscription | null> {
     const subscription = await registration.pushManager.getSubscription();
     return subscription;
   } catch (error) {
-    console.error('[YWM PWA] Failed to get push subscription:', error);
+    if (import.meta.env.DEV) console.error('[YWM PWA] Failed to get push subscription:', error);
     return null;
   }
 }
@@ -222,7 +222,7 @@ export async function subscribeToPush(vapidPublicKey: string): Promise<PushSubsc
   try {
     const permission = await requestPushPermission();
     if (permission !== 'granted') {
-      console.warn('[YWM PWA] Push permission not granted');
+      if (import.meta.env.DEV) console.warn('[YWM PWA] Push permission not granted');
       return null;
     }
 
@@ -232,11 +232,11 @@ export async function subscribeToPush(vapidPublicKey: string): Promise<PushSubsc
       applicationServerKey: vapidPublicKey,
     });
 
-    console.log('[YWM PWA] Push subscription created:', subscription.endpoint);
+    if (import.meta.env.DEV) console.log('[YWM PWA] Push subscription created:', subscription.endpoint);
     // In a real implementation, you would send the subscription to your server
     return subscription;
   } catch (error) {
-    console.error('[YWM PWA] Failed to subscribe to push:', error);
+    if (import.meta.env.DEV) console.error('[YWM PWA] Failed to subscribe to push:', error);
     return null;
   }
 }
@@ -249,12 +249,12 @@ export async function unsubscribeFromPush(): Promise<boolean> {
     const subscription = await getPushSubscription();
     if (subscription) {
       await subscription.unsubscribe();
-      console.log('[YWM PWA] Push subscription removed');
+      if (import.meta.env.DEV) console.log('[YWM PWA] Push subscription removed');
       return true;
     }
     return false;
   } catch (error) {
-    console.error('[YWM PWA] Failed to unsubscribe from push:', error);
+    if (import.meta.env.DEV) console.error('[YWM PWA] Failed to unsubscribe from push:', error);
     return false;
   }
 }

@@ -381,7 +381,7 @@ export function NotificationProvider({
             }));
           },
           (error) => {
-            console.error('AI reply error:', error);
+            if (import.meta.env.DEV) console.error('AI reply error:', error);
             setReplyLoading((prev) => ({
               ...prev,
               [notificationId]: false,

@@ -3,10 +3,18 @@ import { Link } from 'react-router-dom';
 import { ArrowRight, Factory, Truck, Award, Bot, Zap } from 'lucide-react';
 
 const Index = () => {
+  // Smooth scroll to section by ID
+  const scrollToSection = (sectionId: string) => {
+    const element = document.getElementById(sectionId);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
+
   return (
     <Layout>
       {/* Hero Section */}
-      <section className="relative min-h-screen flex items-center justify-center bg-gradient-to-br from-ywm-red via-red-700 to-red-900">
+      <section id="beranda" className="relative min-h-screen flex items-center justify-center bg-gradient-to-br from-ywm-red via-red-700 to-red-900">
         <div className="absolute inset-0 bg-black opacity-40"></div>
         <div className="absolute inset-0">
           <img 
@@ -34,13 +42,13 @@ const Index = () => {
           </div>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link 
-              to="/layanan" 
+            <button 
+              onClick={() => scrollToSection('layanan')}
               className="bg-ywm-red hover:bg-red-700 text-white px-8 py-4 rounded-lg font-semibold text-lg transition-all transform hover:scale-105 flex items-center justify-center"
             >
               Lihat Layanan Kami
               <ArrowRight className="ml-2" size={20} />
-            </Link>
+            </button>
             <Link 
               to="/dashboard" 
               className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-8 py-4 rounded-lg font-semibold text-lg transition-all transform hover:scale-105 flex items-center justify-center"
@@ -48,12 +56,12 @@ const Index = () => {
               <Bot className="mr-2" size={20} />
               AI Dashboard
             </Link>
-            <Link 
-              to="/kontak" 
+            <button 
+              onClick={() => scrollToSection('kontak')}
               className="border-2 border-white text-white hover:bg-white hover:text-ywm-red px-8 py-4 rounded-lg font-semibold text-lg transition-all transform hover:scale-105"
             >
               Hubungi Kami
-            </Link>
+            </button>
           </div>
         </div>
       </section>
@@ -95,7 +103,7 @@ const Index = () => {
       </section>
 
       {/* About Preview */}
-      <section className="py-20 bg-gray-50">
+      <section id="tentang" className="py-20 bg-gray-50">
         <div className="container mx-auto px-4">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="animate-fade-in">
@@ -140,7 +148,7 @@ const Index = () => {
       </section>
 
       {/* Services Preview */}
-      <section className="py-20 bg-white">
+      <section id="layanan" className="py-20 bg-white">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-ywm-dark mb-4">
@@ -200,7 +208,7 @@ const Index = () => {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 bg-ywm-red text-white">
+      <section id="kontak" className="py-20 bg-ywm-red text-white">
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-4xl font-bold mb-6">
             Siap Bermitra dengan Kami?

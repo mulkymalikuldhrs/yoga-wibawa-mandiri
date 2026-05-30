@@ -14,7 +14,7 @@ export async function kvGet<T>(key: string): Promise<T | null> {
     if (!raw) return null;
     return JSON.parse(raw) as T;
   } catch (err) {
-    console.error(`KV GET gagal untuk key "${key}":`, err);
+    if (import.meta.env.DEV) console.error(`KV GET gagal untuk key "${key}":`, err);
     return null;
   }
 }
@@ -26,7 +26,7 @@ export async function kvSet<T>(key: string, value: T): Promise<void> {
     const puter = await waitForPuter();
     await puter.kv.set(key, JSON.stringify(value));
   } catch (err) {
-    console.error(`KV SET gagal untuk key "${key}":`, err);
+    if (import.meta.env.DEV) console.error(`KV SET gagal untuk key "${key}":`, err);
     throw err;
   }
 }
@@ -38,7 +38,7 @@ export async function kvDel(key: string): Promise<void> {
     const puter = await waitForPuter();
     await puter.kv.del(key);
   } catch (err) {
-    console.error(`KV DEL gagal untuk key "${key}":`, err);
+    if (import.meta.env.DEV) console.error(`KV DEL gagal untuk key "${key}":`, err);
     throw err;
   }
 }
@@ -51,7 +51,7 @@ export async function kvList(prefix: string): Promise<string[]> {
     const keys = await puter.kv.list(prefix);
     return Array.isArray(keys) ? keys : [];
   } catch (err) {
-    console.error(`KV LIST gagal untuk prefix "${prefix}":`, err);
+    if (import.meta.env.DEV) console.error(`KV LIST gagal untuk prefix "${prefix}":`, err);
     return [];
   }
 }

@@ -8,6 +8,7 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { cn } from '@/lib/utils';
 import { chatWithAiStream, checkAIHealth, smartParse, parseDataInputAction, buildDashboardContext } from '@/lib/ywm-ai';
 import type { AiMessage } from '@/types/dashboard';
+import { KV_PREFIXES } from '@/types/dashboard';
 import { saveData, generateId } from '@/lib/supabase-data';
 import { useIsMobile } from '@/hooks/use-mobile';
 import {
@@ -33,47 +34,8 @@ import {
   Users,
   Power,
   PowerOff,
+  RefreshCw,
 } from 'lucide-react';
-
-// ── Quick Actions ──
-const QUICK_ACTIONS = [
-  {
-    label: 'Ringkasan Hari Ini',
-    icon: <Zap size={14} />,
-    prompt: 'Beri ringkasan operasional hari ini untuk PT. Yoga Wibawa Mandiri. Apa saja yang perlu diperhatikan?',
-    color: 'text-amber-600',
-  },
-  {
-    label: 'Cek Stok Rendah',
-    icon: <Package size={14} />,
-    prompt: 'Suku cadang mana yang stoknya mendekati batas minimum? Tampilkan daftar lengkap.',
-    color: 'text-orange-600',
-  },
-  {
-    label: 'Jadwal Perawatan',
-    icon: <Wrench size={14} />,
-    prompt: 'Apa jadwal perawatan mesin minggu ini? Ada WO yang overdue?',
-    color: 'text-blue-600',
-  },
-  {
-    label: 'Status Produksi',
-    icon: <TrendingUp size={14} />,
-    prompt: 'Bagaimana status produksi hari ini? Bandingkan target vs aktual per shift.',
-    color: 'text-green-600',
-  },
-  {
-    label: 'Keselamatan Kerja',
-    icon: <Shield size={14} />,
-    prompt: 'Apakah ada insiden keselamatan yang perlu ditindaklanjuti? Tampilkan status HSE.',
-    color: 'text-red-500',
-  },
-  {
-    label: 'Input Data',
-    icon: <Database size={14} />,
-    prompt: 'Saya ingin input data. Apa saja modul yang tersedia dan format yang diperlukan?',
-    color: 'text-purple-600',
-  },
-];
 
 // ── Data Input Confirmation Component ──
 function DataInputCard({
@@ -139,6 +101,46 @@ function DataInputCard({
   );
 }
 
+// ── Quick Actions ──
+const QUICK_ACTIONS = [
+  {
+    label: 'Ringkasan Hari Ini',
+    icon: <Zap size={14} />,
+    prompt: 'Beri ringkasan operasional hari ini untuk PT. Yoga Wibawa Mandiri. Apa saja yang perlu diperhatikan?',
+    color: 'text-amber-600',
+  },
+  {
+    label: 'Cek Stok Rendah',
+    icon: <Package size={14} />,
+    prompt: 'Suku cadang mana yang stoknya mendekati batas minimum? Tampilkan daftar lengkap.',
+    color: 'text-orange-600',
+  },
+  {
+    label: 'Jadwal Perawatan',
+    icon: <Wrench size={14} />,
+    prompt: 'Apa jadwal perawatan mesin minggu ini? Ada WO yang overdue?',
+    color: 'text-blue-600',
+  },
+  {
+    label: 'Status Produksi',
+    icon: <TrendingUp size={14} />,
+    prompt: 'Bagaimana status produksi hari ini? Bandingkan target vs aktual per shift.',
+    color: 'text-green-600',
+  },
+  {
+    label: 'Keselamatan Kerja',
+    icon: <Shield size={14} />,
+    prompt: 'Apakah ada insiden keselamatan yang perlu ditindaklanjuti? Tampilkan status HSE.',
+    color: 'text-red-500',
+  },
+  {
+    label: 'Input Data',
+    icon: <Database size={14} />,
+    prompt: 'Saya ingin input data. Apa saja modul yang tersedia dan format yang diperlukan?',
+    color: 'text-purple-600',
+  },
+];
+
 export default function FloatingChatBot() {
   // ── On/Off toggle state (persisted in localStorage) ──
   const [chatEnabled, setChatEnabled] = useState<boolean>(() => {
@@ -173,6 +175,7 @@ export default function FloatingChatBot() {
   const [isStreaming, setIsStreaming] = useState(false);
   const [aiReady, setAiReady] = useState(false);
   const [checkingAI, setCheckingAI] = useState(true);
+  const [aiWarning, setAiWarning] = useState(false); // Warning state: health check failed but allow interaction
   const [showQuickActions, setShowQuickActions] = useState(true);
   const [pendingDataInput, setPendingDataInput] = useState<{
     module: string;
@@ -188,6 +191,8 @@ export default function FloatingChatBot() {
   const chatContainerRef = useRef<HTMLDivElement>(null);
 
   // ── Check AI backend health ──
+  // When health check fails, show a warning but still allow interaction
+  // (the chat endpoint might work even if health doesn't)
   useEffect(() => {
     let mounted = true;
 
@@ -196,22 +201,39 @@ export default function FloatingChatBot() {
         const health = await checkAIHealth();
         if (mounted) {
           setAiReady(health.ai === 'ready');
+          setAiWarning(health.ai !== 'ready');
           setCheckingAI(false);
         }
       } catch {
         if (mounted) {
+          // Health check failed — show warning but don't fully disable
           setAiReady(false);
+          setAiWarning(true);
           setCheckingAI(false);
         }
       }
     }
 
     check();
-    const interval = setInterval(check, 15000);
+    const interval = setInterval(check, 30000); // Check every 30s
     return () => {
       mounted = false;
       clearInterval(interval);
     };
+  }, []);
+
+  // ── Retry AI connection manually ──
+  const retryAIConnection = useCallback(async () => {
+    setCheckingAI(true);
+    try {
+      const health = await checkAIHealth();
+      setAiReady(health.ai === 'ready');
+      setAiWarning(health.ai !== 'ready');
+    } catch {
+      setAiReady(false);
+      setAiWarning(true);
+    }
+    setCheckingAI(false);
   }, []);
 
   // ── Auto-scroll ──
@@ -232,7 +254,9 @@ export default function FloatingChatBot() {
 
   // ── Send message ──
   const handleSend = useCallback(async () => {
-    if (!input.trim() || isStreaming || !aiReady || !chatEnabled) return;
+    if (!input.trim() || isStreaming || !chatEnabled) return;
+    // Allow sending even if health check failed (aiWarning mode)
+    // Only block if explicitly disabled
 
     const userMessage: AiMessage = {
       id: Date.now().toString(36),
@@ -322,7 +346,7 @@ export default function FloatingChatBot() {
       );
       setIsStreaming(false);
     }
-  }, [input, isStreaming, aiReady, chatEnabled, messages]);
+  }, [input, isStreaming, aiReady, aiWarning, chatEnabled, messages]);
 
   // ── Quick action ──
   const handleQuickAction = useCallback(
@@ -412,15 +436,15 @@ export default function FloatingChatBot() {
   const handleConfirmDataInput = useCallback(() => {
     if (!pendingDataInput) return;
 
-    // Determine the correct KV prefix based on module
+    // Use KV_PREFIXES from dashboard types — single source of truth
     const modulePrefixMap: Record<string, string> = {
-      'spare-parts': 'ywm_sparePart_',
-      'production': 'ywm_production_',
-      'maintenance': 'ywm_maintenance_',
-      'team-activity': 'ywm_teamActivity_',
-      'safety': 'ywm_safety_',
-      'finance': 'ywm_finance_',
-      'hr': 'ywm_employee_',
+      'spare-parts': KV_PREFIXES.sparePart,
+      'production': KV_PREFIXES.production,
+      'maintenance': KV_PREFIXES.maintenance,
+      'team-activity': KV_PREFIXES.teamActivity,
+      'safety': KV_PREFIXES.safety,
+      'finance': KV_PREFIXES.finance,
+      'hr': KV_PREFIXES.employee,
     };
     const prefix = modulePrefixMap[pendingDataInput.module] || `ywm_${pendingDataInput.module}_`;
 
@@ -581,7 +605,7 @@ export default function FloatingChatBot() {
                   )} />
                   <span className="text-slate-400 text-xs">
                     {!chatEnabled ? 'Dinonaktifkan' :
-                    checkingAI ? 'Menghubungkan...' : aiReady ? 'Online — Siap membantu' : 'Offline — Cek server AI'}
+                    checkingAI ? 'Menghubungkan...' : aiReady ? 'Online — Siap membantu' : aiWarning ? 'Koneksi tidak stabil — Coba kirim pesan' : 'Offline — Cek server AI'}
                   </span>
                 </div>
               </div>
@@ -618,7 +642,7 @@ export default function FloatingChatBot() {
                   <button
                     key={action.label}
                     onClick={() => handleQuickAction(action.prompt)}
-                    disabled={isStreaming || !aiReady}
+                    disabled={isStreaming}
                     className="flex items-center gap-1.5 px-2.5 py-2 rounded-lg bg-white/50 border border-white/60 
                       text-slate-500 hover:text-slate-800 hover:bg-white/60 hover:border-white/60 
                       transition-all text-xs disabled:opacity-30 disabled:cursor-not-allowed"
@@ -709,6 +733,19 @@ export default function FloatingChatBot() {
                 )}
 
                 <div ref={messagesEndRef} />
+
+                {/* Retry connection button when AI is in warning state */}
+                {aiWarning && !aiReady && !isStreaming && (
+                  <div className="flex justify-center py-2">
+                    <button
+                      onClick={retryAIConnection}
+                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-amber-50/80 border border-amber-200/50 text-amber-600 text-xs font-medium hover:bg-amber-100/80 transition-all"
+                    >
+                      <RefreshCw size={12} className={checkingAI ? 'animate-spin' : ''} />
+                      Coba Koneksi Ulang
+                    </button>
+                  </div>
+                )}
               </>
             )}
           </div>
@@ -724,13 +761,13 @@ export default function FloatingChatBot() {
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={handleKeyDown}
                 placeholder={
-                  !aiReady
-                    ? 'AI belum terhubung...'
-                    : isStreaming
+                  isStreaming
                     ? 'AI sedang menjawab...'
+                    : aiWarning && !aiReady
+                    ? 'Koneksi tidak stabil — coba kirim pesan...'
                     : 'Ketik pesan atau tanya AI...'
                 }
-                disabled={!aiReady || isStreaming}
+                disabled={isStreaming}
                 rows={1}
                 className="flex-1 bg-transparent text-slate-800 text-sm placeholder:text-slate-400 
                   resize-none outline-none max-h-24 min-h-[32px]"
@@ -749,7 +786,7 @@ export default function FloatingChatBot() {
               </button>
               <button
                 onClick={handleSend}
-                disabled={!input.trim() || isStreaming || !aiReady}
+                disabled={!input.trim() || isStreaming}
                 className="p-2 rounded-lg bg-gradient-to-r from-cyan-500/20 to-blue-600/20 
                   text-cyan-600 hover:from-cyan-200/60 hover:to-blue-200/60 
                   transition-all disabled:opacity-30 disabled:cursor-not-allowed flex-shrink-0"

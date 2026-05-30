@@ -6,6 +6,8 @@
 import { useState, useEffect, lazy, Suspense } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import DashboardLayout from '@/components/dashboard/DashboardLayout';
+import { DashboardContext } from '@/contexts/DashboardContext';
+import { ModuleErrorBoundary } from '@/components/dashboard/ModuleErrorBoundary';
 import type { DashboardModule } from '@/types/dashboard';
 import { initializeDatabase } from '@/lib/db-init';
 import { checkDatabaseStatus, type DatabaseStatus } from '@/lib/supabase-data';
@@ -73,7 +75,7 @@ export default function Dashboard() {
           setDbStatus(status);
         }
       } catch (err) {
-        console.warn('[YWM Dashboard] Database initialization error:', err);
+        if (import.meta.env.DEV) console.warn('[YWM Dashboard] Database initialization error:', err);
         if (!cancelled) {
           setDbStatus({
             connected: false,
@@ -125,6 +127,7 @@ export default function Dashboard() {
   const ActiveComponent = MODULE_MAP[activeModule];
 
   return (
+    <DashboardContext.Provider value={{ onModuleChange: handleModuleChange }}>
     <DashboardLayout activeModule={activeModule} onModuleChange={handleModuleChange}>
       {/* Database Connection Status Indicator */}
       <div className="fixed top-2 right-2 z-50">
@@ -157,8 +160,11 @@ export default function Dashboard() {
           </div>
         }
       >
-        <ActiveComponent />
+        <ModuleErrorBoundary moduleName={activeModule}>
+          <ActiveComponent />
+        </ModuleErrorBoundary>
       </Suspense>
     </DashboardLayout>
+    </DashboardContext.Provider>
   );
 }
