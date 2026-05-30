@@ -1,6 +1,7 @@
 // ============================================================
 // DashboardLayout — Layout wrapper with sidebar + AI panel + Floating Chat
 // WHITE/RED theme matching YWM website
+// DB status indicator
 // ============================================================
 
 import React, { useState } from 'react';
@@ -12,17 +13,20 @@ import type { DashboardModule } from '@/types/dashboard';
 interface DashboardLayoutProps {
   activeModule: DashboardModule;
   onModuleChange: (mod: DashboardModule) => void;
+  dbStatus: 'connected' | 'disconnected' | 'checking';
+  unreadNotifs: number;
   children: React.ReactNode;
 }
 
 export default function DashboardLayout({
   activeModule,
   onModuleChange,
+  dbStatus,
+  unreadNotifs,
   children,
 }: DashboardLayoutProps) {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [aiPanelOpen, setAiPanelOpen] = useState(false);
-  const [unreadNotifs] = useState(0);
 
   return (
     <div className="h-screen flex overflow-hidden bg-gray-50">
@@ -33,6 +37,7 @@ export default function DashboardLayout({
         collapsed={sidebarCollapsed}
         onToggleCollapse={() => setSidebarCollapsed((p) => !p)}
         unreadCount={unreadNotifs}
+        dbStatus={dbStatus}
       />
 
       {/* Main Content */}

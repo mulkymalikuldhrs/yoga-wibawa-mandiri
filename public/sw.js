@@ -3,7 +3,7 @@
 // PT. Yoga Wibawa Mandiri
 // ============================================================
 
-const CACHE_NAME = 'ywm-dashboard-v1';
+const CACHE_NAME = 'ywm-dashboard-v2';
 const STATIC_ASSETS = [
   '/',
   '/index.html',

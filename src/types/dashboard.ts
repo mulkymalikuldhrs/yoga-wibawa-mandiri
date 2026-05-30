@@ -1,5 +1,7 @@
 // ============================================================
 // TypeScript Types for YWM Dashboard
+// PT. Yoga Wibawa Mandiri — Cement Packaging Company
+// With Supabase DB integration
 // ============================================================
 
 // --- Base ---
@@ -77,6 +79,27 @@ export interface Document extends WithId, Timestamped {
   catatan: string;
 }
 
+// --- Opname (Stok Opname) ---
+export interface OpnameRecord extends WithId, Timestamped {
+  tanggal: string;
+  kategori: string;
+  item: string;
+  jumlah: number;
+  satuan: string;
+  keterangan: string;
+}
+
+// --- Pispot (Produksi Packer) ---
+export interface PispotRecord extends WithId, Timestamped {
+  tanggal: string;
+  shift: 'pagi' | 'siang' | 'malam';
+  packer: string;
+  nozzle: string;
+  produksiZak: number;
+  produksiTon: number;
+  catatan: string;
+}
+
 // --- AI ---
 export interface AiMessage {
   id: string;
@@ -103,6 +126,16 @@ export interface Notification extends WithId, Timestamped {
   link: string;
 }
 
+// --- Silo Data ---
+export interface SiloData extends WithId {
+  name: string;
+  capacity: number;
+  current: number;
+  holes: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
 // --- Dashboard Module Enum ---
 export type DashboardModule =
   | 'overview'
@@ -111,6 +144,8 @@ export type DashboardModule =
   | 'maintenance'
   | 'safety'
   | 'documents'
+  | 'opname'
+  | 'pispot'
   | 'notifications';
 
 export interface DashboardModuleInfo {

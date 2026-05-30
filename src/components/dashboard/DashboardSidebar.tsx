@@ -1,6 +1,7 @@
 // ============================================================
 // DashboardSidebar — White frosted glass navigation sidebar
 // YWM Red accent theme matching website
+// Includes Opname & Pispot modules
 // ============================================================
 
 import React from 'react';
@@ -17,6 +18,8 @@ import {
   ChevronLeft,
   ChevronRight,
   ExternalLink,
+  ClipboardCheck,
+  Factory,
 } from 'lucide-react';
 
 const MODULES: { id: DashboardModule; label: string; icon: React.ReactNode }[] = [
@@ -25,6 +28,8 @@ const MODULES: { id: DashboardModule; label: string; icon: React.ReactNode }[] =
   { id: 'team-activity', label: 'Aktivitas Tim', icon: <Users size={20} /> },
   { id: 'maintenance', label: 'Perawatan', icon: <Wrench size={20} /> },
   { id: 'safety', label: 'Keselamatan (HSE)', icon: <ShieldCheck size={20} /> },
+  { id: 'opname', label: 'Stok Opname', icon: <ClipboardCheck size={20} /> },
+  { id: 'pispot', label: 'Produksi Packer', icon: <Factory size={20} /> },
   { id: 'documents', label: 'Dokumen & OCR', icon: <FileText size={20} /> },
   { id: 'notifications', label: 'Notifikasi', icon: <Bell size={20} /> },
 ];
@@ -35,6 +40,7 @@ interface DashboardSidebarProps {
   collapsed: boolean;
   onToggleCollapse: () => void;
   unreadCount: number;
+  dbStatus: 'connected' | 'disconnected' | 'checking';
 }
 
 export default function DashboardSidebar({
@@ -43,6 +49,7 @@ export default function DashboardSidebar({
   collapsed,
   onToggleCollapse,
   unreadCount,
+  dbStatus,
 }: DashboardSidebarProps) {
   return (
     <aside
@@ -61,7 +68,15 @@ export default function DashboardSidebar({
         {!collapsed && (
           <div className="overflow-hidden">
             <h1 className="text-[#212121] font-semibold text-sm truncate">YWM Dashboard</h1>
-            <p className="text-gray-400 text-xs truncate">PT. Yoga Wibawa Mandiri</p>
+            <div className="flex items-center gap-1.5">
+              <div className={cn(
+                'w-1.5 h-1.5 rounded-full',
+                dbStatus === 'connected' ? 'bg-emerald-500' : dbStatus === 'disconnected' ? 'bg-red-500' : 'bg-yellow-500'
+              )} />
+              <p className="text-gray-400 text-xs truncate">
+                {dbStatus === 'connected' ? 'Database Terhubung' : dbStatus === 'disconnected' ? 'Offline Mode' : 'Menyambung...'}
+              </p>
+            </div>
           </div>
         )}
       </div>

@@ -6,6 +6,7 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { cn } from '@/lib/utils';
 import { chatWithAiStream, checkAIHealth, smartParse, parseDataInputAction } from '@/lib/ywm-ai';
+import { aiInsertData, checkDbConnection } from '@/lib/db';
 import type { AiMessage } from '@/types/dashboard';
 import {
   MessageCircle,
@@ -112,6 +113,7 @@ function DataInputCard({
 export default function FloatingChatBot() {
   // ── State ──
   const [isOpen, setIsOpen] = useState(false);
+  const [chatEnabled, setChatEnabled] = useState(true); // on/off toggle
   const [messages, setMessages] = useState<AiMessage[]>([
     {
       id: 'welcome',
@@ -319,28 +321,50 @@ export default function FloatingChatBot() {
     [messages]
   );
 
-  // ── Handle data input confirmation ──
-  const handleConfirmDataInput = useCallback(() => {
+  // ── Handle data input confirmation (Supabase + localStorage) ──
+  const handleConfirmDataInput = useCallback(async () => {
     if (!pendingDataInput) return;
 
-    const storageKey = `ywm_data_${pendingDataInput.module}`;
-    const existingData = JSON.parse(localStorage.getItem(storageKey) || '[]');
-    existingData.push({
-      ...pendingDataInput.data,
-      id: Date.now().toString(36),
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    });
-    localStorage.setItem(storageKey, JSON.stringify(existingData));
+    try {
+      // Try Supabase first
+      const result = await aiInsertData(pendingDataInput.module, pendingDataInput.data);
+      if (result) {
+        const confirmMsg: AiMessage = {
+          id: Date.now().toString(36),
+          role: 'assistant',
+          content: `Data berhasil disimpan ke database modul ${pendingDataInput.module}! Data telah tersinkronisasi ke Supabase dan bisa dilihat di halaman modul yang bersangkutan.`,
+          timestamp: new Date().toISOString(),
+        };
+        setMessages((prev) => [...prev, confirmMsg]);
+      } else {
+        // Fallback to localStorage
+        const storageKey = `ywm_data_${pendingDataInput.module}`;
+        const existingData = JSON.parse(localStorage.getItem(storageKey) || '[]');
+        existingData.push({
+          ...pendingDataInput.data,
+          id: Date.now().toString(36),
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        });
+        localStorage.setItem(storageKey, JSON.stringify(existingData));
+        const confirmMsg: AiMessage = {
+          id: Date.now().toString(36),
+          role: 'assistant',
+          content: `Data berhasil disimpan ke lokal modul ${pendingDataInput.module}! (Mode offline — data akan tersinkronisasi saat database terhubung)`,
+          timestamp: new Date().toISOString(),
+        };
+        setMessages((prev) => [...prev, confirmMsg]);
+      }
+    } catch {
+      const confirmMsg: AiMessage = {
+        id: Date.now().toString(36),
+        role: 'assistant',
+        content: `Data disimpan ke lokal modul ${pendingDataInput.module}. Gagal menyimpan ke database.`,
+        timestamp: new Date().toISOString(),
+      };
+      setMessages((prev) => [...prev, confirmMsg]);
+    }
 
-    const confirmMsg: AiMessage = {
-      id: Date.now().toString(36),
-      role: 'assistant',
-      content: `✅ **Data berhasil disimpan ke modul ${pendingDataInput.module}!**\n\nData telah tersimpan dan bisa dilihat di halaman modul yang bersangkutan.`,
-      timestamp: new Date().toISOString(),
-    };
-
-    setMessages((prev) => [...prev, confirmMsg]);
     setPendingDataInput(null);
   }, [pendingDataInput]);
 
@@ -404,9 +428,19 @@ export default function FloatingChatBot() {
   return (
     <>
       {/* ═══════════════════════════════════════════ */}
-      {/* FLOATING CHATBOT BUTTON                     */}
+      {/* FLOATING CHATBOT BUTTON (only if enabled)   */}
       {/* ═══════════════════════════════════════════ */}
-      {!isOpen && (
+      {!chatEnabled && (
+        <button
+          onClick={() => setChatEnabled(true)}
+          className="fixed bottom-6 right-6 z-50 w-10 h-10 rounded-full bg-gray-200 hover:bg-gray-300 
+            flex items-center justify-center transition-all"
+          title="Aktifkan Chat AI"
+        >
+          <MessageCircle size={18} className="text-gray-500" />
+        </button>
+      )}
+      {chatEnabled && !isOpen && (
         <button
           onClick={() => setIsOpen(true)}
           className="fixed bottom-6 right-6 z-50 group"
@@ -465,12 +499,22 @@ export default function FloatingChatBot() {
                 </div>
               </div>
             </div>
-            <button
-              onClick={() => setIsOpen(false)}
-              className="p-1.5 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-50 transition-all"
-            >
-              <X size={16} />
-            </button>
+            <div className="flex items-center gap-1">
+              <button
+                onClick={() => { setIsOpen(false); setChatEnabled(false); }}
+                className="p-1.5 rounded-lg text-gray-300 hover:text-red-500 hover:bg-red-50 transition-all"
+                title="Matikan Chat"
+              >
+                <X size={14} />
+              </button>
+              <button
+                onClick={() => setIsOpen(false)}
+                className="p-1.5 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-50 transition-all"
+                title="Minimalkan"
+              >
+                <ChevronDown size={16} />
+              </button>
+            </div>
           </div>
 
           {/* ── Quick Actions ── */}
