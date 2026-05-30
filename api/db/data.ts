@@ -17,8 +17,22 @@ const VALID_TABLES = [
   'pispot', 'documents', 'silo_calculation', 'silo_opname'
 ];
 
+/** Convert camelCase keys to snake_case for Supabase */
+function toSnakeCase(obj: Record<string, unknown>): Record<string, unknown> {
+  const result: Record<string, unknown> = {};
+  for (const [key, value] of Object.entries(obj)) {
+    const snakeKey = key.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`);
+    if (value && typeof value === 'object' && !Array.isArray(value) && !(value instanceof Date)) {
+      result[snakeKey] = toSnakeCase(value as Record<string, unknown>);
+    } else {
+      result[snakeKey] = value;
+    }
+  }
+  return result;
+}
+
 function getSupabase() {
-  const url = process.env.VITE_SUPABASE_URL || '';
+  const url = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL || '';
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.VITE_SUPABASE_ANON_KEY || '';
   if (!url || !key) return null;
   return createClient(url, key);
@@ -86,7 +100,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       }
 
       // Sanitize and validate input data
-      const sanitizedInsertData = sanitizeData(table, data);
+      const snakeData = toSnakeCase(data);
+      const sanitizedInsertData = sanitizeData(table, snakeData);
       const validationError = validateData(sanitizedInsertData);
       if (validationError) {
         return res.status(400).json({ error: validationError });
@@ -112,7 +127,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       }
 
       // Sanitize and validate input data
-      const sanitizedUpdateData = sanitizeData(table, data);
+      const snakeData = toSnakeCase(data);
+      const sanitizedUpdateData = sanitizeData(table, snakeData);
       const validationError = validateData(sanitizedUpdateData);
       if (validationError) {
         return res.status(400).json({ error: validationError });

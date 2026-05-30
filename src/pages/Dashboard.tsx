@@ -6,7 +6,6 @@
 import { useState, useEffect, lazy, Suspense } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import DashboardLayout from '@/components/dashboard/DashboardLayout';
-import { DashboardContext } from '@/contexts/DashboardContext';
 import { ModuleErrorBoundary } from '@/components/dashboard/ModuleErrorBoundary';
 import type { DashboardModule } from '@/types/dashboard';
 import { initializeDatabase } from '@/lib/db-init';
@@ -127,7 +126,6 @@ export default function Dashboard() {
   const ActiveComponent = MODULE_MAP[activeModule];
 
   return (
-    <DashboardContext.Provider value={{ onModuleChange: handleModuleChange }}>
     <DashboardLayout activeModule={activeModule} onModuleChange={handleModuleChange}>
       {/* Database Connection Status Indicator */}
       <div className="fixed top-2 right-2 z-50">
@@ -165,6 +163,5 @@ export default function Dashboard() {
         </ModuleErrorBoundary>
       </Suspense>
     </DashboardLayout>
-    </DashboardContext.Provider>
   );
 }

@@ -16,6 +16,12 @@ export interface ContactFormData {
 
 export const sendContactEmail = async (formData: ContactFormData): Promise<boolean> => {
   try {
+    // Guard: skip if EmailJS not configured
+    if (!EMAILJS_SERVICE_ID || !EMAILJS_TEMPLATE_ID || !EMAILJS_PUBLIC_KEY) {
+      if (import.meta.env.DEV) console.warn('[EmailService] EmailJS not configured — email not sent');
+      return false;
+    }
+
     // Initialize EmailJS (only needs to be done once)
     emailjs.init(EMAILJS_PUBLIC_KEY);
 

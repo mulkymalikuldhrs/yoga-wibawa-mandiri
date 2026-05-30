@@ -6,6 +6,10 @@ node_modules/
 # Build output
 dist/
 build/
+.next/
+
+# Test screenshots
+test-screenshots/
 
 # Environment variables
 .env

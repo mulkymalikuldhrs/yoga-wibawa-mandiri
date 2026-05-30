@@ -287,7 +287,7 @@ export default function FloatingChatBot() {
       );
 
       // Add dashboard data context as a system message
-      const dashboardContext = buildDashboardContext();
+      const dashboardContext = await buildDashboardContext();
       const contextMessage: AiMessage = {
         id: 'dashboard_context',
         role: 'system',
@@ -352,7 +352,7 @@ export default function FloatingChatBot() {
   const handleQuickAction = useCallback(
     (prompt: string) => {
       setInput(prompt);
-      setTimeout(() => {
+      setTimeout(async () => {
         // Directly send
         const userMessage: AiMessage = {
           id: Date.now().toString(36),
@@ -379,7 +379,7 @@ export default function FloatingChatBot() {
         );
 
         // Add dashboard data context
-        const dashboardContext = buildDashboardContext();
+        const dashboardContext = await buildDashboardContext();
         const contextMessage: AiMessage = {
           id: 'dashboard_context',
           role: 'system',

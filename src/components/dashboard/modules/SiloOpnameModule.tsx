@@ -33,9 +33,10 @@ function hitungVolume(silo: SiloId, ukuran: UkuranTuple): number {
     ? config.tConisMax
     : config.tConisFormula - tinggiRataRata;
   const volumeSilinder = config.areaSilinder * tSilinder;
+  // Proporsional: areaConis * tConis * (tConis / tConisMax) — scaling berdasarkan rasio isi conis
   const volumeConis = tinggiRataRata <= config.tinggiSilinder
     ? config.areaConis * tConis
-    : config.areaConis * tConis / config.tConisMax * config.tConisMax;
+    : config.areaConis * tConis * (tConis / config.tConisMax);
   return Math.round((volumeSilinder + volumeConis) * 1000) / 1000;
 }
 

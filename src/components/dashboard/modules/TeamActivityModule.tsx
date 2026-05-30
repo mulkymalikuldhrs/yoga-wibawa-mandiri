@@ -27,6 +27,7 @@ import {
   DialogDescription,
   DialogFooter,
 } from '@/components/ui/dialog';
+import DeleteConfirmDialog from '@/components/dashboard/DeleteConfirmDialog';
 
 const STATUS_CONFIG: Record<string, { color: string; bg: string; label: string }> = {
   hadir: { color: 'text-emerald-600', bg: 'bg-emerald-100/80', label: 'Hadir' },

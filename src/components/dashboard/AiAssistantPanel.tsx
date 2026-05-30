@@ -200,7 +200,7 @@ export default function AiAssistantPanel({ isOpen, onToggle }: AiAssistantPanelP
       const chatMessages = [...messages, userMessage].filter(m => m.id !== 'welcome');
 
       // Add dashboard data context as a system message
-      const dashboardContext = buildDashboardContext();
+      const dashboardContext = await buildDashboardContext();
       const contextMessage: AiMessage = {
         id: 'dashboard_context',
         role: 'system',
@@ -263,7 +263,7 @@ export default function AiAssistantPanel({ isOpen, onToggle }: AiAssistantPanelP
   const handleQuickAction = useCallback(
     (prompt: string) => {
       setInput(prompt);
-      setTimeout(() => {
+      setTimeout(async () => {
         const userMessage: AiMessage = {
           id: Date.now().toString(36),
           role: 'user',
@@ -285,7 +285,7 @@ export default function AiAssistantPanel({ isOpen, onToggle }: AiAssistantPanelP
         const chatMessages = [...messages, userMessage].filter(m => m.id !== 'welcome');
 
         // Add dashboard data context
-        const dashboardContext = buildDashboardContext();
+        const dashboardContext = await buildDashboardContext();
         const contextMessage: AiMessage = {
           id: 'dashboard_context',
           role: 'system',

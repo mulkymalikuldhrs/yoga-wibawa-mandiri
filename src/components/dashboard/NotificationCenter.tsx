@@ -40,6 +40,8 @@ import {
   FileText,
   BarChart3,
   Users,
+  Volume2,
+  VolumeX,
 } from 'lucide-react';
 
 // ── Tipe config ──
@@ -317,6 +319,8 @@ export default function NotificationCenter() {
     replyToNotification,
     replyLoading,
     navigateToModule,
+    beepMuted,
+    toggleBeepMuted,
   } = useNotifications();
 
   const [search, setSearch] = useState('');
@@ -386,6 +390,19 @@ export default function NotificationCenter() {
                 </SheetDescription>
               </div>
             </div>
+            {/* Beep mute/unmute toggle */}
+            <button
+              onClick={toggleBeepMuted}
+              title={beepMuted ? 'Aktifkan suara notifikasi' : 'Matikan suara notifikasi'}
+              className={cn(
+                'p-2 rounded-xl transition-all',
+                beepMuted
+                  ? 'bg-slate-100/80 text-slate-400 hover:text-slate-600 hover:bg-slate-200/80'
+                  : 'bg-cyan-100/80 text-cyan-600 hover:bg-cyan-200/80'
+              )}
+            >
+              {beepMuted ? <VolumeX size={16} /> : <Volume2 size={16} />}
+            </button>
           </div>
 
           {/* Stats row */}

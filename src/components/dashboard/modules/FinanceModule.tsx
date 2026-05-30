@@ -72,11 +72,11 @@ export default function FinanceModule() {
       pengeluaran: Math.round(vals.pengeluaran / 1000000),
     }));
 
-  // Running balance
-  const sortedData = [...filtered].sort((a, b) => a.tanggal.localeCompare(b.tanggal));
+  // Running balance — computed on ALL data (not filtered), so balance is always accurate
+  const allSorted = [...data].sort((a, b) => a.tanggal.localeCompare(b.tanggal));
   let runningBalance = 0;
   const balances: Record<string, number> = {};
-  sortedData.forEach((d) => {
+  allSorted.forEach((d) => {
     runningBalance += d.jenis === 'pemasukan' ? d.jumlah : -d.jumlah;
     balances[d.id] = runningBalance;
   });

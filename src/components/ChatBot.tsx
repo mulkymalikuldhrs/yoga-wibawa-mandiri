@@ -138,22 +138,22 @@ const ChatBot = () => {
     const message = userMessage.toLowerCase();
     
     if (message.includes('halo') || message.includes('hai') || message.includes('hello')) {
-      return 'Halo! Saya AI Assistant PT. Yoga Wibawa Mandiri. Saya siap membantu Anda dengan informasi tentang produk semen dan layanan kami 24/7.\n\n📞 Untuk komunikasi langsung: +6285322624038';
+      return 'Halo! Saya AI Assistant PT. Yoga Wibawa Mandiri. Saya siap membantu Anda dengan informasi tentang produk semen dan layanan kami 24/7.\n\n📞 Untuk komunikasi langsung: +6285322624048';
     }
     if (message.includes('hubungi') || message.includes('kontak') || message.includes('telepon')) {
-      return '📞 Hubungi kami:\n\n🏭 Tim Pengantongan: +6285322624038\n📧 Email: info@ywm.co.id';
+      return '📞 Hubungi kami:\n\n🏭 Tim Pengantongan: +6285322624048\n📧 Email: info@ywm.co.id';
     }
     if (message.includes('semen') || message.includes('produk')) {
-      return 'Kami menyediakan semen berkualitas tinggi dari Semen Padang dengan kapasitas produksi hingga 500 ton per hari. Tersedia dalam kemasan 40kg.\n\n📞 Info detail: +6285322624038';
+      return 'Kami menyediakan semen berkualitas tinggi dari Semen Padang dengan kapasitas produksi hingga 500 ton per hari. Tersedia dalam kemasan 40kg.\n\n📞 Info detail: +6285322624048';
     }
     if (message.includes('harga') || message.includes('pesan') || message.includes('order')) {
-      return 'Untuk informasi harga terbaru dan pemesanan:\n\n📞 Hubungi: +6285322624038\n📧 Email: sales@ywm.co.id';
+      return 'Untuk informasi harga terbaru dan pemesanan:\n\n📞 Hubungi: +6285322624048\n📧 Email: sales@ywm.co.id';
     }
     if (message.includes('lokasi') || message.includes('alamat')) {
-      return 'Pabrik kami berlokasi di Pelabuhan Krueng Geukueh, Lhokseumawe, Aceh.\n\n📞 Untuk kunjungan: +6285322624038';
+      return 'Pabrik kami berlokasi di Pelabuhan Krueng Geukueh, Lhokseumawe, Aceh.\n\n📞 Untuk kunjungan: +6285322624048';
     }
     
-    return 'Terima kasih atas pertanyaan Anda.\n\n📞 Untuk bantuan langsung: +6285322624038\n📧 Email: info@ywm.co.id\n\nTim kami siap melayani Anda!';
+    return 'Terima kasih atas pertanyaan Anda.\n\n📞 Untuk bantuan langsung: +6285322624048\n📧 Email: info@ywm.co.id\n\nTim kami siap melayani Anda!';
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -164,7 +164,7 @@ const ChatBot = () => {
   };
 
   const handlePhoneClick = () => {
-    window.open('https://wa.me/6285322624038', '_blank');
+    window.open('https://wa.me/6285322624048', '_blank');
   };
 
   return (
@@ -297,7 +297,7 @@ const ChatBot = () => {
                 className="text-xs text-green-600 hover:text-green-800 font-medium flex items-center space-x-1"
               >
                 <Phone size={12} />
-                <span>+6285322624038</span>
+                <span>+6285322624048</span>
               </button>
             </div>
           </div>

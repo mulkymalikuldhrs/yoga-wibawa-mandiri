@@ -18,6 +18,7 @@ import {
   NotificationProvider,
   useNotifications,
 } from './NotificationProvider';
+import { DashboardContext } from '@/contexts/DashboardContext';
 import type { DashboardModule } from '@/types/dashboard';
 import { useIsMobile } from '@/hooks/use-mobile';
 
@@ -115,8 +116,10 @@ function DashboardLayoutInner({
 
 export default function DashboardLayout(props: DashboardLayoutProps) {
   return (
-    <NotificationProvider navigateToModule={props.onModuleChange}>
-      <DashboardLayoutInner {...props} />
-    </NotificationProvider>
+    <DashboardContext.Provider value={{ onModuleChange: props.onModuleChange }}>
+      <NotificationProvider navigateToModule={props.onModuleChange}>
+        <DashboardLayoutInner {...props} />
+      </NotificationProvider>
+    </DashboardContext.Provider>
   );
 }

@@ -8,15 +8,17 @@ const About = () => {
       {/* Hero Section */}
       <section className="py-20 bg-gradient-to-r from-ywm-red to-red-700 text-white">
         <div className="container mx-auto px-4 text-center">
-          <h1 className="text-5xl font-bold mb-6 animate-fade-in">Tentang Kami</h1>
-          <p className="text-xl max-w-3xl mx-auto animate-fade-in">
-            PT. Yoga Wibawa Mandiri - Mitra Terpercaya dalam Industri Semen Indonesia
-          </p>
+          <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl p-10 max-w-3xl mx-auto">
+            <h1 className="text-5xl font-bold mb-6 animate-fade-in">Tentang Kami</h1>
+            <p className="text-xl max-w-3xl mx-auto animate-fade-in">
+              PT. Yoga Wibawa Mandiri - Mitra Terpercaya dalam Industri Semen Indonesia
+            </p>
+          </div>
         </div>
       </section>
 
       {/* Company History */}
-      <section className="py-20 bg-white">
+      <section className="py-20">
         <div className="container mx-auto px-4">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="animate-fade-in">
@@ -42,7 +44,7 @@ const About = () => {
               <img 
                 src="https://images.unsplash.com/photo-1501854140801-50d01698950b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" 
                 alt="Sejarah Perusahaan"
-                className="rounded-lg shadow-2xl"
+                className="rounded-xl shadow-2xl"
                 loading="lazy"
               />
             </div>
@@ -51,7 +53,7 @@ const About = () => {
       </section>
 
       {/* Vision & Mission */}
-      <section className="py-20 bg-gray-50">
+      <section className="py-20">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-ywm-dark mb-4">
@@ -63,7 +65,7 @@ const About = () => {
           </div>
 
           <div className="grid md:grid-cols-2 gap-12">
-            <div className="text-center animate-fade-in">
+            <div className="glass-frosted text-center p-8 rounded-2xl animate-fade-in">
               <div className="w-20 h-20 bg-ywm-red rounded-full flex items-center justify-center mx-auto mb-6">
                 <Eye className="text-white" size={40} />
               </div>
@@ -75,7 +77,7 @@ const About = () => {
               </p>
             </div>
 
-            <div className="text-center animate-fade-in">
+            <div className="glass-frosted text-center p-8 rounded-2xl animate-fade-in">
               <div className="w-20 h-20 bg-ywm-red rounded-full flex items-center justify-center mx-auto mb-6">
                 <Target className="text-white" size={40} />
               </div>
@@ -93,7 +95,7 @@ const About = () => {
       </section>
 
       {/* Organizational Structure */}
-      <section className="py-20 bg-white">
+      <section className="py-20">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-ywm-dark mb-4">
@@ -105,9 +107,9 @@ const About = () => {
           </div>
 
           <div className="grid md:grid-cols-3 gap-8">
-            <div className="text-center p-8 rounded-lg shadow-lg animate-fade-in">
+            <div className="glass-frosted text-center p-8 rounded-2xl animate-fade-in">
               <div className="w-24 h-24 bg-gradient-to-br from-ywm-red to-red-700 rounded-full mx-auto mb-4 flex items-center justify-center">
-                <span className="text-white text-2xl font-bold">HY</span>
+                <span className="text-white text-2xl font-bold">HMY</span>
               </div>
               <h3 className="text-xl font-semibold text-ywm-dark mb-1">Direktur Utama</h3>
               <p className="text-ywm-red font-bold mb-2">H. Muhammad Yogi</p>
@@ -117,9 +119,9 @@ const About = () => {
               </p>
             </div>
 
-            <div className="text-center p-8 rounded-lg shadow-lg animate-fade-in">
+            <div className="glass-frosted text-center p-8 rounded-2xl animate-fade-in">
               <div className="w-24 h-24 bg-gradient-to-br from-ywm-red to-red-700 rounded-full mx-auto mb-4 flex items-center justify-center">
-                <span className="text-white text-2xl font-bold">IW</span>
+                <span className="text-white text-2xl font-bold">WM</span>
               </div>
               <h3 className="text-xl font-semibold text-ywm-dark mb-1">Manajer Operasional</h3>
               <p className="text-ywm-red font-bold mb-2">Ir. Wibawa Mandiri</p>
@@ -129,7 +131,7 @@ const About = () => {
               </p>
             </div>
 
-            <div className="text-center p-8 rounded-lg shadow-lg animate-fade-in">
+            <div className="glass-frosted text-center p-8 rounded-2xl animate-fade-in">
               <div className="w-24 h-24 bg-gradient-to-br from-ywm-red to-red-700 rounded-full mx-auto mb-4 flex items-center justify-center">
                 <span className="text-white text-xl font-bold">MD</span>
               </div>
@@ -155,7 +157,7 @@ const About = () => {
           </div>
 
           <div className="grid md:grid-cols-4 gap-8">
-            <div className="text-center animate-fade-in">
+            <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl text-center p-6 animate-fade-in">
               <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center mx-auto mb-4">
                 <Award className="text-ywm-red" size={32} />
               </div>
@@ -165,7 +167,7 @@ const About = () => {
               </p>
             </div>
 
-            <div className="text-center animate-fade-in">
+            <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl text-center p-6 animate-fade-in">
               <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center mx-auto mb-4">
                 <Users className="text-ywm-red" size={32} />
               </div>
@@ -175,7 +177,7 @@ const About = () => {
               </p>
             </div>
 
-            <div className="text-center animate-fade-in">
+            <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl text-center p-6 animate-fade-in">
               <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center mx-auto mb-4">
                 <Target className="text-ywm-red" size={32} />
               </div>
@@ -185,7 +187,7 @@ const About = () => {
               </p>
             </div>
 
-            <div className="text-center animate-fade-in">
+            <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl text-center p-6 animate-fade-in">
               <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center mx-auto mb-4">
                 <Eye className="text-ywm-red" size={32} />
               </div>

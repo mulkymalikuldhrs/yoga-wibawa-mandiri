@@ -10,9 +10,14 @@ interface LayoutProps {
 
 const Layout = ({ children }: LayoutProps) => {
   return (
-    <div className="min-h-screen font-poppins bg-gray-50">
+    <div className="min-h-screen font-poppins public-glassmorphic-bg">
+      {/* Floating glassmorphic orbs for public site */}
+      <div className="glassmorphic-orb-red" style={{ top: '30%', left: '5%' }} />
+      <div className="glassmorphic-orb-light-amber" style={{ top: '60%', right: '5%' }} />
+      <div className="glassmorphic-orb-light-emerald" style={{ bottom: '20%', left: '40%' }} />
+
       <Header />
-      <main className="relative">
+      <main className="relative z-10">
         {children}
       </main>
       <Footer />

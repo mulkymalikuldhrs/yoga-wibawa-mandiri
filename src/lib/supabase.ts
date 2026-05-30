@@ -12,17 +12,27 @@ if (!supabaseUrl || !supabaseAnonKey) {
   if (import.meta.env.DEV) console.warn('[YWM Supabase] Missing environment variables. Database features disabled.');
 }
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
-  auth: {
-    persistSession: true,
-    autoRefreshToken: true,
-  },
-  realtime: {
-    params: {
-      eventsPerSecond: 10,
-    },
-  },
-});
+export const supabase = (supabaseUrl && supabaseAnonKey)
+  ? createClient(supabaseUrl, supabaseAnonKey, {
+      auth: {
+        persistSession: true,
+        autoRefreshToken: true,
+      },
+      realtime: {
+        params: {
+          eventsPerSecond: 10,
+        },
+      },
+    })
+  : null;
+
+/**
+ * Get the Supabase client, throwing if not configured.
+ */
+export function requireSupabase() {
+  if (!supabase) throw new Error('Supabase not configured. Missing VITE_SUPABASE_URL or VITE_SUPABASE_ANON_KEY.');
+  return supabase;
+}
 
 // ── Table name type ──
 export type TableName =
@@ -126,7 +136,8 @@ export async function dbSelect(table: string, options?: {
 }) {
   const { columns = '*', filter, orderBy, ascending = false, limit } = options || {};
 
-  let query = supabase.from(table).select(columns);
+  const client = requireSupabase();
+  let query = client.from(table).select(columns);
 
   if (filter) {
     Object.entries(filter).forEach(([key, value]) => {
@@ -154,7 +165,7 @@ export async function dbSelect(table: string, options?: {
  * Insert records into a Supabase table.
  */
 export async function dbInsert(table: string, records: Record<string, unknown> | Record<string, unknown>[]) {
-  const { data, error } = await supabase
+  const { data, error } = await requireSupabase()
     .from(table)
     .insert(records)
     .select();
@@ -170,7 +181,7 @@ export async function dbInsert(table: string, records: Record<string, unknown> |
  * Update a record in a Supabase table by ID.
  */
 export async function dbUpdate(table: string, id: string, updates: Record<string, unknown>) {
-  const { data, error } = await supabase
+  const { data, error } = await requireSupabase()
     .from(table)
     .update(updates)
     .eq('id', id)
@@ -187,7 +198,7 @@ export async function dbUpdate(table: string, id: string, updates: Record<string
  * Delete a record from a Supabase table by ID.
  */
 export async function dbDelete(table: string, id: string) {
-  const { error } = await supabase
+  const { error } = await requireSupabase()
     .from(table)
     .delete()
     .eq('id', id);
@@ -206,7 +217,7 @@ export async function dbDelete(table: string, id: string) {
  */
 export async function tableExists(tableName: string): Promise<boolean> {
   try {
-    const { error } = await supabase
+    const { error } = await requireSupabase()
       .from(tableName)
       .select('id')
       .limit(1);
@@ -234,7 +245,7 @@ export async function ensureTableExists(tableName: TableName): Promise<boolean> 
 
   try {
     // Try using an RPC function to create the table
-    const { error } = await supabase.rpc('ensure_table_exists', { table_name: tableName });
+    const { error } = await requireSupabase().rpc('ensure_table_exists', { table_name: tableName });
 
     if (error) {
       if (import.meta.env.DEV) console.warn(`[YWM DB] Could not auto-create table ${tableName}:`, error.message);
@@ -282,7 +293,7 @@ export async function checkSupabaseConnection(): Promise<{
 }> {
   try {
     // Try a simple query to check connection
-    const { error } = await supabase.from('spare_parts').select('id').limit(1);
+    const { error } = await requireSupabase().from('spare_parts').select('id').limit(1);
 
     if (error && error.code === '42P01') {
       // Table doesn't exist yet - need to create schema
@@ -308,7 +319,7 @@ export async function checkSupabaseConnection(): Promise<{
     const missingTables: string[] = [];
 
     for (const tableName of ALL_TABLE_NAMES) {
-      const { error: tableError } = await supabase
+      const { error: tableError } = await requireSupabase()
         .from(tableName)
         .select('id')
         .limit(1);
