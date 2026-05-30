@@ -1,7 +1,7 @@
 
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, Code } from 'lucide-react';
+import { Menu, X, Code, ShoppingBag } from 'lucide-react';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -11,6 +11,7 @@ const Header = () => {
     { name: 'Beranda', path: '/' },
     { name: 'Tentang Kami', path: '/tentang' },
     { name: 'Layanan', path: '/layanan' },
+    { name: 'Produk', path: '/produk' },
     { name: 'Galeri', path: '/galeri' },
     { name: 'Lokasi', path: '/lokasi' },
     { name: 'Kontak', path: '/kontak' },
@@ -25,9 +26,9 @@ const Header = () => {
           {/* Logo PT. YWM — Primary */}
           <div className="flex items-center">
             <img 
-              src="/lovable-uploads/5f8e0e82-2031-4a9f-b848-f05d23c37cf2.png" 
-              alt="PT. Yoga Wibawa Mandiri Logo"
-              className="w-14 h-14 rounded-xl shadow-lg"
+              src="/sp-black.png"
+              alt="Semen Padang"
+              className="w-14 h-14 rounded-xl shadow-lg object-contain bg-white p-1"
             />
             <div className="ml-3">
               <h1 className="text-slate-800 font-bold text-lg leading-tight">PT. Yoga Wibawa Mandiri</h1>
@@ -52,7 +53,7 @@ const Header = () => {
 
           {/* Right side: Mitra Resmi badge + Developer credit */}
           <div className="hidden lg:flex items-center gap-4">
-            {/* Mitra Resmi badge — text only, no logo */}
+            {/* Mitra Resmi badge */}
             <div className="flex items-center gap-2 px-3 py-1.5 bg-slate-50/80 rounded-lg border border-slate-200/50">
               <span className="text-slate-500 text-xs font-medium">Mitra Resmi</span>
               <span className="text-slate-700 text-xs font-bold">Semen Padang</span>

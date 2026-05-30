@@ -6,6 +6,7 @@ const Footer = () => {
     { name: 'Beranda', path: '/' },
     { name: 'Tentang Kami', path: '/tentang' },
     { name: 'Layanan', path: '/layanan' },
+    { name: 'Produk', path: '/produk' },
     { name: 'Galeri', path: '/galeri' },
     { name: 'Lokasi', path: '/lokasi' },
     { name: 'Kontak', path: '/kontak' },
@@ -19,9 +20,9 @@ const Footer = () => {
           <div className="md:col-span-2">
             <div className="flex items-center mb-6">
               <img 
-                src="/lovable-uploads/5f8e0e82-2031-4a9f-b848-f05d23c37cf2.png" 
-                alt="PT. Yoga Wibawa Mandiri Logo"
-                className="w-14 h-14 rounded-xl shadow-lg mr-4"
+                src="/sp-black.png"
+                alt="Semen Padang"
+                className="w-14 h-14 rounded-xl shadow-lg mr-4 object-contain bg-white p-1"
               />
               <div>
                 <h3 className="font-bold text-xl">PT. Yoga Wibawa Mandiri</h3>
@@ -33,7 +34,7 @@ const Footer = () => {
               fasilitas modern dan distribusi yang luas di seluruh Aceh dan Sumatera Utara.
             </p>
             
-            {/* Partnership Badge — text only, no logo */}
+            {/* Partnership Badge */}
             <div className="flex items-center space-x-3 mb-6">
               <div className="px-3 py-2 bg-slate-800 rounded-lg border border-slate-700">
                 <span className="text-gray-400 text-xs font-medium">Mitra Resmi</span>
@@ -48,14 +49,14 @@ const Footer = () => {
             >
               <Code className="text-white" size={20} />
               <div>
-                <p className="text-white font-semibold text-sm">🤖 AI Dashboard</p>
+                <p className="text-white font-semibold text-sm">AI Dashboard</p>
                 <p className="text-cyan-100 text-xs">AI-Powered Operations Management</p>
               </div>
             </Link>
 
             {/* WhatsApp Contact */}
             <a
-              href="https://wa.me/6285322624038"
+              href="https://wa.me/6285322624048"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-5 py-2.5 rounded-lg transition-colors font-medium"
@@ -110,7 +111,7 @@ const Footer = () => {
               </div>
               <div className="flex items-center space-x-3">
                 <Phone className="text-cyan-400" size={18} />
-                <p className="text-gray-300 text-sm">+6285322624038</p>
+                <p className="text-gray-300 text-sm">+6285322624048</p>
               </div>
               <div className="flex items-center space-x-3">
                 <Mail className="text-cyan-400" size={18} />

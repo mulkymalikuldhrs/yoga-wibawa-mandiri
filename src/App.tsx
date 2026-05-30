@@ -12,6 +12,7 @@ import ScrollToTop from "./components/ScrollToTop";
 const Index = lazy(() => import("./pages/Index"));
 const About = lazy(() => import("./pages/About"));
 const Services = lazy(() => import("./pages/Services"));
+const Products = lazy(() => import("./pages/Products"));
 const Gallery = lazy(() => import("./pages/Gallery"));
 const Location = lazy(() => import("./pages/Location"));
 const Contact = lazy(() => import("./pages/Contact"));
@@ -39,6 +40,7 @@ const App = () => (
               <Route path="/" element={<Index />} />
               <Route path="/tentang" element={<About />} />
               <Route path="/layanan" element={<Services />} />
+              <Route path="/produk" element={<Products />} />
               <Route path="/galeri" element={<Gallery />} />
               <Route path="/lokasi" element={<Location />} />
               <Route path="/kontak" element={<Contact />} />

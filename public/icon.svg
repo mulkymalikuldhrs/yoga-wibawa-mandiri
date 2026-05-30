@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#C62828"/>
+      <stop offset="100%" stop-color="#8E0000"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="64" fill="url(#bg)"/>
+  <text x="256" y="300" text-anchor="middle" font-family="Arial" font-weight="bold" font-size="180" fill="white">YWM</text>
+  <text x="256" y="390" text-anchor="middle" font-family="Arial" font-weight="500" font-size="48" fill="#FFCDD2">PT. Yoga Wibawa Mandiri</text>
+</svg>

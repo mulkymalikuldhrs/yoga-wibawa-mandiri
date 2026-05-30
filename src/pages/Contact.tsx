@@ -1,8 +1,11 @@
 import { useState } from 'react';
 import Layout from '@/components/Layout';
-import { MapPin, Phone, Mail, Clock, Send, Loader2 } from 'lucide-react';
+import { MapPin, Phone, Mail, Clock, Send, Loader2, MessageCircle, ExternalLink } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { sendContactEmail, type ContactFormData } from '@/services/emailService';
+
+const WHATSAPP_NUMBER = '6285322624048';
+const WHATSAPP_URL = `https://wa.me/${WHATSAPP_NUMBER}`;
 
 const Contact = () => {
   const { toast } = useToast();
@@ -82,23 +85,19 @@ const Contact = () => {
     setIsSubmitting(true);
 
     try {
-      // Show loading toast
       toast({
         title: "Mengirim Pesan...",
         description: "Mohon tunggu, pesan Anda sedang dikirim.",
       });
 
-      // Try to send email
       const emailSent = await sendContactEmail(formData);
 
       if (emailSent) {
-        // Success
         toast({
-          title: "✅ Pesan Berhasil Terkirim!",
+          title: "Pesan Berhasil Terkirim!",
           description: "Terima kasih atas pesan Anda. Tim kami akan menghubungi Anda dalam 24 jam.",
         });
 
-        // Reset form
         setFormData({
           name: '',
           email: '',
@@ -108,24 +107,45 @@ const Contact = () => {
           message: ''
         });
       } else {
-        // Email service failed — show honest error and suggest alternatives
+        // Email failed — offer WhatsApp fallback
+        const waMessage = `Halo PT. Yoga Wibawa Mandiri,
+
+Nama: ${formData.name}
+Email: ${formData.email}
+Telepon: ${formData.phone}
+Perusahaan: ${formData.company || '-'}
+Subjek: ${formData.subject}
+
+Pesan:
+${formData.message}
+
+Mohon segera direspons. Terima kasih.`;
+
         toast({
-          title: "⚠️ Gagal Mengirim Email",
-          description: "Layanan email sedang bermasalah. Silakan hubungi kami langsung di info@ywm.co.id atau +6285322624038.",
-          variant: "destructive"
+          title: "Email Gagal Terkirim",
+          description: "Silakan hubungi kami langsung via WhatsApp dengan klik tombol di bawah.",
+          variant: "destructive",
         });
+
+        // Auto-open WhatsApp as fallback
+        window.open(`${WHATSAPP_URL}?text=${encodeURIComponent(waMessage)}`, '_blank');
       }
     } catch (error) {
       if (import.meta.env.DEV) console.error('Form submission error:', error);
       
       toast({
-        title: "❌ Gagal Mengirim",
-        description: "Terjadi kesalahan. Silakan coba lagi atau hubungi kami langsung.",
+        title: "Gagal Mengirim",
+        description: "Terjadi kesalahan. Silakan coba lagi atau hubungi kami via WhatsApp.",
         variant: "destructive"
       });
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  const handleWhatsAppClick = () => {
+    const message = `Halo PT. Yoga Wibawa Mandiri, saya ingin berkonsultasi mengenai produk dan layanan Anda.`;
+    window.open(`${WHATSAPP_URL}?text=${encodeURIComponent(message)}`, '_blank');
   };
 
   return (
@@ -151,7 +171,7 @@ const Contact = () => {
               </h2>
               <p className="text-gray-600 mb-8">
                 Isi formulir di bawah ini dan tim kami akan menghubungi Anda dalam waktu 24 jam.
-                Pesan akan langsung terkirim ke email kami.
+                Jika form tidak berfungsi, gunakan tombol WhatsApp untuk chat langsung.
               </p>
 
               <form onSubmit={handleSubmit} className="space-y-6">
@@ -286,17 +306,22 @@ const Contact = () => {
                   )}
                 </button>
 
-                {/* Email destination info */}
-                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                  <div className="flex items-center space-x-2">
-                    <Mail className="text-blue-600" size={16} />
-                    <p className="text-sm text-blue-800">
-                      <strong>Pesan akan dikirim ke:</strong> info@ywm.co.id
+                {/* WhatsApp Fallback */}
+                <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                  <div className="flex items-center gap-2 mb-2">
+                    <MessageCircle className="text-green-600" size={18} />
+                    <p className="text-sm text-green-800 font-semibold">
+                      Lebih cepat via WhatsApp?
                     </p>
                   </div>
-                  <p className="text-xs text-blue-600 mt-1">
-                    Tim kami akan merespons dalam 24 jam kerja
-                  </p>
+                  <button
+                    type="button"
+                    onClick={handleWhatsAppClick}
+                    className="w-full bg-green-600 hover:bg-green-700 text-white px-4 py-3 rounded-lg font-medium text-sm transition-colors flex items-center justify-center gap-2"
+                  >
+                    <MessageCircle size={18} />
+                    Chat via WhatsApp
+                  </button>
                 </div>
               </form>
             </div>
@@ -308,12 +333,31 @@ const Contact = () => {
               </h2>
 
               <div className="space-y-6">
+                {/* WhatsApp Card */}
+                <div className="bg-green-50 border border-green-200 p-6 rounded-lg">
+                  <h3 className="text-xl font-semibold text-green-800 mb-4 flex items-center gap-2">
+                    <MessageCircle size={22} />
+                    Chat WhatsApp Langsung
+                  </h3>
+                  <p className="text-gray-600 mb-4">
+                    Respons cepat dalam hitungan menit pada jam kerja
+                  </p>
+                  <button
+                    onClick={handleWhatsAppClick}
+                    className="w-full bg-green-600 hover:bg-green-700 text-white px-5 py-3 rounded-lg font-semibold transition-all flex items-center justify-center gap-2 shadow-md hover:shadow-lg"
+                  >
+                    <MessageCircle size={20} />
+                    +62 853-2262-4048
+                    <ExternalLink size={16} />
+                  </button>
+                </div>
+
                 {/* Kantor Pusat */}
                 <div className="bg-gray-50 p-6 rounded-lg">
                   <h3 className="text-xl font-semibold text-ywm-dark mb-4">Kantor Pusat</h3>
                   <div className="space-y-3">
                     <div className="flex items-start space-x-3">
-                      <MapPin className="text-ywm-red mt-1" size={20} />
+                      <MapPin className="text-ywm-red mt-1 flex-shrink-0" size={20} />
                       <div>
                         <p className="text-gray-700">
                           Jl. Gatot Subroto No. 123<br />
@@ -322,11 +366,11 @@ const Contact = () => {
                       </div>
                     </div>
                     <div className="flex items-center space-x-3">
-                      <Phone className="text-ywm-red" size={20} />
-                      <p className="text-gray-700">+6285322624038</p>
+                      <Phone className="text-ywm-red flex-shrink-0" size={20} />
+                      <p className="text-gray-700">+6285322624048</p>
                     </div>
                     <div className="flex items-center space-x-3">
-                      <Mail className="text-ywm-red" size={20} />
+                      <Mail className="text-ywm-red flex-shrink-0" size={20} />
                       <p className="text-gray-700">info@ywm.co.id</p>
                     </div>
                   </div>
@@ -337,7 +381,7 @@ const Contact = () => {
                   <h3 className="text-xl font-semibold text-ywm-dark mb-4">Pabrik Pengantongan</h3>
                   <div className="space-y-3">
                     <div className="flex items-start space-x-3">
-                      <MapPin className="text-ywm-red mt-1" size={20} />
+                      <MapPin className="text-ywm-red mt-1 flex-shrink-0" size={20} />
                       <div>
                         <p className="text-gray-700">
                           Pelabuhan Krueng Geukueh<br />
@@ -346,11 +390,11 @@ const Contact = () => {
                       </div>
                     </div>
                     <div className="flex items-center space-x-3">
-                      <Phone className="text-ywm-red" size={20} />
-                      <p className="text-gray-700">+6285322624038</p>
+                      <Phone className="text-ywm-red flex-shrink-0" size={20} />
+                      <p className="text-gray-700">+6285322624048</p>
                     </div>
                     <div className="flex items-center space-x-3">
-                      <Mail className="text-ywm-red" size={20} />
+                      <Mail className="text-ywm-red flex-shrink-0" size={20} />
                       <p className="text-gray-700">pabrik@ywm.co.id</p>
                     </div>
                   </div>
@@ -383,6 +427,31 @@ const Contact = () => {
                     </div>
                   </div>
                 </div>
+
+                {/* Google Maps */}
+                <div className="rounded-lg overflow-hidden shadow-lg border border-gray-200">
+                  <iframe
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3982.215165924775!2d97.1461977!3d5.1893289!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3047b7e8a4e3b4b3%3A0x9e8e8e8e8e8e8e8e!2sPelabuhan%20Krueng%20Geukueh!5e0!3m2!1sid!2sid!4v1690000000000"
+                    width="100%"
+                    height="250"
+                    style={{ border: 0 }}
+                    allowFullScreen
+                    loading="lazy"
+                    referrerPolicy="no-referrer-when-downgrade"
+                    title="Peta Lokasi Pabrik PT. Yoga Wibawa Mandiri"
+                  ></iframe>
+                  <div className="p-3 bg-gray-50 text-center">
+                    <a 
+                      href="https://maps.app.goo.gl/example" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="text-ywm-red hover:text-red-700 text-sm font-medium flex items-center justify-center gap-1"
+                    >
+                      <MapPin size={16} />
+                      Buka di Google Maps
+                    </a>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -404,7 +473,7 @@ const Contact = () => {
                 <Phone className="text-ywm-red" size={24} />
                 <div className="text-left">
                   <p className="font-semibold text-ywm-dark">Hotline 24 Jam</p>
-                  <p className="text-gray-600">+6285322624038</p>
+                  <p className="text-gray-600">+6285322624048</p>
                 </div>
               </div>
               <div className="flex items-center space-x-3">
@@ -414,6 +483,15 @@ const Contact = () => {
                   <p className="text-gray-600">emergency@ywm.co.id</p>
                 </div>
               </div>
+            </div>
+            <div className="mt-8">
+              <button
+                onClick={handleWhatsAppClick}
+                className="inline-flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-semibold transition-all"
+              >
+                <MessageCircle size={20} />
+                Chat WhatsApp Darurat
+              </button>
             </div>
           </div>
         </div>

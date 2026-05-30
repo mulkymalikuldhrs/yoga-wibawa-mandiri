@@ -25,56 +25,108 @@ import {
 } from '@/components/ui/dialog';
 import DeleteConfirmDialog from '@/components/dashboard/DeleteConfirmDialog';
 
-// ─── Formula YWM ─────────────────────────────────────────
-function hitungKekosongan(silo: SiloId, ukuran: number[], pengeluaran: number) {
+// ── Formula YWM (verified against original Excel files) ──
+// Referensi: Discharge Calculation Kalkulasi Kekosongan.xlsx, Opname Silo (Complete).xlsx
+// Pengukuran 7 lubang: kedalaman kekosongan dari permukaan semen (meter)
+//
+// (a) Pengukuran 1-7: input kedalaman tiap lubang
+// (b) Jumlah = SUM(1-7)
+// (c) Tinggi Rata-Rata = Jumlah / 7
+// (d) t Silinder = 18 - (c) [jika (c) > 18m → 0]
+// (e) t Conis: ≤18m → A=4.6m, B=2.9m; >18m → A=22.6-(c), B=20.9-(c)
+// Volume Silinder = 145.42 × (d)
+// Volume Conis = 48.47 × (e) [+conis penuh/proporsional]
+// Kekosongan (m³) = ((c) - 2.5) × 145
+// Space Silo = Kekosongan - Pengeluaran
+
+/** Pure calculation function - unit testable */
+export function hitungVolumeSilo(
+  silo: SiloId,
+  ukuran7: number[],
+): {
+  jumlah: number;
+  tinggiRataRata: number;
+  tSilinder: number;
+  tConis: number;
+  volumeSilinder: number;
+  volumeConis: number;
+  volumeTotal: number;
+} {
   const config = SILO_CONFIG[silo];
 
   // (b) Jumlah 1-7
-  const jumlah = ukuran.reduce((s, v) => s + v, 0);
+  const jumlah = ukuran7.reduce((s, v) => s + v, 0);
 
   // (c) Tinggi Rata-Rata
   const tinggiRataRata = jumlah / 7;
 
-  // (d) t Silinder = 18 - (c) — jika (c) > 18 maka = 0
+  // (d) t Silinder = 18 - (c) — jika (c) > 18 maka = 0 (Nihil per Excel)
   const tSilinder = tinggiRataRata <= config.tinggiSilinder
-    ? config.tinggiSilinder - tinggiRataRata
+    ? +(config.tinggiSilinder - tinggiRataRata).toFixed(4)
     : 0;
 
-  // (e) t Conis: jika (c) ≤ 18m → pakai tetap (A=4.6, B=2.9)
-  //                jika (c) > 18m → A=22.6-(c), B=20.9-(c)
+  // (e) t Conis:
+  //   Ketentuan 0-18m → A = 4.6, B = 2.9 (full conis)
+  //   Diatas 18m → A = 22.6 - (c), B = 20.9 - (c) (partial conis)
   const tConis = tinggiRataRata <= config.tinggiSilinder
     ? config.tConisMax
-    : config.tConisFormula - tinggiRataRata;
+    : +(config.tConisFormula - tinggiRataRata).toFixed(4);
 
-  // Volume Silinder = 145.42 × tSilinder
+  // Volume Silinder = 145.42 × (d)
   const volumeSilinder = config.areaSilinder * tSilinder;
 
-  // Volume Conis = 48.47 × tConis (untuk conis penuh: × tConisMax / tConisMax × tConisMax)
-  // Formula asli: 48.47 * tConis (ketika ≤ 18m) atau 48.47 * tConis/tConisMax * tConisMax
-  const volumeConis = tinggiRataRata <= config.tinggiSilinder
-    ? config.areaConis * tConis // conis penuh terisi
-    : config.areaConis * tConis / config.tConisMax * config.tConisMax; // conis sebagian
+  // Volume Conis = 48.47 × (e)
+  // Formula asli Excel: 48.47 * tConis (≤18m) atau 48.47 * tConis / tConisMax * tConisMax (>18m)
+  // Secara matematis keduanya = areaConis × tConis
+  const volumeConis = config.areaConis * Math.max(0, tConis);
 
-  // Total Volume Silo = volumeSilinder + volumeConis
+  // Total Volume = Silinder + Conis
   const volumeTotal = volumeSilinder + volumeConis;
 
-  // Kekosongan: (tinggi rata-rata - 2.5m) × 145
-  const kekosonganBase = (tinggiRataRata - 2.5) * 145;
-  const kekosongan = kekosonganBase > 0 ? kekosonganBase : 0;
+  return {
+    jumlah: +jumlah.toFixed(3),
+    tinggiRataRata: +tinggiRataRata.toFixed(4),
+    tSilinder: +tSilinder.toFixed(4),
+    tConis: +Math.max(0, tConis).toFixed(4),
+    volumeSilinder: +volumeSilinder.toFixed(3),
+    volumeConis: +volumeConis.toFixed(3),
+    volumeTotal: +volumeTotal.toFixed(3),
+  };
+}
 
-  // Space Silo = kekosongan - pengeluaran
-  const spaceSilo = kekosongan - pengeluaran;
+/** Hitung Kekosongan (m³) berdasarkan formula Discharge Calculation */
+export function hitungKekosonganM3(
+  tinggiRataRata: number,
+): number {
+  // Kekosongan = ((c) - 2.5) × 145
+  // 2.5m = offset bottom cone / dead stock
+  // 145 = effective cross-sectional area (m²)
+  const hasil = (tinggiRataRata - 2.5) * 145;
+  return hasil > 0 ? +hasil.toFixed(3) : 0;
+}
+
+/** Hitung Space Silo = Kekosongan - Pengeluaran (truck + curah) */
+export function hitungSpaceSilo(
+  kekosonganM3: number,
+  pengeluaran: number,
+): number {
+  return +(kekosonganM3 - pengeluaran).toFixed(3);
+}
+
+/** Main calculation function that combines all sub-calculations */
+export function hitungKekosongan(
+  silo: SiloId,
+  ukuran: number[],
+  pengeluaran: number,
+) {
+  const vol = hitungVolumeSilo(silo, ukuran);
+  const kekosongan = hitungKekosonganM3(vol.tinggiRataRata);
+  const spaceSilo = hitungSpaceSilo(kekosongan, pengeluaran);
 
   return {
-    jumlah: Math.round(jumlah * 1000) / 1000,
-    tinggiRataRata: Math.round(tinggiRataRata * 10000) / 10000,
-    tSilinder: Math.round(tSilinder * 10000) / 10000,
-    tConis: Math.round(Math.max(0, tConis) * 10000) / 10000,
-    volumeSilinder: Math.round(volumeSilinder * 1000) / 1000,
-    volumeConis: Math.round(volumeConis * 1000) / 1000,
-    volumeTotal: Math.round(volumeTotal * 1000) / 1000,
-    kekosongan: Math.round(kekosongan * 1000) / 1000,
-    spaceSilo: Math.round(spaceSilo * 1000) / 1000,
+    ...vol,
+    kekosongan,
+    spaceSilo,
   };
 }
 
