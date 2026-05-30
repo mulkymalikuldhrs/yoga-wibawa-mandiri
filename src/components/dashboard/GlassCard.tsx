@@ -13,7 +13,7 @@ interface GlassCardProps extends React.HTMLAttributes<HTMLDivElement> {
 
 const variantStyles: Record<string, string> = {
   default: 'bg-white/10 border-white/20',
-  accent: 'bg-cyan-500/10 border-cyan-500/30',
+  accent: 'bg-red-500/10 border-red-500/30',
   danger: 'bg-red-500/10 border-red-500/30',
   success: 'bg-emerald-500/10 border-emerald-500/30',
 };
@@ -30,7 +30,7 @@ export default function GlassCard({
       className={cn(
         'backdrop-blur-xl rounded-2xl border transition-all duration-300',
         variantStyles[variant] || variantStyles.default,
-        glow && 'hover:shadow-[0_0_30px_rgba(0,212,255,0.2)]',
+        glow && 'hover:shadow-[0_0_30px_rgba(198,40,40,0.2)]',
         'hover:bg-white/15 hover:border-white/30',
         className
       )}

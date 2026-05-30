@@ -10,10 +10,7 @@ import {
   Package,
   Users,
   Wrench,
-  Factory,
   ShieldCheck,
-  Wallet,
-  UserCog,
   FileText,
   BarChart3,
   Bell,
@@ -27,10 +24,7 @@ const MODULES: { id: DashboardModule; label: string; icon: React.ReactNode }[] =
   { id: 'spare-parts', label: 'Suku Cadang', icon: <Package size={20} /> },
   { id: 'team-activity', label: 'Aktivitas Tim', icon: <Users size={20} /> },
   { id: 'maintenance', label: 'Perawatan', icon: <Wrench size={20} /> },
-  { id: 'production', label: 'Produksi', icon: <Factory size={20} /> },
   { id: 'safety', label: 'Keselamatan (HSE)', icon: <ShieldCheck size={20} /> },
-  { id: 'finance', label: 'Keuangan', icon: <Wallet size={20} /> },
-  { id: 'hr', label: 'SDM / Payroll', icon: <UserCog size={20} /> },
   { id: 'documents', label: 'Dokumen & OCR', icon: <FileText size={20} /> },
   { id: 'analytics', label: 'Analitik', icon: <BarChart3 size={20} /> },
   { id: 'notifications', label: 'Notifikasi', icon: <Bell size={20} /> },
@@ -60,9 +54,11 @@ export default function DashboardSidebar({
     >
       {/* Logo / Title */}
       <div className="px-4 py-5 border-b border-white/10 flex items-center gap-3">
-        <div className="w-9 h-9 rounded-lg bg-cyan-500/20 flex items-center justify-center flex-shrink-0">
-          <span className="text-cyan-400 font-bold text-sm">YWM</span>
-        </div>
+        <img 
+          src="/lovable-uploads/ywm-logo-kop-surat.png" 
+          alt="YWM Logo"
+          className="w-9 h-9 rounded-lg object-contain flex-shrink-0"
+        />
         {!collapsed && (
           <div className="overflow-hidden">
             <h1 className="text-white font-semibold text-sm truncate">YWM Dashboard</h1>
@@ -83,7 +79,7 @@ export default function DashboardSidebar({
                 'w-full flex items-center gap-3 px-4 py-2.5 mx-2 rounded-xl transition-all duration-200 text-left',
                 'max-w-[calc(100%-16px)]',
                 isActive
-                  ? 'bg-cyan-500/20 text-cyan-400 shadow-[0_0_15px_rgba(0,212,255,0.1)]'
+                  ? 'bg-red-500/20 text-red-400 shadow-[0_0_15px_rgba(198,40,40,0.15)]'
                   : 'text-white/60 hover:text-white hover:bg-white/5'
               )}
               title={collapsed ? mod.label : undefined}

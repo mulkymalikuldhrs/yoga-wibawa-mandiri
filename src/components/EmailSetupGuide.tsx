@@ -76,7 +76,7 @@ Silakan balas langsung ke email pengirim: {{reply_to}}
               <h4 className="font-semibold text-green-800 mb-2">Step 2: Setup Email Service</h4>
               <ul className="text-green-700 text-sm space-y-1">
                 <li>• Pilih Gmail/Outlook sebagai email service</li>
-                <li>• Hubungkan dengan email: <strong>mulkymalikuldhaher@mail.com</strong></li>
+                <li>• Hubungkan dengan email: <strong>yogawibawamandiri@gmail.com</strong></li>
                 <li>• Catat Service ID yang diberikan</li>
               </ul>
             </div>
@@ -151,7 +151,7 @@ const EMAILJS_PUBLIC_KEY = 'your_public_key';`}
               <h4 className="font-semibold text-blue-800 mb-2">Setup Formspree</h4>
               <ol className="text-blue-700 text-sm space-y-1">
                 <li>1. Daftar di <a href="https://formspree.io" target="_blank" rel="noopener noreferrer" className="underline">Formspree.io</a></li>
-                <li>2. Buat form baru dengan email: <strong>mulkymalikuldhaher@mail.com</strong></li>
+                <li>2. Buat form baru dengan email: <strong>yogawibawamandiri@gmail.com</strong></li>
                 <li>3. Copy Form ID yang diberikan</li>
                 <li>4. Update <code>YOUR_FORMSPREE_ID</code> di emailService.ts</li>
               </ol>
@@ -177,7 +177,7 @@ const EMAILJS_PUBLIC_KEY = 'your_public_key';`}
             </div>
             <div className="flex items-center space-x-3">
               <CheckCircle className="w-5 h-5 text-green-600" />
-              <span className="text-gray-700">Target email: mulkymalikuldhaher@mail.com</span>
+              <span className="text-gray-700">Target email: yogawibawamandiri@gmail.com</span>
             </div>
             <div className="flex items-center space-x-3">
               <Settings className="w-5 h-5 text-yellow-600" />

@@ -52,18 +52,6 @@ export interface MaintenanceRecord extends WithId, Timestamped {
   catatan: string;
 }
 
-// --- Production ---
-export interface ProductionRecord extends WithId, Timestamped {
-  tanggal: string;
-  shift: 'pagi' | 'siang' | 'malam';
-  mesin: string;
-  target: number;
-  aktual: number;
-  satuan: string;
-  kualitas: 'A' | 'B' | 'C';
-  catatan: string;
-}
-
 // --- Safety / HSE ---
 export interface SafetyIncident extends WithId, Timestamped {
   judul: string;
@@ -75,32 +63,6 @@ export interface SafetyIncident extends WithId, Timestamped {
   korban: string;
   deskripsi: string;
   tindakan: string;
-}
-
-// --- Finance ---
-export interface FinanceRecord extends WithId, Timestamped {
-  tanggal: string;
-  jenis: 'pemasukan' | 'pengeluaran';
-  kategori: string;
-  deskripsi: string;
-  jumlah: number;
-  metodePembayaran: string;
-  referensi: string;
-  catatan: string;
-}
-
-// --- HR / Employee ---
-export interface Employee extends WithId, Timestamped {
-  nama: string;
-  nip: string;
-  jabatan: string;
-  divisi: string;
-  tanggalMasuk: string;
-  gajiPokok: number;
-  status: 'aktif' | 'cuti' | 'resign';
-  noTelepon: string;
-  email: string;
-  alamat: string;
 }
 
 // --- Document ---
@@ -147,10 +109,7 @@ export type DashboardModule =
   | 'spare-parts'
   | 'team-activity'
   | 'maintenance'
-  | 'production'
   | 'safety'
-  | 'finance'
-  | 'hr'
   | 'documents'
   | 'analytics'
   | 'notifications';
@@ -167,10 +126,7 @@ export const KV_PREFIXES = {
   sparePart: 'ywm_spare_',
   teamActivity: 'ywm_team_',
   maintenance: 'ywm_maint_',
-  production: 'ywm_prod_',
   safety: 'ywm_safety_',
-  finance: 'ywm_finance_',
-  employee: 'ywm_hr_',
   document: 'ywm_doc_',
   notification: 'ywm_notif_',
   chatHistory: 'ywm_chat_',
@@ -182,9 +138,6 @@ export interface DashboardStats {
   totalSpareParts: number;
   lowStockItems: number;
   activeMaintenance: number;
-  todayProduction: number;
   openIncidents: number;
-  monthlyRevenue: number;
-  activeEmployees: number;
   unreadNotifications: number;
 }

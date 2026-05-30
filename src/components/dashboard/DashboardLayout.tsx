@@ -1,10 +1,11 @@
 // ============================================================
-// DashboardLayout — Layout wrapper with sidebar + AI panel
+// DashboardLayout — Layout wrapper with sidebar + AI panel + Floating Chat
 // ============================================================
 
 import React, { useState } from 'react';
 import DashboardSidebar from './DashboardSidebar';
 import AiAssistantPanel from './AiAssistantPanel';
+import FloatingChatBot from './FloatingChatBot';
 import type { DashboardModule } from '@/types/dashboard';
 
 interface DashboardLayoutProps {
@@ -19,11 +20,11 @@ export default function DashboardLayout({
   children,
 }: DashboardLayoutProps) {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
-  const [aiPanelOpen, setAiPanelOpen] = useState(true);
+  const [aiPanelOpen, setAiPanelOpen] = useState(false);
   const [unreadNotifs] = useState(0);
 
   return (
-    <div className="h-screen flex overflow-hidden bg-gradient-to-br from-[#0f0c29] via-[#302b63] to-[#24243e]">
+    <div className="h-screen flex overflow-hidden bg-gradient-to-br from-[#1a0a0a] via-[#2d1515] to-[#1a0a0a]">
       {/* Sidebar */}
       <DashboardSidebar
         activeModule={activeModule}
@@ -38,11 +39,14 @@ export default function DashboardLayout({
         {children}
       </main>
 
-      {/* AI Assistant Panel */}
+      {/* AI Assistant Panel (side panel) */}
       <AiAssistantPanel
         isOpen={aiPanelOpen}
         onToggle={() => setAiPanelOpen((p) => !p)}
       />
+
+      {/* Floating Chatbot — always available */}
+      <FloatingChatBot />
     </div>
   );
 }

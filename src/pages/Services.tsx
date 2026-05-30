@@ -33,7 +33,7 @@ const Services = () => {
                 <li>• Kapasitas produksi hingga 500 ton per hari</li>
                 <li>• Sistem penimbangan otomatis</li>
                 <li>• Kontrol kualitas ketat</li>
-                <li>• Kemasan 40kg dan 50kg</li>
+                <li>• Kemasan 40kg (Zak)</li>
               </ul>
             </div>
 

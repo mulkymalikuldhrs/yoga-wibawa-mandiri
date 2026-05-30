@@ -6,6 +6,7 @@ const Footer = () => {
     { name: 'Beranda', path: '/' },
     { name: 'Tentang Kami', path: '/tentang' },
     { name: 'Layanan', path: '/layanan' },
+    { name: 'Produk', path: '/produk' },
     { name: 'Galeri', path: '/galeri' },
     { name: 'Lokasi', path: '/lokasi' },
     { name: 'Kontak', path: '/kontak' },
@@ -19,9 +20,9 @@ const Footer = () => {
           <div className="md:col-span-2">
             <div className="flex items-center mb-6">
               <img 
-                src="/lovable-uploads/5f8e0e82-2031-4a9f-b848-f05d23c37cf2.png" 
+                src="/lovable-uploads/ywm-logo-kop-surat.png" 
                 alt="PT. Yoga Wibawa Mandiri Logo"
-                className="w-14 h-14 rounded-xl shadow-lg mr-4"
+                className="w-16 h-16 rounded-xl shadow-lg mr-4"
               />
               <div>
                 <h3 className="font-bold text-xl">PT. Yoga Wibawa Mandiri</h3>
@@ -109,13 +110,13 @@ const Footer = () => {
                   <p className="text-gray-300 text-sm">Pelabuhan Krueng Geukueh<br />Lhokseumawe, Aceh</p>
                 </div>
               </div>
-              <div className="flex items-center space-x-3">
+              <a href="https://wa.me/6285322624038" target="_blank" rel="noopener noreferrer" className="flex items-center space-x-3 hover:text-white transition-colors">
                 <Phone className="text-ywm-red" size={18} />
-                <p className="text-gray-300 text-sm">+62 651 123456</p>
-              </div>
+                <p className="text-gray-300 text-sm">+62 853-2262-4038</p>
+              </a>
               <div className="flex items-center space-x-3">
                 <Mail className="text-ywm-red" size={18} />
-                <p className="text-gray-300 text-sm">info@ywm.co.id</p>
+                <p className="text-gray-300 text-sm">yogawibawamandiri@gmail.com</p>
               </div>
               <div className="flex items-center space-x-3">
                 <Clock className="text-ywm-red" size={18} />

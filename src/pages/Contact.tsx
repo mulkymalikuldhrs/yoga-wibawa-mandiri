@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import Layout from '@/components/Layout';
-import { MapPin, Phone, Mail, Clock, Send, Loader2 } from 'lucide-react';
+import { MapPin, Phone, Mail, Clock, Send, Loader2, MessageCircle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { sendContactEmail, type ContactFormData } from '@/services/emailService';
 
@@ -306,7 +306,7 @@ const Contact = () => {
                   <div className="flex items-center space-x-2">
                     <Mail className="text-blue-600" size={16} />
                     <p className="text-sm text-blue-800">
-                      <strong>Pesan akan dikirim ke:</strong> mulkymalikuldhaher@mail.com
+                      <strong>Pesan akan dikirim ke:</strong> yogawibawamandiri@gmail.com
                     </p>
                   </div>
                   <p className="text-xs text-blue-600 mt-1">
@@ -331,18 +331,18 @@ const Contact = () => {
                       <MapPin className="text-ywm-red mt-1" size={20} />
                       <div>
                         <p className="text-gray-700">
-                          Jl. Gatot Subroto No. 123<br />
+                          Jl. Paduan Tenaga No. 12<br />
                           Medan, Sumatera Utara 20112
                         </p>
                       </div>
                     </div>
                     <div className="flex items-center space-x-3">
                       <Phone className="text-ywm-red" size={20} />
-                      <p className="text-gray-700">+62 61 456789</p>
+                      <p className="text-gray-700">(061) 7362740</p>
                     </div>
                     <div className="flex items-center space-x-3">
                       <Mail className="text-ywm-red" size={20} />
-                      <p className="text-gray-700">info@ywm.co.id</p>
+                      <p className="text-gray-700">yogawibawamandiri@gmail.com</p>
                     </div>
                   </div>
                 </div>
@@ -362,11 +362,11 @@ const Contact = () => {
                     </div>
                     <div className="flex items-center space-x-3">
                       <Phone className="text-ywm-red" size={20} />
-                      <p className="text-gray-700">+62 651 123456</p>
+                      <p className="text-gray-700">(0645) 58345</p>
                     </div>
                     <div className="flex items-center space-x-3">
                       <Mail className="text-ywm-red" size={20} />
-                      <p className="text-gray-700">pabrik@ywm.co.id</p>
+                      <p className="text-gray-700">yogawibawamandiri@gmail.com</p>
                     </div>
                   </div>
                 </div>
@@ -419,16 +419,28 @@ const Contact = () => {
                 <Phone className="text-ywm-red" size={24} />
                 <div className="text-left">
                   <p className="font-semibold text-ywm-dark">Hotline 24 Jam</p>
-                  <p className="text-gray-600">+62 851 xxxx xxxx</p>
+                  <p className="text-gray-600">+62 853-2262-4038</p>
                 </div>
               </div>
               <div className="flex items-center space-x-3">
                 <Mail className="text-ywm-red" size={24} />
                 <div className="text-left">
                   <p className="font-semibold text-ywm-dark">Email Darurat</p>
-                  <p className="text-gray-600">emergency@ywm.co.id</p>
+                  <p className="text-gray-600">yogawibawamandiri@gmail.com</p>
                 </div>
               </div>
+              <a
+                href="https://wa.me/6285322624038"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center space-x-3 bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-lg transition-colors"
+              >
+                <MessageCircle size={24} />
+                <div className="text-left">
+                  <p className="font-semibold">WhatsApp</p>
+                  <p className="text-green-100 text-sm">+62 853-2262-4038</p>
+                </div>
+              </a>
             </div>
           </div>
         </div>

@@ -92,7 +92,7 @@ const Location = () => {
                   <div>
                     <h4 className="font-semibold text-ywm-dark">Alamat Kantor</h4>
                     <p className="text-gray-600">
-                      Jl. Gatot Subroto No. 123<br />
+                      Jl. Paduan Tenaga No. 12<br />
                       Medan, Sumatera Utara 20112<br />
                       Indonesia
                     </p>
@@ -104,9 +104,9 @@ const Location = () => {
                   <div>
                     <h4 className="font-semibold text-ywm-dark">Kontak</h4>
                     <p className="text-gray-600">
-                      Telepon: +62 61 456789<br />
-                      Fax: +62 61 456790<br />
-                      Email: info@ywm.co.id
+                      Telepon: (061) 7362740<br />
+                      Fax: (061) 7360994<br />
+                      Email: yogawibawamandiri@gmail.com
                     </p>
                   </div>
                 </div>

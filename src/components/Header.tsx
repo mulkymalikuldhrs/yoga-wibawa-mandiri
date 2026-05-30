@@ -11,7 +11,8 @@ const Header = () => {
     { name: 'Beranda', path: '/' },
     { name: 'Tentang Kami', path: '/tentang' },
     { name: 'Layanan', path: '/layanan' },
-    { name: 'Galeri', path: '/galeri' },
+    { name: 'Produk', path: '/produk' },
+    { name: 'Galeri', path: '/galeri'},
     { name: 'Lokasi', path: '/lokasi' },
     { name: 'Kontak', path: '/kontak' },
   ];
@@ -25,9 +26,9 @@ const Header = () => {
           {/* Logo PT. YWM */}
           <div className="flex items-center">
             <img 
-              src="/lovable-uploads/5f8e0e82-2031-4a9f-b848-f05d23c37cf2.png" 
+              src="/lovable-uploads/ywm-logo-kop-surat.png" 
               alt="PT. Yoga Wibawa Mandiri Logo"
-              className="w-16 h-16 rounded-xl shadow-lg"
+              className="w-20 h-20 rounded-xl shadow-lg"
             />
             <div className="ml-4">
               <h1 className="text-ywm-dark font-bold text-xl">PT. Yoga Wibawa Mandiri</h1>
@@ -55,7 +56,7 @@ const Header = () => {
             <img 
               src="/lovable-uploads/35616003-ad4f-4d69-940c-91a3a5a41f07.png" 
               alt="Semen Padang Logo"
-              className="w-16 h-16 rounded-xl shadow-lg mr-4"
+              className="w-14 h-14 rounded-xl shadow-lg mr-4"
             />
             <div>
               <p className="text-ywm-dark font-bold text-lg">Semen Padang</p>
