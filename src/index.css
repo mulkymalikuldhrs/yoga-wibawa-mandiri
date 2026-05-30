@@ -430,6 +430,22 @@ html {
   }
 }
 
+/* Push notification slide-in (top-right, with spring easing) */
+@keyframes ywm-slide-in-right {
+  0% {
+    transform: translateX(100%) scale(0.95);
+    opacity: 0;
+  }
+  60% {
+    transform: translateX(-4%) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(0) scale(1);
+    opacity: 1;
+  }
+}
+
 @keyframes notification-pulse {
   0%, 100% {
     opacity: 1;
@@ -607,6 +623,93 @@ html {
 body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* ============================================================
+   Public Website — Light Glassmorphic Background & Orbs
+   ============================================================ */
+
+.public-glassmorphic-bg {
+  position: relative;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #fef2f2 0%, #fff1f2 20%, #fefce8 40%, #f0fdf4 60%, #eff6ff 80%, #faf5ff 100%);
+  overflow-x: hidden;
+}
+
+/* Red/Rose orb — top right */
+.public-glassmorphic-bg::before {
+  content: '';
+  position: fixed;
+  width: 500px;
+  height: 500px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(198, 40, 40, 0.1), transparent);
+  filter: blur(80px);
+  opacity: 0.6;
+  top: -100px;
+  right: -100px;
+  z-index: 0;
+  pointer-events: none;
+  animation: float-orb-1 20s ease-in-out infinite;
+}
+
+/* Amber orb — bottom left */
+.public-glassmorphic-bg::after {
+  content: '';
+  position: fixed;
+  width: 450px;
+  height: 450px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(245, 158, 11, 0.08), transparent);
+  filter: blur(70px);
+  opacity: 0.5;
+  bottom: -100px;
+  left: -80px;
+  z-index: 0;
+  pointer-events: none;
+  animation: float-orb-2 25s ease-in-out infinite;
+}
+
+/* Light red accent orb */
+.glassmorphic-orb-red {
+  position: fixed;
+  width: 350px;
+  height: 350px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(198, 40, 40, 0.08), transparent);
+  filter: blur(60px);
+  opacity: 0.5;
+  pointer-events: none;
+  z-index: 0;
+  animation: float-orb-3 18s ease-in-out infinite;
+}
+
+/* Light amber accent orb */
+.glassmorphic-orb-light-amber {
+  position: fixed;
+  width: 300px;
+  height: 300px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(251, 191, 36, 0.1), transparent);
+  filter: blur(50px);
+  opacity: 0.4;
+  pointer-events: none;
+  z-index: 0;
+  animation: float-orb-4 22s ease-in-out infinite;
+}
+
+/* Light emerald accent orb */
+.glassmorphic-orb-light-emerald {
+  position: fixed;
+  width: 280px;
+  height: 280px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(16, 185, 129, 0.07), transparent);
+  filter: blur(50px);
+  opacity: 0.4;
+  pointer-events: none;
+  z-index: 0;
+  animation: float-orb-5 15s ease-in-out infinite;
 }
 
 /* ============================================================

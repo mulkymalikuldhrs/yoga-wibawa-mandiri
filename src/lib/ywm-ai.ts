@@ -6,7 +6,7 @@
 
 import type { AiMessage } from '@/types/dashboard';
 import { KV_PREFIXES } from '@/types/dashboard';
-import { getData as getLocalData } from '@/lib/dashboard-storage';
+import { getData } from '@/lib/supabase-data';
 
 const API_BASE = '/api';
 
@@ -146,13 +146,15 @@ export async function smartParse(
 }
 
 // ── Build Dashboard Data Context ──
-// Reads current dashboard data from localStorage to give AI context
-export function buildDashboardContext(): string {
+// Reads current dashboard data from Supabase (with localStorage fallback) to give AI context
+export async function buildDashboardContext(): Promise<string> {
   try {
-    const spareParts = getLocalData<{ id: string; nama: string; kode: string; stok: number; stokMinimum: number; satuan: string }>(KV_PREFIXES.sparePart);
-    const maintenance = getLocalData<{ id: string; judul: string; mesin: string; status: string; prioritas: string }>(KV_PREFIXES.maintenance);
-    const pispot = getLocalData<{ id: string; namaPeralatan: string; kodePeralatan: string; status: string; kondisi: string; bulan: string }>(KV_PREFIXES.pispot);
-    const team = getLocalData<{ id: string; namaKaryawan: string; divisi: string; status: string; tanggal: string }>(KV_PREFIXES.teamActivity);
+    const spareParts = await getData<{ id: string; nama: string; kode: string; stok: number; stokMinimum: number; satuan: string }>(KV_PREFIXES.sparePart);
+    const maintenance = await getData<{ id: string; judul: string; mesin: string; status: string; prioritas: string }>(KV_PREFIXES.maintenance);
+    const pispot = await getData<{ id: string; namaPeralatan: string; kodePeralatan: string; status: string; kondisi: string; bulan: string }>(KV_PREFIXES.pispot);
+    const team = await getData<{ id: string; namaKaryawan: string; divisi: string; status: string; tanggal: string }>(KV_PREFIXES.teamActivity);
+    const production = await getData<{ id: string; tanggal: string; shift: string; mesin: string; target: number; aktual: number; satuan: string }>(KV_PREFIXES.production);
+    const siloCalc = await getData<{ id: string; silo: string; tanggal: string; kekosongan: number; spaceSilo: number; pengeluaran: number; keterangan: string }>(KV_PREFIXES.siloCalculation);
 
     const lowStockItems = spareParts.filter(p => p.stok <= p.stokMinimum);
     const activeMaintenance = maintenance.filter(m => m.status === 'berjalan');
@@ -186,6 +188,23 @@ export function buildDashboardContext(): string {
     context += `- Karyawan Hadir Hari Ini: ${todayTeam.filter(t => t.status === 'hadir' || t.status === 'lembur').length}/${todayTeam.length}\n`;
     if (absentToday.length > 0) {
       context += `  - Tidak Hadir: ${absentToday.map(t => `${t.namaKaryawan} (${t.status})`).join(', ')}\n`;
+    }
+
+    // Production data
+    const todayProduction = production.filter(p => p.tanggal === todayStr);
+    if (todayProduction.length > 0) {
+      context += `- Produksi Hari Ini: ${todayProduction.length} shift\n`;
+      todayProduction.forEach(p => {
+        context += `  - ${p.shift}/${p.mesin}: Target ${p.target} ${p.satuan}, Aktual ${p.aktual} ${p.satuan}\n`;
+      });
+    }
+
+    // Silo data
+    if (siloCalc.length > 0) {
+      const latestSiloA = siloCalc.filter(s => s.silo === 'A').sort((a, b) => (b.tanggal || '').localeCompare(a.tanggal || ''))[0];
+      const latestSiloB = siloCalc.filter(s => s.silo === 'B').sort((a, b) => (b.tanggal || '').localeCompare(a.tanggal || ''))[0];
+      if (latestSiloA) context += `- Silo A Terkini: Kekosongan ${latestSiloA.kekosongan} m³, Space ${latestSiloA.spaceSilo} m³ (${latestSiloA.keterangan})\n`;
+      if (latestSiloB) context += `- Silo B Terkini: Kekosongan ${latestSiloB.kekosongan} m³, Space ${latestSiloB.spaceSilo} m³ (${latestSiloB.keterangan})\n`;
     }
 
     return context;

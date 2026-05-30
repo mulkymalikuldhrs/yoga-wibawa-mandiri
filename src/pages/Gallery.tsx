@@ -1,5 +1,6 @@
 
 import Layout from '@/components/Layout';
+import { Link } from 'react-router-dom';
 
 const Gallery = () => {
   const galleryImages = [
@@ -46,20 +47,22 @@ const Gallery = () => {
       {/* Hero Section */}
       <section className="py-20 bg-gradient-to-r from-ywm-red to-red-700 text-white">
         <div className="container mx-auto px-4 text-center">
-          <h1 className="text-5xl font-bold mb-6 animate-fade-in">Galeri</h1>
-          <p className="text-xl max-w-3xl mx-auto animate-fade-in">
-            Dokumentasi Kegiatan dan Fasilitas PT. Yoga Wibawa Mandiri
-          </p>
+          <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl p-10 max-w-3xl mx-auto">
+            <h1 className="text-5xl font-bold mb-6 animate-fade-in">Galeri</h1>
+            <p className="text-xl max-w-3xl mx-auto animate-fade-in">
+              Dokumentasi Kegiatan dan Fasilitas PT. Yoga Wibawa Mandiri
+            </p>
+          </div>
         </div>
       </section>
 
       {/* Gallery Grid */}
-      <section className="py-20 bg-white">
+      <section className="py-20">
         <div className="container mx-auto px-4">
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             {galleryImages.map((image, index) => (
               <div key={image.id} className="group cursor-pointer animate-fade-in" style={{animationDelay: `${index * 0.1}s`}}>
-                <div className="relative overflow-hidden rounded-lg shadow-lg">
+                <div className="glass-frosted relative overflow-hidden rounded-2xl">
                   <img 
                     src={image.src}
                     alt={image.title}
@@ -80,7 +83,7 @@ const Gallery = () => {
       </section>
 
       {/* Statistics */}
-      <section className="py-20 bg-gray-50">
+      <section className="py-20">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-ywm-dark mb-4">
@@ -92,19 +95,19 @@ const Gallery = () => {
           </div>
 
           <div className="grid md:grid-cols-4 gap-8 text-center">
-            <div className="animate-fade-in">
+            <div className="glass-frosted rounded-2xl p-6 animate-fade-in">
               <h3 className="text-4xl font-bold text-ywm-red mb-2">500K+</h3>
               <p className="text-gray-700 font-medium">Ton Semen per Tahun</p>
             </div>
-            <div className="animate-fade-in">
+            <div className="glass-frosted rounded-2xl p-6 animate-fade-in">
               <h3 className="text-4xl font-bold text-ywm-red mb-2">15+</h3>
               <p className="text-gray-700 font-medium">Tahun Pengalaman</p>
             </div>
-            <div className="animate-fade-in">
+            <div className="glass-frosted rounded-2xl p-6 animate-fade-in">
               <h3 className="text-4xl font-bold text-ywm-red mb-2">200+</h3>
               <p className="text-gray-700 font-medium">Karyawan Profesional</p>
             </div>
-            <div className="animate-fade-in">
+            <div className="glass-frosted rounded-2xl p-6 animate-fade-in">
               <h3 className="text-4xl font-bold text-ywm-red mb-2">50+</h3>
               <p className="text-gray-700 font-medium">Kota Distribusi</p>
             </div>
@@ -115,19 +118,21 @@ const Gallery = () => {
       {/* CTA Section */}
       <section className="py-20 bg-ywm-red text-white">
         <div className="container mx-auto px-4 text-center">
-          <h2 className="text-4xl font-bold mb-6">
-            Ingin Melihat Fasilitas Kami Langsung?
-          </h2>
-          <p className="text-xl mb-8 max-w-2xl mx-auto">
-            Kunjungi pabrik kami di Pelabuhan Krueng Geukueh, Lhokseumawe untuk melihat 
-            proses produksi dan fasilitas modern yang kami miliki.
-          </p>
-          <a 
-            href="/lokasi" 
-            className="inline-block bg-white text-ywm-red px-8 py-4 rounded-lg font-semibold text-lg hover:bg-gray-100 transition-colors transform hover:scale-105"
-          >
-            Lihat Lokasi Kami
-          </a>
+          <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl p-12 max-w-3xl mx-auto">
+            <h2 className="text-4xl font-bold mb-6">
+              Ingin Melihat Fasilitas Kami Langsung?
+            </h2>
+            <p className="text-xl mb-8 max-w-2xl mx-auto">
+              Kunjungi pabrik kami di Pelabuhan Krueng Geukueh, Lhokseumawe untuk melihat 
+              proses produksi dan fasilitas modern yang kami miliki.
+            </p>
+            <Link 
+              to="/lokasi" 
+              className="inline-block bg-white/90 backdrop-blur-md text-ywm-red px-8 py-4 rounded-lg font-semibold text-lg hover:bg-white transition-colors transform hover:scale-105"
+            >
+              Lihat Lokasi Kami
+            </Link>
+          </div>
         </div>
       </section>
     </Layout>

@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>YWM Dashboard - Offline</title>
+  <meta name="theme-color" content="#dc2626" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: linear-gradient(135deg, #0f0c29 0%, #1a1a2e 50%, #16213e 100%);
+      color: #fff;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 2rem;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .container {
+      max-width: 420px;
+      width: 100%;
+    }
+
+    .icon-wrapper {
+      width: 96px;
+      height: 96px;
+      margin: 0 auto 1.5rem;
+      border-radius: 24px;
+      background: linear-gradient(135deg, rgba(220, 38, 38, 0.15), rgba(220, 38, 38, 0.05));
+      border: 1px solid rgba(220, 38, 38, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.7; transform: scale(0.95); }
+    }
+
+    .icon-wrapper svg {
+      width: 44px;
+      height: 44px;
+      color: #dc2626;
+    }
+
+    h1 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      letter-spacing: -0.02em;
+    }
+
+    .subtitle {
+      font-size: 0.95rem;
+      color: rgba(255, 255, 255, 0.5);
+      line-height: 1.6;
+      margin-bottom: 2rem;
+    }
+
+    .retry-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 0.8rem 2rem;
+      background: linear-gradient(135deg, #dc2626, #b91c1c);
+      color: #fff;
+      border: none;
+      border-radius: 14px;
+      cursor: pointer;
+      font-size: 0.95rem;
+      font-weight: 600;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 15px rgba(220, 38, 38, 0.3);
+    }
+
+    .retry-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(220, 38, 38, 0.4);
+    }
+
+    .retry-btn:active {
+      transform: translateY(0);
+    }
+
+    .retry-btn svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    .tip {
+      margin-top: 2rem;
+      padding: 1rem;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+    }
+
+    .tip p {
+      font-size: 0.8rem;
+      color: rgba(255, 255, 255, 0.35);
+      line-height: 1.5;
+    }
+
+    .brand {
+      margin-top: 2.5rem;
+      font-size: 0.75rem;
+      color: rgba(255, 255, 255, 0.2);
+      letter-spacing: 0.05em;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="icon-wrapper">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
+      </svg>
+    </div>
+
+    <h1>📡 Anda Sedang Offline</h1>
+    <p class="subtitle">
+      YWM Dashboard memerlukan koneksi internet untuk berfungsi penuh. 
+      Data yang tersimpan di cache mungkin tersedia.
+    </p>
+
+    <button class="retry-btn" onclick="window.location.reload()">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182" />
+      </svg>
+      Coba Lagi
+    </button>
+
+    <div class="tip">
+      <p>💡 Pastikan perangkat Anda terhubung ke internet, lalu coba muat ulang halaman ini.</p>
+    </div>
+
+    <p class="brand">PT. Yoga Wibawa Mandiri</p>
+  </div>
+</body>
+</html>

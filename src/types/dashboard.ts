@@ -77,6 +77,7 @@ export interface Document extends WithId, Timestamped {
   jenis: 'kontrak' | 'laporan' | 'manual' | 'sertifikat' | 'lainnya';
   kategori: string;
   ukuran: number;
+  tipeFile: string; // MIME type, e.g. 'application/pdf', 'image/png'
   url: string;
   ocrText: string;
   diunggahOleh: string;
@@ -164,8 +165,10 @@ export interface SiloCalculation extends WithId, Timestamped {
   volumeTotal: number;
   // Kekosongan (m³)
   kekosongan: number;
-  // Space Silo setelah dikurangi pengeluaran
+  // Space Silo setelah dikurangi pengeluaran (minimum 0)
   spaceSilo: number;
+  // Apakah silo penuh/over-capacity (spaceSilo diklem ke 0)
+  isOverCapacity: boolean;
   // Pengeluaran (truck + curah, ton)
   pengeluaran: number;
   keterangan: string;

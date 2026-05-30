@@ -2,16 +2,18 @@
 // DocumentsModule — Dokumen & OCR
 // ============================================================
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { cn } from '@/lib/utils';
 import GlassCard from '@/components/dashboard/GlassCard';
 import { getData, saveData, deleteData, generateId } from '@/lib/supabase-data';
 import { KV_PREFIXES, type Document } from '@/types/dashboard';
 import {
   Plus, Search, FileText, Upload, File, FileCheck, FileWarning, Trash2, Eye, ScanLine,
+  FileSpreadsheet, FileImage, FileType2,
 } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import DeleteConfirmDialog from '@/components/dashboard/DeleteConfirmDialog';
+import { toast } from '@/hooks/use-toast';
 
 const JENIS_CONFIG: Record<string, { color: string; bg: string; label: string; icon: React.ReactNode }> = {
   kontrak: { color: 'text-blue-600', bg: 'bg-blue-100/80', label: 'Kontrak', icon: <FileCheck size={14} /> },
@@ -22,7 +24,7 @@ const JENIS_CONFIG: Record<string, { color: string; bg: string; label: string; i
 };
 
 const EMPTY_FORM: Omit<Document, 'id' | 'createdAt' | 'updatedAt'> = {
-  nama: '', jenis: 'manual', kategori: '', ukuran: 0, url: '#', ocrText: '',
+  nama: '', jenis: 'manual', kategori: '', ukuran: 0, tipeFile: '', url: '#', ocrText: '',
   diunggahOleh: '', catatan: '',
 };
 
@@ -32,6 +34,27 @@ function formatFileSize(bytes: number): string {
   const sizes = ['B', 'KB', 'MB', 'GB'];
   const i = Math.floor(Math.log(bytes) / Math.log(k));
   return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+}
+
+/** Return a Lucide icon node based on file MIME type or extension */
+function getFileTypeIcon(tipeFile: string, nama: string): React.ReactNode {
+  const ext = nama.split('.').pop()?.toLowerCase() ?? '';
+  if (tipeFile === 'application/pdf' || ext === 'pdf') return <FileType2 size={14} />;
+  if (tipeFile.startsWith('image/') || ['png','jpg','jpeg','gif','svg','webp'].includes(ext)) return <FileImage size={14} />;
+  if (tipeFile.startsWith('text/') || ['txt','md','rtf'].includes(ext)) return <FileText size={14} />;
+  if (['application/vnd.ms-excel','application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'].includes(tipeFile) || ['xls','xlsx','csv'].includes(ext)) return <FileSpreadsheet size={14} />;
+  if (['application/msword','application/vnd.openxmlformats-officedocument.wordprocessingml.document'].includes(tipeFile) || ['doc','docx'].includes(ext)) return <FileText size={14} />;
+  return <File size={14} />;
+}
+
+/** Return icon color classes based on file type */
+function getFileTypeStyle(tipeFile: string, nama: string): { color: string; bg: string } {
+  const ext = nama.split('.').pop()?.toLowerCase() ?? '';
+  if (tipeFile === 'application/pdf' || ext === 'pdf') return { color: 'text-red-500', bg: 'bg-red-100/80' };
+  if (tipeFile.startsWith('image/') || ['png','jpg','jpeg','gif','svg','webp'].includes(ext)) return { color: 'text-pink-500', bg: 'bg-pink-100/80' };
+  if (['xls','xlsx','csv'].includes(ext) || tipeFile.includes('spreadsheet') || tipeFile.includes('excel')) return { color: 'text-green-600', bg: 'bg-green-100/80' };
+  if (['doc','docx'].includes(ext) || tipeFile.includes('word')) return { color: 'text-blue-600', bg: 'bg-blue-100/80' };
+  return { color: 'text-slate-500', bg: 'bg-slate-100/80' };
 }
 
 export default function DocumentsModule() {
@@ -46,6 +69,9 @@ export default function DocumentsModule() {
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
   const perPage = 10;
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  // Store local object URLs keyed by document id (for locally-dropped files)
+  const [localObjectUrls, setLocalObjectUrls] = useState<Record<string, string>>({});
 
   const loadData = useCallback(async () => {
     setLoading(true);
@@ -69,9 +95,14 @@ export default function DocumentsModule() {
   const handleSave = () => {
     if (!form.nama) return;
     if (editingItem) {
-      saveData(KV_PREFIXES.document, { ...editingItem, ...form });
+      saveData(KV_PREFIXES.document, { ...editingItem, ...form, updatedAt: new Date().toISOString() });
     } else {
-      saveData(KV_PREFIXES.document, { ...form, id: generateId(), createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() });
+      const newId = generateId();
+      // If we have a local object URL, store it for this document
+      if (form.url && form.url.startsWith('blob:')) {
+        setLocalObjectUrls((prev) => ({ ...prev, [newId]: form.url }));
+      }
+      saveData(KV_PREFIXES.document, { ...form, id: newId, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() });
     }
     setDialogOpen(false); setEditingItem(null); setForm(EMPTY_FORM); loadData();
   };
@@ -79,16 +110,47 @@ export default function DocumentsModule() {
   const handleDelete = (id: string) => { deleteData(KV_PREFIXES.document, id); setDeleteConfirm(null); loadData(); };
   const handleEdit = (item: Document) => {
     setEditingItem(item);
-    setForm({ nama: item.nama, jenis: item.jenis, kategori: item.kategori, ukuran: item.ukuran, url: item.url, ocrText: item.ocrText, diunggahOleh: item.diunggahOleh, catatan: item.catatan });
+    setForm({ nama: item.nama, jenis: item.jenis, kategori: item.kategori, ukuran: item.ukuran, tipeFile: item.tipeFile, url: item.url, ocrText: item.ocrText, diunggahOleh: item.diunggahOleh, catatan: item.catatan });
+    setDialogOpen(true);
+  };
+
+  const handleViewDocument = (item: Document) => {
+    const viewUrl = localObjectUrls[item.id] || item.url;
+    if (viewUrl && viewUrl !== '#') {
+      window.open(viewUrl, '_blank', 'noopener,noreferrer');
+    }
+  };
+
+  const handleOcr = () => {
+    toast({ title: 'Fitur OCR akan segera tersedia', description: 'Pemrosesan OCR memerlukan layanan server-side yang sedang dalam pengembangan.' });
+  };
+
+  /** Process a FileList (from drop or input) and populate the form */
+  const processFiles = (files: FileList | null) => {
+    if (!files || files.length === 0) return;
+    const file = files[0]; // process first file
+    const objectUrl = URL.createObjectURL(file);
+    setForm({
+      ...EMPTY_FORM,
+      nama: file.name,
+      ukuran: file.size,
+      tipeFile: file.type || 'application/octet-stream',
+      url: objectUrl,
+      diunggahOleh: 'User',
+    });
     setDialogOpen(true);
   };
 
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
     setDragOver(false);
-    // In a real app, handle file upload here
-    setForm({ ...EMPTY_FORM, nama: 'Dokumen Baru', ukuran: 1024000, diunggahOleh: 'User' });
-    setDialogOpen(true);
+    processFiles(e.dataTransfer.files);
+  };
+
+  const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    processFiles(e.target.files);
+    // Reset input so the same file can be selected again
+    e.target.value = '';
   };
 
   return (
@@ -149,12 +211,20 @@ export default function DocumentsModule() {
       </div>
 
       {/* Upload Area */}
+      {/* Hidden file input */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        className="hidden"
+        accept=".pdf,.doc,.docx,.xls,.xlsx,.csv,.jpg,.jpeg,.png,.gif,.svg,.webp,.txt,.md,.rtf"
+        onChange={handleFileInputChange}
+      />
       <GlassCard
         className={cn('p-8 border-2 border-dashed transition-all cursor-pointer', dragOver ? 'border-cyan-500/50 bg-cyan-500/5' : 'border-white/60 hover:border-slate-200/50')}
         onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
         onDragLeave={() => setDragOver(false)}
         onDrop={handleDrop}
-        onClick={() => { setEditingItem(null); setForm(EMPTY_FORM); setDialogOpen(true); }}
+        onClick={() => fileInputRef.current?.click()}
       >
         <div className="flex flex-col items-center gap-3 text-center">
           <div className="w-12 h-12 rounded-xl bg-white/40 flex items-center justify-center">
@@ -191,8 +261,11 @@ export default function DocumentsModule() {
             return (
               <GlassCard key={item.id} className="p-4 hover:bg-white/50 transition-all group">
                 <div className="flex items-start gap-3">
-                  <div className={cn('w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0', jc.bg, jc.color)}>
-                    {jc.icon}
+                  <div className={cn('w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0',
+                    item.tipeFile ? getFileTypeStyle(item.tipeFile, item.nama).bg : jc.bg,
+                    item.tipeFile ? getFileTypeStyle(item.tipeFile, item.nama).color : jc.color
+                  )}>
+                    {item.tipeFile ? getFileTypeIcon(item.tipeFile, item.nama) : jc.icon}
                   </div>
                   <div className="flex-1 min-w-0">
                     <h3 className="text-slate-800 font-medium text-sm truncate">{item.nama}</h3>
@@ -205,10 +278,10 @@ export default function DocumentsModule() {
                   </div>
                 </div>
                 <div className="flex items-center gap-1 mt-3 pt-3 border-t border-white/60">
-                  <button className="flex items-center gap-1 px-2 py-1 rounded-lg bg-white/40 text-slate-400 text-xs hover:bg-white/50 hover:text-slate-500 transition-all">
+                  <button onClick={() => handleViewDocument(item)} className="flex items-center gap-1 px-2 py-1 rounded-lg bg-white/40 text-slate-400 text-xs hover:bg-white/50 hover:text-slate-500 transition-all">
                     <Eye size={12} /> Lihat
                   </button>
-                  <button className="flex items-center gap-1 px-2 py-1 rounded-lg bg-white/40 text-slate-400 text-xs hover:bg-white/50 hover:text-cyan-600 transition-all">
+                  <button onClick={handleOcr} className="flex items-center gap-1 px-2 py-1 rounded-lg bg-white/40 text-slate-400 text-xs hover:bg-white/50 hover:text-cyan-600 transition-all">
                     <ScanLine size={12} /> OCR
                   </button>
                   <button onClick={() => handleEdit(item)} className="flex items-center gap-1 px-2 py-1 rounded-lg bg-white/40 text-slate-400 text-xs hover:bg-white/50 hover:text-amber-600 transition-all">
@@ -263,10 +336,16 @@ export default function DocumentsModule() {
                 <input value={form.diunggahOleh} onChange={(e) => setForm({ ...form, diunggahOleh: e.target.value })} className="w-full px-3 py-2 bg-white/[0.05] border border-white/[0.1] rounded-xl text-slate-800 text-sm placeholder:text-slate-400 focus:border-cyan-500/40 focus:outline-none" placeholder="Nama" />
               </div>
               <div>
-                <label className="text-slate-500 text-xs mb-1 block">Ukuran (bytes)</label>
-                <input type="number" value={form.ukuran} onChange={(e) => setForm({ ...form, ukuran: Number(e.target.value) })} className="w-full px-3 py-2 bg-white/[0.05] border border-white/[0.1] rounded-xl text-slate-800 text-sm focus:border-cyan-500/40 focus:outline-none" />
+                <label className="text-slate-500 text-xs mb-1 block">Ukuran File</label>
+                <input type="text" value={form.ukuran ? formatFileSize(form.ukuran) : ''} readOnly className="w-full px-3 py-2 bg-white/[0.03] border border-white/[0.08] rounded-xl text-slate-500 text-sm focus:outline-none cursor-default" placeholder="Otomatis dari file" />
               </div>
             </div>
+            {form.tipeFile && (
+              <div>
+                <label className="text-slate-500 text-xs mb-1 block">Tipe File</label>
+                <input type="text" value={form.tipeFile} readOnly className="w-full px-3 py-2 bg-white/[0.03] border border-white/[0.08] rounded-xl text-slate-500 text-sm focus:outline-none cursor-default" />
+              </div>
+            )}
             <div>
               <label className="text-slate-500 text-xs mb-1 block">Catatan</label>
               <textarea value={form.catatan} onChange={(e) => setForm({ ...form, catatan: e.target.value })} rows={2} className="w-full px-3 py-2 bg-white/[0.05] border border-white/[0.1] rounded-xl text-slate-800 text-sm placeholder:text-slate-400 focus:border-cyan-500/40 focus:outline-none resize-none" />

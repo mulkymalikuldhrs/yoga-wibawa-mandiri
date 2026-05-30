@@ -2,7 +2,7 @@ import { useState } from 'react';
 import Layout from '@/components/Layout';
 import { MapPin, Phone, Mail, Clock, Send, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { sendContactEmail, type ContactFormData } from '@/services/emailService';
+import { sendContactEmail, sendContactEmailFormspree, type ContactFormData } from '@/services/emailService';
 
 const Contact = () => {
   const { toast } = useToast();
@@ -89,7 +89,12 @@ const Contact = () => {
       });
 
       // Try to send email
-      const emailSent = await sendContactEmail(formData);
+      let emailSent = await sendContactEmail(formData);
+
+      // Fallback to Formspree if EmailJS fails
+      if (!emailSent) {
+        emailSent = await sendContactEmailFormspree(formData);
+      }
 
       if (emailSent) {
         // Success
@@ -111,7 +116,7 @@ const Contact = () => {
         // Email service failed — show honest error and suggest alternatives
         toast({
           title: "⚠️ Gagal Mengirim Email",
-          description: "Layanan email sedang bermasalah. Silakan hubungi kami langsung di info@ywm.co.id atau +6285322624038.",
+          description: "Layanan email sedang bermasalah. Silakan hubungi kami langsung di info@ywm.co.id atau +6285322624048.",
           variant: "destructive"
         });
       }
@@ -133,15 +138,17 @@ const Contact = () => {
       {/* Hero Section */}
       <section className="py-20 bg-gradient-to-r from-ywm-red to-red-700 text-white">
         <div className="container mx-auto px-4 text-center">
-          <h1 className="text-5xl font-bold mb-6 animate-fade-in">Hubungi Kami</h1>
-          <p className="text-xl max-w-3xl mx-auto animate-fade-in">
-            Silakan hubungi kami untuk konsultasi, pemesanan, atau informasi lebih lanjut
-          </p>
+          <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl p-10 max-w-3xl mx-auto">
+            <h1 className="text-5xl font-bold mb-6 animate-fade-in">Hubungi Kami</h1>
+            <p className="text-xl max-w-3xl mx-auto animate-fade-in">
+              Silakan hubungi kami untuk konsultasi, pemesanan, atau informasi lebih lanjut
+            </p>
+          </div>
         </div>
       </section>
 
       {/* Contact Form & Info */}
-      <section className="py-20 bg-white">
+      <section className="py-20">
         <div className="container mx-auto px-4">
           <div className="grid lg:grid-cols-2 gap-12">
             {/* Contact Form */}
@@ -154,7 +161,7 @@ const Contact = () => {
                 Pesan akan langsung terkirim ke email kami.
               </p>
 
-              <form onSubmit={handleSubmit} className="space-y-6">
+              <form onSubmit={handleSubmit} className="glass-frosted rounded-2xl p-8 space-y-6">
                 <div className="grid md:grid-cols-2 gap-6">
                   <div>
                     <label htmlFor="name" className="block text-sm font-medium text-ywm-dark mb-2">
@@ -168,7 +175,7 @@ const Contact = () => {
                       onChange={handleInputChange}
                       required
                       disabled={isSubmitting}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ywm-red focus:border-ywm-red transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ywm-red focus:border-ywm-red transition-colors disabled:opacity-50 disabled:cursor-not-allowed bg-white/60 backdrop-blur-sm"
                       placeholder="Masukkan nama lengkap"
                     />
                   </div>
@@ -184,7 +191,7 @@ const Contact = () => {
                       onChange={handleInputChange}
                       required
                       disabled={isSubmitting}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ywm-red focus:border-ywm-red transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ywm-red focus:border-ywm-red transition-colors disabled:opacity-50 disabled:cursor-not-allowed bg-white/60 backdrop-blur-sm"
                       placeholder="nama@email.com"
                     />
                   </div>
@@ -203,7 +210,7 @@ const Contact = () => {
                       onChange={handleInputChange}
                       required
                       disabled={isSubmitting}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ywm-red focus:border-ywm-red transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ywm-red focus:border-ywm-red transition-colors disabled:opacity-50 disabled:cursor-not-allowed bg-white/60 backdrop-blur-sm"
                       placeholder="+62 xxx xxxx xxxx"
                     />
                   </div>
@@ -218,7 +225,7 @@ const Contact = () => {
                       value={formData.company}
                       onChange={handleInputChange}
                       disabled={isSubmitting}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ywm-red focus:border-ywm-red transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ywm-red focus:border-ywm-red transition-colors disabled:opacity-50 disabled:cursor-not-allowed bg-white/60 backdrop-blur-sm"
                       placeholder="Nama perusahaan (opsional)"
                     />
                   </div>
@@ -235,7 +242,7 @@ const Contact = () => {
                     onChange={handleInputChange}
                     required
                     disabled={isSubmitting}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ywm-red focus:border-ywm-red transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ywm-red focus:border-ywm-red transition-colors disabled:opacity-50 disabled:cursor-not-allowed bg-white/60 backdrop-blur-sm"
                   >
                     <option value="">Pilih subjek pesan</option>
                     <option value="Pemesanan Semen">Pemesanan Semen</option>
@@ -259,7 +266,7 @@ const Contact = () => {
                     required
                     rows={6}
                     disabled={isSubmitting}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ywm-red focus:border-ywm-red transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ywm-red focus:border-ywm-red transition-colors disabled:opacity-50 disabled:cursor-not-allowed bg-white/60 backdrop-blur-sm"
                     placeholder="Tuliskan pesan atau pertanyaan Anda di sini..."
                     minLength={10}
                   ></textarea>
@@ -287,7 +294,7 @@ const Contact = () => {
                 </button>
 
                 {/* Email destination info */}
-                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <div className="bg-blue-50/60 backdrop-blur-sm border border-blue-200/60 rounded-lg p-4">
                   <div className="flex items-center space-x-2">
                     <Mail className="text-blue-600" size={16} />
                     <p className="text-sm text-blue-800">
@@ -309,7 +316,7 @@ const Contact = () => {
 
               <div className="space-y-6">
                 {/* Kantor Pusat */}
-                <div className="bg-gray-50 p-6 rounded-lg">
+                <div className="glass-frosted p-6 rounded-xl">
                   <h3 className="text-xl font-semibold text-ywm-dark mb-4">Kantor Pusat</h3>
                   <div className="space-y-3">
                     <div className="flex items-start space-x-3">
@@ -323,17 +330,17 @@ const Contact = () => {
                     </div>
                     <div className="flex items-center space-x-3">
                       <Phone className="text-ywm-red" size={20} />
-                      <p className="text-gray-700">+6285322624038</p>
+                      <a href="tel:+6285322624048" className="text-gray-700 hover:text-ywm-red hover:underline">+6285322624048</a>
                     </div>
                     <div className="flex items-center space-x-3">
                       <Mail className="text-ywm-red" size={20} />
-                      <p className="text-gray-700">info@ywm.co.id</p>
+                      <a href="mailto:info@ywm.co.id" className="text-gray-700 hover:text-ywm-red hover:underline">info@ywm.co.id</a>
                     </div>
                   </div>
                 </div>
 
                 {/* Pabrik */}
-                <div className="bg-gray-50 p-6 rounded-lg">
+                <div className="glass-frosted p-6 rounded-xl">
                   <h3 className="text-xl font-semibold text-ywm-dark mb-4">Pabrik Pengantongan</h3>
                   <div className="space-y-3">
                     <div className="flex items-start space-x-3">
@@ -347,17 +354,17 @@ const Contact = () => {
                     </div>
                     <div className="flex items-center space-x-3">
                       <Phone className="text-ywm-red" size={20} />
-                      <p className="text-gray-700">+6285322624038</p>
+                      <a href="tel:+6285322624048" className="text-gray-700 hover:text-ywm-red hover:underline">+6285322624048</a>
                     </div>
                     <div className="flex items-center space-x-3">
                       <Mail className="text-ywm-red" size={20} />
-                      <p className="text-gray-700">pabrik@ywm.co.id</p>
+                      <a href="mailto:pabrik@ywm.co.id" className="text-gray-700 hover:text-ywm-red hover:underline">pabrik@ywm.co.id</a>
                     </div>
                   </div>
                 </div>
 
                 {/* Jam Operasional */}
-                <div className="bg-ywm-red text-white p-6 rounded-lg">
+                <div className="bg-ywm-red/90 backdrop-blur-xl border border-red-400/30 text-white p-6 rounded-xl">
                   <h3 className="text-xl font-semibold mb-4">Jam Operasional</h3>
                   <div className="space-y-2">
                     <div className="flex items-center space-x-3">
@@ -390,9 +397,9 @@ const Contact = () => {
       </section>
 
       {/* Emergency Contact */}
-      <section className="py-16 bg-gray-50">
+      <section className="py-16">
         <div className="container mx-auto px-4">
-          <div className="text-center">
+          <div className="glass-frosted rounded-2xl p-8 text-center">
             <h2 className="text-3xl font-bold text-ywm-dark mb-4">
               Kontak <span className="text-ywm-red">Darurat</span>
             </h2>
@@ -404,14 +411,14 @@ const Contact = () => {
                 <Phone className="text-ywm-red" size={24} />
                 <div className="text-left">
                   <p className="font-semibold text-ywm-dark">Hotline 24 Jam</p>
-                  <p className="text-gray-600">+6285322624038</p>
+                  <a href="tel:+6285322624048" className="text-gray-600 hover:text-ywm-red hover:underline">+6285322624048</a>
                 </div>
               </div>
               <div className="flex items-center space-x-3">
                 <Mail className="text-ywm-red" size={24} />
                 <div className="text-left">
                   <p className="font-semibold text-ywm-dark">Email Darurat</p>
-                  <p className="text-gray-600">emergency@ywm.co.id</p>
+                  <a href="mailto:emergency@ywm.co.id" className="text-gray-600 hover:text-ywm-red hover:underline">emergency@ywm.co.id</a>
                 </div>
               </div>
             </div>

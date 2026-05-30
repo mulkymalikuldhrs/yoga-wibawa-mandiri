@@ -7,6 +7,60 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [7.0.0] - 2026-05-30 — Comprehensive Audit & Major Fix Release
+
+> **Timestamp:** 2026-05-30T12:00:00+07:00
+> **Developer:** Tim Teknik | Mulky Malikul Dhaher
+
+### 🔴 CRITICAL FIXES
+- **WhatsApp number corrected**: `6285322624038` → `6285322624048` across 5 files, 17 occurrences (Services, Location, Contact, Footer, ChatBot)
+- **DashboardContext Provider duplication removed**: Was wrapped twice (Dashboard.tsx + DashboardLayout.tsx), causing unnecessary re-renders
+- **AI context now reads from Supabase**: `buildDashboardContext()` was reading only localStorage — now uses `getData()` from `supabase-data.ts` which tries Supabase first, with localStorage fallback. Added production and silo data to context.
+- **Silo Conis Volume Formula fixed**: The partial conis formula `areaConis * tConis / tConisMax * tConisMax` was mathematically redundant (division and multiplication cancel out). Fixed to `areaConis * tConis * (tConis / tConisMax)` for proper proportional scaling. Applied to both SiloCalculationModule and SiloOpnameModule.
+- **Negative Space Silo clamped**: `spaceSilo` could go negative, now clamped to minimum 0 with "over-capacity" warning indicator.
+
+### 🟠 SIGNIFICANT IMPROVEMENTS
+- **Glassmorphic design on public website**: All 6 public pages (Index, About, Services, Gallery, Location, Contact) now use frosted glass cards, glassmorphic backgrounds with floating orbs, consistent with dashboard design
+- **Documents Module — real file upload**: Drag-and-drop and file input now actually read files (name, size, type), create object URLs for viewing. "Lihat" button opens document in new tab. "OCR" button shows "coming soon" toast. File type icons added (PDF=red, Excel=green, Word=blue, Image=pink).
+- **Notification system overhaul**: 
+  - 24-hour deduplication (same title+module won't duplicate within 24h)
+  - Beep sound using Web Audio API (200ms, 800Hz sine wave)
+  - Mute/unmute toggle in Notification Center
+  - Push notification style popups (top-right, spring animation)
+  - Suppressed beeps during initial page load
+- **Google Maps embed fixed**: Real Pelabuhan Krueng Geukueh coordinates (5.1871, 97.1354)
+- **Clickable phone numbers**: All phone numbers now use `<a href="tel:">` and `<a href="https://wa.me/">` links
+- **Semen Padang logo in Header/Footer**: Logo image added next to "Mitra Resmi Semen Padang" badge
+- **OverviewModule silo trends**: Replaced hardcoded `-5/+8` fake values with real calculated trends from historical silo data (compares last two entries per silo)
+
+### 🟡 NEW FEATURES
+- **Products page** (`/produk`): Dedicated e-commerce-style Semen Padang product catalog
+  - PCC Zak 40kg with 2 options: 250 zak (10 ton) and 750 zak (30 ton)
+  - Bulk/Curah with manual input (1-30 ton) and truck icon
+  - WhatsApp order buttons with pre-filled messages to +6285322624048
+  - Konsultasi section for inquiries
+- **PWA improvements**:
+  - Enhanced service worker v3 with navigation preload, network timeout, offline.html fallback
+  - Better manifest.json with shortcuts, screenshots, proper icon sizing
+  - iOS Safari install instructions in InstallPWAButton
+  - Success state after installation
+  - Dedicated offline page with branded design
+
+### 🟢 MINOR FIXES
+- ISO stat on homepage: "ISO" → "ISO 9001:2015"
+- Gallery CTA: `<a href>` → `<Link to>` for SPA navigation
+- About page org structure: "HY" → "HMY", "IW" → "WM"
+- Footer contacts now clickable (tel:, mailto:, wa.me links)
+
+### Changed
+- `buildDashboardContext()` is now async (returns `Promise<string>`)
+- All callers (FloatingChatBot, AiAssistantPanel) updated with `await`
+- Document interface: added `tipeFile: string` field
+- SiloCalculation interface: added `isOverCapacity: boolean` field
+- Notification `addNotification()` returns `Notification | null` (null if deduplicated)
+
+---
+
 ## [6.0.0] - 2026-05-29
 
 ### BREAKING CHANGES

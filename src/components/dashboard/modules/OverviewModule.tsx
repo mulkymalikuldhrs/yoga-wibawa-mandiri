@@ -127,6 +127,8 @@ export default function OverviewModule() {
     siloBLevel: 0,
     siloATon: 0,
     siloBTon: 0,
+    siloATrend: undefined as { value: number; up: boolean } | undefined,
+    siloBTrend: undefined as { value: number; up: boolean } | undefined,
     // Finance
     incomeThisMonth: 0,
     expenseThisMonth: 0,
@@ -197,6 +199,26 @@ export default function OverviewModule() {
       const siloATon = latestSiloA ? Math.round(latestSiloA.volumeTotal * SILO_CONFIG.A.beratJenis) : 0;
       const siloBTon = latestSiloB ? Math.round(latestSiloB.volumeTotal * SILO_CONFIG.B.beratJenis) : 0;
 
+      // ── Silo Trends (actual % change of kekosongan between latest two entries) ──
+      const siloASorted = siloCalcs.filter((d) => d.silo === 'A').sort((a, b) => `${b.tanggal}${b.jam}`.localeCompare(`${a.tanggal}${a.jam}`));
+      const siloBSorted = siloCalcs.filter((d) => d.silo === 'B').sort((a, b) => `${b.tanggal}${b.jam}`.localeCompare(`${a.tanggal}${a.jam}`));
+
+      function computeSiloTrend(sorted: SiloCalculation[]): { value: number; up: boolean } | undefined {
+        if (sorted.length < 2) return undefined; // need at least 2 data points
+        const latest = sorted[0];
+        const previous = sorted[1];
+        if (previous.kekosongan === 0) return undefined; // avoid division by zero
+        const pctChange = ((latest.kekosongan - previous.kekosongan) / previous.kekosongan) * 100;
+        const rounded = Math.round(Math.abs(pctChange) * 10) / 10; // one decimal
+        if (rounded === 0) return undefined; // no meaningful change
+        // kekosongan increased → silo emptier → level down (up: false)
+        // kekosongan decreased → silo fuller → level up (up: true)
+        return { value: rounded, up: pctChange < 0 };
+      }
+
+      const siloATrend = computeSiloTrend(siloASorted);
+      const siloBTrend = computeSiloTrend(siloBSorted);
+
       // ── Finance ──
       const financeThisMonth = finance.filter((f) => f.tanggal.slice(0, 7) === currentMonth);
       const incomeThisMonth = financeThisMonth.filter((f) => f.jenis === 'pemasukan').reduce((s, f) => s + f.jumlah, 0);
@@ -229,6 +251,8 @@ export default function OverviewModule() {
         siloBLevel: siloBPct,
         siloATon,
         siloBTon,
+        siloATrend,
+        siloBTrend,
         incomeThisMonth,
         expenseThisMonth,
         hadirHariIni,
@@ -444,7 +468,7 @@ export default function OverviewModule() {
           value={`${stats.siloALevel}%`}
           label="Silo A — Level"
           sublabel={`${stats.siloATon} ton`}
-          trend={{ value: stats.siloALevel >= 60 ? -5 : 8, up: stats.siloALevel >= 60 ? false : true }}
+          trend={stats.siloATrend}
           onClick={() => navigateToModule('silo-calculation')}
         />
         <StatCard
@@ -454,7 +478,7 @@ export default function OverviewModule() {
           value={`${stats.siloBLevel}%`}
           label="Silo B — Level"
           sublabel={`${stats.siloBTon} ton`}
-          trend={{ value: stats.siloBLevel >= 60 ? -3 : 10, up: stats.siloBLevel >= 60 ? false : true }}
+          trend={stats.siloBTrend}
           onClick={() => navigateToModule('silo-calculation')}
         />
         <StatCard

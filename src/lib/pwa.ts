@@ -1,18 +1,36 @@
 // ============================================================
 // PWA Registration & Utilities for YWM Dashboard
-// Updated: 2026-05-29 — Enhanced push notification support
-// registerSW(), unregisterSW(), isPWAInstalled(), showInstallPrompt()
-// requestPushPermission(), getPushSubscription()
+// Updated: 2026-03-04 — v3: Fixed double listener, added update notifications
+// Exports: registerSW(), unregisterSW(), isPWAInstalled(), showInstallPrompt()
+//          onInstallPromptAvailable(), onSWUpdateAvailable()
+//          requestPushPermission(), getPushSubscription()
 // ============================================================
 
 // Store the beforeinstallprompt event for later use
 let deferredPrompt: BeforeInstallPromptEvent | null = null;
 
-// Custom event for PWA install prompt
+// Update callback subscribers
+type UpdateCallback = (registration: ServiceWorkerRegistration) => void;
+const updateSubscribers: Set<UpdateCallback> = new Set();
+
+// BeforeInstallPromptEvent type (not standard in TypeScript)
+export interface BeforeInstallPromptEvent extends Event {
+  prompt(): Promise<void>;
+  userChoice: Promise<{ outcome: 'accepted' | 'dismissed' }>;
+}
+
+// ─── Install Prompt Management ─────────────────────────────
+
+/**
+ * Subscribe to be notified when the install prompt becomes available.
+ * If the prompt was already captured, the callback fires immediately.
+ * Returns an unsubscribe function.
+ */
 export const onInstallPromptAvailable = (callback: (e: BeforeInstallPromptEvent) => void) => {
+  // If we already have the prompt, fire immediately
   if (deferredPrompt) {
     callback(deferredPrompt);
-    return;
+    return () => {};
   }
 
   const handler = (e: Event) => {
@@ -25,14 +43,19 @@ export const onInstallPromptAvailable = (callback: (e: BeforeInstallPromptEvent)
   return () => window.removeEventListener('beforeinstallprompt', handler);
 };
 
-// BeforeInstallPromptEvent type (not standard in TypeScript)
-export interface BeforeInstallPromptEvent extends Event {
-  prompt(): Promise<void>;
-  userChoice: Promise<{ outcome: 'accepted' | 'dismissed' }>;
-}
+/**
+ * Subscribe to be notified when a new service worker update is available.
+ * Returns an unsubscribe function.
+ */
+export const onSWUpdateAvailable = (callback: UpdateCallback) => {
+  updateSubscribers.add(callback);
+  return () => updateSubscribers.delete(callback);
+};
+
+// ─── Service Worker Registration ────────────────────────────
 
 /**
- * Register the service worker
+ * Register the service worker and set up lifecycle handlers.
  */
 export function registerSW(): void {
   if (typeof window === 'undefined') return;
@@ -41,54 +64,7 @@ export function registerSW(): void {
     return;
   }
 
-  window.addEventListener('load', async () => {
-    try {
-      const swUrl = '/sw.js';
-      const registration = await navigator.serviceWorker.register(swUrl, {
-        scope: '/',
-      });
-
-      if (import.meta.env.DEV) console.log('[YWM PWA] Service Worker registered:', registration.scope);
-
-      // Check for updates periodically
-      setInterval(() => {
-        registration.update().catch((err) => {
-          if (import.meta.env.DEV) console.warn('[YWM PWA] SW update check failed:', err);
-        });
-      }, 60 * 60 * 1000); // Check every hour
-
-      // Handle updates
-      registration.addEventListener('updatefound', () => {
-        const newWorker = registration.installing;
-        if (!newWorker) return;
-
-        newWorker.addEventListener('statechange', () => {
-          if (newWorker.state === 'installed') {
-            if (navigator.serviceWorker.controller) {
-              // New content available — notify user
-              if (import.meta.env.DEV) console.log('[YWM PWA] Konten baru tersedia, silakan refresh.');
-              // Send message to skip waiting
-              newWorker.postMessage({ type: 'SKIP_WAITING' });
-            } else {
-              if (import.meta.env.DEV) console.log('[YWM PWA] Konten di-cache untuk penggunaan offline.');
-            }
-          }
-        });
-      });
-    } catch (error) {
-      if (import.meta.env.DEV) console.error('[YWM PWA] Service Worker registration failed:', error);
-    }
-  });
-
-  // Listen for controller change (new SW activated)
-  let refreshing = false;
-  navigator.serviceWorker.addEventListener('controllerchange', () => {
-    if (refreshing) return;
-    refreshing = true;
-    window.location.reload();
-  });
-
-  // Listen for beforeinstallprompt
+  // Single beforeinstallprompt listener — the canonical capture point
   window.addEventListener('beforeinstallprompt', (e) => {
     e.preventDefault();
     deferredPrompt = e as BeforeInstallPromptEvent;
@@ -99,6 +75,54 @@ export function registerSW(): void {
   window.addEventListener('appinstalled', () => {
     if (import.meta.env.DEV) console.log('[YWM PWA] App installed successfully');
     deferredPrompt = null;
+  });
+
+  window.addEventListener('load', async () => {
+    try {
+      const swUrl = '/sw.js';
+      const registration = await navigator.serviceWorker.register(swUrl, {
+        scope: '/',
+      });
+
+      if (import.meta.env.DEV) console.log('[YWM PWA] Service Worker registered:', registration.scope);
+
+      // Check for updates periodically (every hour)
+      setInterval(() => {
+        registration.update().catch((err) => {
+          if (import.meta.env.DEV) console.warn('[YWM PWA] SW update check failed:', err);
+        });
+      }, 60 * 60 * 1000);
+
+      // Handle updates found
+      registration.addEventListener('updatefound', () => {
+        const newWorker = registration.installing;
+        if (!newWorker) return;
+
+        newWorker.addEventListener('statechange', () => {
+          if (newWorker.state === 'installed') {
+            if (navigator.serviceWorker.controller) {
+              // New content available — notify subscribers
+              if (import.meta.env.DEV) console.log('[YWM PWA] New content available');
+              updateSubscribers.forEach((cb) => {
+                try { cb(registration); } catch (e) { /* noop */ }
+              });
+            } else {
+              if (import.meta.env.DEV) console.log('[YWM PWA] Content cached for offline use');
+            }
+          }
+        });
+      });
+    } catch (error) {
+      if (import.meta.env.DEV) console.error('[YWM PWA] Service Worker registration failed:', error);
+    }
+  });
+
+  // Handle controller change (new SW activated) — auto-reload once
+  let refreshing = false;
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if (refreshing) return;
+    refreshing = true;
+    window.location.reload();
   });
 }
 
@@ -118,6 +142,8 @@ export async function unregisterSW(): Promise<void> {
   }
 }
 
+// ─── PWA Status Checks ─────────────────────────────────────
+
 /**
  * Check if the app is running as an installed PWA
  */
@@ -126,7 +152,7 @@ export function isPWAInstalled(): boolean {
 
   // Check if displayed in standalone mode
   const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
-  
+
   // Check iOS Safari PWA
   const isIOSStandalone = (navigator as any).standalone === true;
 
@@ -134,8 +160,24 @@ export function isPWAInstalled(): boolean {
 }
 
 /**
- * Show the install prompt if available
- * Returns true if the prompt was shown, false otherwise
+ * Check if install prompt is available
+ */
+export function canInstallPWA(): boolean {
+  return deferredPrompt !== null;
+}
+
+/**
+ * Get the deferred prompt (for component use)
+ */
+export function getDeferredPrompt(): BeforeInstallPromptEvent | null {
+  return deferredPrompt;
+}
+
+// ─── Install Flow ───────────────────────────────────────────
+
+/**
+ * Show the install prompt if available.
+ * Returns true if the user accepted, false otherwise.
  */
 export async function showInstallPrompt(): Promise<boolean> {
   if (!deferredPrompt) {
@@ -155,21 +197,7 @@ export async function showInstallPrompt(): Promise<boolean> {
   }
 }
 
-/**
- * Check if install prompt is available
- */
-export function canInstallPWA(): boolean {
-  return deferredPrompt !== null;
-}
-
-/**
- * Get the deferred prompt (for component use)
- */
-export function getDeferredPrompt(): BeforeInstallPromptEvent | null {
-  return deferredPrompt;
-}
-
-// ── Push Notification Functions ──
+// ─── Push Notification Functions ────────────────────────────
 
 /**
  * Check if push notifications are supported
@@ -181,7 +209,6 @@ export function isPushSupported(): boolean {
 
 /**
  * Request push notification permission
- * Returns the permission status: 'granted', 'denied', or 'default'
  */
 export async function requestPushPermission(): Promise<NotificationPermission> {
   if (!isPushSupported()) {
@@ -196,7 +223,6 @@ export async function requestPushPermission(): Promise<NotificationPermission> {
 
 /**
  * Get the current push subscription
- * Returns the subscription object or null
  */
 export async function getPushSubscription(): Promise<PushSubscription | null> {
   if (!isPushSupported()) return null;
@@ -212,9 +238,7 @@ export async function getPushSubscription(): Promise<PushSubscription | null> {
 }
 
 /**
- * Subscribe to push notifications
- * Requires a VAPID public key (to be configured on server)
- * Returns the subscription object or null on failure
+ * Subscribe to push notifications with a VAPID public key
  */
 export async function subscribeToPush(vapidPublicKey: string): Promise<PushSubscription | null> {
   if (!isPushSupported()) return null;
@@ -233,7 +257,6 @@ export async function subscribeToPush(vapidPublicKey: string): Promise<PushSubsc
     });
 
     if (import.meta.env.DEV) console.log('[YWM PWA] Push subscription created:', subscription.endpoint);
-    // In a real implementation, you would send the subscription to your server
     return subscription;
   } catch (error) {
     if (import.meta.env.DEV) console.error('[YWM PWA] Failed to subscribe to push:', error);

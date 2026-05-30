@@ -11,6 +11,7 @@ const Header = () => {
     { name: 'Beranda', path: '/' },
     { name: 'Tentang Kami', path: '/tentang' },
     { name: 'Layanan', path: '/layanan' },
+    { name: 'Produk', path: '/produk' },
     { name: 'Galeri', path: '/galeri' },
     { name: 'Lokasi', path: '/lokasi' },
     { name: 'Kontak', path: '/kontak' },
@@ -19,7 +20,7 @@ const Header = () => {
   const isActive = (path: string) => location.pathname === path;
 
   return (
-    <header className="bg-white/70 backdrop-blur-xl border-b border-white/50 shadow-sm sticky top-0 z-50">
+    <header className="glass-frosted border-b border-white/50 shadow-sm sticky top-0 z-50">
       <div className="container mx-auto px-4">
         <div className="flex justify-between items-center py-4">
           {/* Logo PT. YWM — Primary */}
@@ -52,8 +53,13 @@ const Header = () => {
 
           {/* Right side: Mitra Resmi badge + Developer credit */}
           <div className="hidden lg:flex items-center gap-4">
-            {/* Mitra Resmi badge — text only, no logo */}
-            <div className="flex items-center gap-2 px-3 py-1.5 bg-slate-50/80 rounded-lg border border-slate-200/50">
+            {/* Mitra Resmi badge — with Semen Padang logo */}
+            <div className="flex items-center gap-2 px-3 py-1.5 bg-white/50 backdrop-blur-sm rounded-lg border border-white/60">
+              <img 
+                src="/lovable-uploads/LOGO PT SEMEN PADANG HITAM.png" 
+                alt="Semen Padang Logo" 
+                className="h-6 object-contain"
+              />
               <span className="text-slate-500 text-xs font-medium">Mitra Resmi</span>
               <span className="text-slate-700 text-xs font-bold">Semen Padang</span>
             </div>
@@ -96,6 +102,11 @@ const Header = () => {
               {/* Mobile: Mitra Resmi badge */}
               <div className="flex items-center justify-center pt-4 border-t border-slate-200/50">
                 <div className="flex items-center gap-2 px-3 py-1.5 bg-slate-100/80 rounded-lg">
+                  <img 
+                    src="/lovable-uploads/LOGO PT SEMEN PADANG HITAM.png" 
+                    alt="Semen Padang Logo" 
+                    className="h-6 object-contain"
+                  />
                   <span className="text-slate-500 text-xs">Mitra Resmi</span>
                   <span className="text-slate-700 text-xs font-bold">Semen Padang</span>
                 </div>

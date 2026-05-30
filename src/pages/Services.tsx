@@ -2,7 +2,7 @@ import { useState } from 'react';
 import Layout from '@/components/Layout';
 import { Factory, Truck, Settings, Shield, Clock, MapPin, Package, Minus, Plus, ShoppingCart, MessageCircle, Weight } from 'lucide-react';
 
-const WHATSAPP_NUMBER = '6285322624038';
+const WHATSAPP_NUMBER = '6285322624048';
 const WHATSAPP_BASE_URL = `https://wa.me/${WHATSAPP_NUMBER}`;
 
 const Services = () => {
@@ -27,15 +27,17 @@ const Services = () => {
       {/* Hero Section */}
       <section className="py-20 bg-gradient-to-r from-ywm-red to-red-700 text-white">
         <div className="container mx-auto px-4 text-center">
-          <h1 className="text-5xl font-bold mb-6 animate-fade-in">Katalog Produk</h1>
-          <p className="text-xl max-w-3xl mx-auto animate-fade-in">
-            Produk Semen Padang Berkualitas Tinggi — Pesan Langsung via WhatsApp
-          </p>
+          <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl p-10 max-w-3xl mx-auto">
+            <h1 className="text-5xl font-bold mb-6 animate-fade-in">Katalog Produk</h1>
+            <p className="text-xl max-w-3xl mx-auto animate-fade-in">
+              Produk Semen Padang Berkualitas Tinggi — Pesan Langsung via WhatsApp
+            </p>
+          </div>
         </div>
       </section>
 
       {/* Product Catalog */}
-      <section className="py-20 bg-white">
+      <section className="py-20">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-ywm-dark mb-4">
@@ -48,11 +50,11 @@ const Services = () => {
 
           <div className="grid lg:grid-cols-2 gap-12 max-w-5xl mx-auto">
             {/* Variant 1: Semen Padang PCC Zak 40kg */}
-            <div className="border border-gray-200 rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow animate-fade-in">
+            <div className="glass-frosted border border-white/60 rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow animate-fade-in">
               {/* Product Image */}
-              <div className="bg-gradient-to-br from-gray-100 to-gray-200 p-8 flex items-center justify-center h-64">
+              <div className="bg-gradient-to-br from-gray-100/80 to-gray-200/80 backdrop-blur-sm p-8 flex items-center justify-center h-64">
                 <div className="text-center">
-                  <div className="w-32 h-32 bg-white rounded-2xl shadow-md flex items-center justify-center mx-auto mb-3 border-2 border-gray-200">
+                  <div className="w-32 h-32 bg-white/80 backdrop-blur-md rounded-2xl shadow-md flex items-center justify-center mx-auto mb-3 border-2 border-gray-200">
                     <Package className="text-ywm-red" size={64} />
                   </div>
                   <img 
@@ -96,7 +98,7 @@ const Services = () => {
                       onClick={() => setZakQuantity('250')}
                       className={`p-4 rounded-xl border-2 transition-all text-left ${
                         zakQuantity === '250'
-                          ? 'border-ywm-red bg-red-50 shadow-md'
+                          ? 'border-ywm-red bg-red-50/80 backdrop-blur-sm shadow-md'
                           : 'border-gray-200 hover:border-gray-300'
                       }`}
                     >
@@ -117,7 +119,7 @@ const Services = () => {
                       onClick={() => setZakQuantity('750')}
                       className={`p-4 rounded-xl border-2 transition-all text-left ${
                         zakQuantity === '750'
-                          ? 'border-ywm-red bg-red-50 shadow-md'
+                          ? 'border-ywm-red bg-red-50/80 backdrop-blur-sm shadow-md'
                           : 'border-gray-200 hover:border-gray-300'
                       }`}
                     >
@@ -137,7 +139,7 @@ const Services = () => {
                 </div>
 
                 {/* Order Summary */}
-                <div className="bg-gray-50 rounded-xl p-4 mb-4">
+                <div className="bg-white/50 backdrop-blur-sm rounded-xl p-4 mb-4 border border-white/60">
                   <div className="flex justify-between items-center mb-2">
                     <span className="text-sm text-gray-600">Produk</span>
                     <span className="text-sm font-medium text-ywm-dark">Semen Padang PCC Zak 40kg</span>
@@ -167,11 +169,11 @@ const Services = () => {
             </div>
 
             {/* Variant 2: Semen Padang Bulk/Curah */}
-            <div className="border border-gray-200 rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow animate-fade-in">
+            <div className="glass-frosted border border-white/60 rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow animate-fade-in">
               {/* Product Image */}
-              <div className="bg-gradient-to-br from-amber-50 to-orange-100 p-8 flex items-center justify-center h-64">
+              <div className="bg-gradient-to-br from-amber-50/80 to-orange-100/80 backdrop-blur-sm p-8 flex items-center justify-center h-64">
                 <div className="text-center">
-                  <div className="w-32 h-32 bg-white rounded-2xl shadow-md flex items-center justify-center mx-auto mb-3 border-2 border-amber-200">
+                  <div className="w-32 h-32 bg-white/80 backdrop-blur-md rounded-2xl shadow-md flex items-center justify-center mx-auto mb-3 border-2 border-amber-200">
                     <Truck className="text-amber-600" size={64} />
                   </div>
                   <p className="text-amber-700 text-sm font-medium">Pengiriman Bulk / Curah</p>
@@ -222,7 +224,7 @@ const Services = () => {
                           const val = parseInt(e.target.value) || 1;
                           setBulkTonnage(Math.min(30, Math.max(1, val)));
                         }}
-                        className="w-full text-center text-2xl font-bold text-ywm-dark py-2 px-4 border-2 border-amber-300 rounded-xl focus:border-amber-500 focus:outline-none bg-amber-50"
+                        className="w-full text-center text-2xl font-bold text-ywm-dark py-2 px-4 border-2 border-amber-300 rounded-xl focus:border-amber-500 focus:outline-none bg-amber-50/80 backdrop-blur-sm"
                       />
                       <span className="absolute right-4 top-1/2 -translate-y-1/2 text-amber-600 font-semibold text-sm">
                         ton
@@ -250,7 +252,7 @@ const Services = () => {
                 </div>
 
                 {/* Order Summary */}
-                <div className="bg-amber-50 rounded-xl p-4 mb-4">
+                <div className="bg-white/50 backdrop-blur-sm rounded-xl p-4 mb-4 border border-white/60">
                   <div className="flex justify-between items-center mb-2">
                     <span className="text-sm text-gray-600">Produk</span>
                     <span className="text-sm font-medium text-ywm-dark">Semen Padang Bulk/Curah</span>
@@ -283,7 +285,7 @@ const Services = () => {
       </section>
 
       {/* Facilities & Capacity */}
-      <section className="py-20 bg-gray-50">
+      <section className="py-20">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-ywm-dark mb-4">
@@ -299,8 +301,8 @@ const Services = () => {
               <h3 className="text-2xl font-bold text-ywm-dark mb-6">Spesifikasi Mesin & Kapasitas</h3>
               
               <div className="space-y-6">
-                <div className="flex items-start space-x-4">
-                  <div className="w-12 h-12 bg-ywm-red rounded-lg flex items-center justify-center">
+                <div className="glass-frosted flex items-start space-x-4 p-4 rounded-xl">
+                  <div className="w-12 h-12 bg-ywm-red rounded-lg flex items-center justify-center flex-shrink-0">
                     <Factory className="text-white" size={24} />
                   </div>
                   <div>
@@ -309,8 +311,8 @@ const Services = () => {
                   </div>
                 </div>
 
-                <div className="flex items-start space-x-4">
-                  <div className="w-12 h-12 bg-ywm-red rounded-lg flex items-center justify-center">
+                <div className="glass-frosted flex items-start space-x-4 p-4 rounded-xl">
+                  <div className="w-12 h-12 bg-ywm-red rounded-lg flex items-center justify-center flex-shrink-0">
                     <Shield className="text-white" size={24} />
                   </div>
                   <div>
@@ -319,8 +321,8 @@ const Services = () => {
                   </div>
                 </div>
 
-                <div className="flex items-start space-x-4">
-                  <div className="w-12 h-12 bg-ywm-red rounded-lg flex items-center justify-center">
+                <div className="glass-frosted flex items-start space-x-4 p-4 rounded-xl">
+                  <div className="w-12 h-12 bg-ywm-red rounded-lg flex items-center justify-center flex-shrink-0">
                     <MapPin className="text-white" size={24} />
                   </div>
                   <div>
@@ -329,8 +331,8 @@ const Services = () => {
                   </div>
                 </div>
 
-                <div className="flex items-start space-x-4">
-                  <div className="w-12 h-12 bg-ywm-red rounded-lg flex items-center justify-center">
+                <div className="glass-frosted flex items-start space-x-4 p-4 rounded-xl">
+                  <div className="w-12 h-12 bg-ywm-red rounded-lg flex items-center justify-center flex-shrink-0">
                     <Clock className="text-white" size={24} />
                   </div>
                   <div>
@@ -345,7 +347,7 @@ const Services = () => {
               <img 
                 src="https://images.unsplash.com/photo-1433086966358-54859d0ed716?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" 
                 alt="Fasilitas Modern"
-                className="rounded-lg shadow-2xl"
+                className="rounded-xl shadow-2xl"
                 loading="lazy"
               />
             </div>
@@ -354,7 +356,7 @@ const Services = () => {
       </section>
 
       {/* Quality Standards */}
-      <section className="py-20 bg-white">
+      <section className="py-20">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-ywm-dark mb-4">
@@ -366,7 +368,7 @@ const Services = () => {
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-            <div className="text-center p-6 rounded-lg shadow-lg animate-fade-in">
+            <div className="glass-frosted text-center p-6 rounded-2xl animate-fade-in">
               <div className="w-16 h-16 bg-ywm-red rounded-full flex items-center justify-center mx-auto mb-4">
                 <Shield className="text-white" size={32} />
               </div>
@@ -374,7 +376,7 @@ const Services = () => {
               <p className="text-gray-600 text-sm">Sistem Manajemen Kualitas</p>
             </div>
 
-            <div className="text-center p-6 rounded-lg shadow-lg animate-fade-in">
+            <div className="glass-frosted text-center p-6 rounded-2xl animate-fade-in">
               <div className="w-16 h-16 bg-ywm-red rounded-full flex items-center justify-center mx-auto mb-4">
                 <Factory className="text-white" size={32} />
               </div>
@@ -382,7 +384,7 @@ const Services = () => {
               <p className="text-gray-600 text-sm">Standar Nasional Indonesia Semen</p>
             </div>
 
-            <div className="text-center p-6 rounded-lg shadow-lg animate-fade-in">
+            <div className="glass-frosted text-center p-6 rounded-2xl animate-fade-in">
               <div className="w-16 h-16 bg-ywm-red rounded-full flex items-center justify-center mx-auto mb-4">
                 <Settings className="text-white" size={32} />
               </div>
@@ -390,7 +392,7 @@ const Services = () => {
               <p className="text-gray-600 text-sm">Pengujian Setiap Batch</p>
             </div>
 
-            <div className="text-center p-6 rounded-lg shadow-lg animate-fade-in">
+            <div className="glass-frosted text-center p-6 rounded-2xl animate-fade-in">
               <div className="w-16 h-16 bg-ywm-red rounded-full flex items-center justify-center mx-auto mb-4">
                 <Clock className="text-white" size={32} />
               </div>
@@ -404,20 +406,22 @@ const Services = () => {
       {/* CTA Section */}
       <section className="py-20 bg-ywm-red text-white">
         <div className="container mx-auto px-4 text-center">
-          <h2 className="text-4xl font-bold mb-6">
-            Butuh Konsultasi Layanan?
-          </h2>
-          <p className="text-xl mb-8 max-w-2xl mx-auto">
-            Tim ahli kami siap membantu Anda memilih solusi terbaik untuk kebutuhan proyek Anda.
-          </p>
-          <a 
-            href={`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent('Halo PT. Yoga Wibawa Mandiri, saya ingin konsultasi mengenai produk semen Anda.')}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-block bg-white text-ywm-red px-8 py-4 rounded-lg font-semibold text-lg hover:bg-gray-100 transition-colors transform hover:scale-105"
-          >
-            Hubungi via WhatsApp
-          </a>
+          <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl p-12 max-w-3xl mx-auto">
+            <h2 className="text-4xl font-bold mb-6">
+              Butuh Konsultasi Layanan?
+            </h2>
+            <p className="text-xl mb-8 max-w-2xl mx-auto">
+              Tim ahli kami siap membantu Anda memilih solusi terbaik untuk kebutuhan proyek Anda.
+            </p>
+            <a 
+              href={`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent('Halo PT. Yoga Wibawa Mandiri, saya ingin konsultasi mengenai produk semen Anda.')}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-block bg-white/90 backdrop-blur-md text-ywm-red px-8 py-4 rounded-lg font-semibold text-lg hover:bg-white transition-colors transform hover:scale-105"
+            >
+              Hubungi via WhatsApp
+            </a>
+          </div>
         </div>
       </section>
     </Layout>

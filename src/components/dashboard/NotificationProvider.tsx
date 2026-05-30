@@ -23,9 +23,27 @@ import { chatWithAiStream } from '@/lib/ywm-ai';
 import type { AiMessage } from '@/types/dashboard';
 
 // ── Notification beep sound (Web Audio API) ──
-function playNotificationBeep() {
+// Short 200ms pleasant tone at 800Hz sine wave
+let _audioCtx: AudioContext | null = null;
+function getAudioContext(): AudioContext | null {
   try {
-    const audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
+    if (!_audioCtx) {
+      _audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
+    }
+    return _audioCtx;
+  } catch {
+    return null;
+  }
+}
+
+function playNotificationBeep() {
+  const audioCtx = getAudioContext();
+  if (!audioCtx) return;
+  try {
+    // Resume context if suspended (browser autoplay policy)
+    if (audioCtx.state === 'suspended') {
+      audioCtx.resume();
+    }
     const oscillator = audioCtx.createOscillator();
     const gainNode = audioCtx.createGain();
     oscillator.connect(gainNode);
@@ -33,10 +51,10 @@ function playNotificationBeep() {
     oscillator.frequency.setValueAtTime(800, audioCtx.currentTime);
     oscillator.type = 'sine';
     gainNode.gain.setValueAtTime(0.3, audioCtx.currentTime);
-    gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.2);
     oscillator.start(audioCtx.currentTime);
-    oscillator.stop(audioCtx.currentTime + 0.3);
-  } catch (e) {
+    oscillator.stop(audioCtx.currentTime + 0.2);
+  } catch {
     // AudioContext not available
   }
 }
@@ -73,14 +91,20 @@ export interface PopupNotification extends Notification {
   dismissed: boolean;
 }
 
+// ── 24-hour dedup key ──
+function notifDedupeKey(n: { judul: string; modul: string }): string {
+  return `${n.modul}::${n.judul}`;
+}
+
 // ── Context shape ──
 interface NotificationContextValue {
   notifications: Notification[];
   unreadCount: number;
   popups: PopupNotification[];
   addNotification: (
-    partial: Omit<Notification, 'id' | 'createdAt' | 'updatedAt' | 'dibaca'>
-  ) => Notification;
+    partial: Omit<Notification, 'id' | 'createdAt' | 'updatedAt' | 'dibaca'>,
+    options?: { suppressBeep?: boolean; suppressPopup?: boolean }
+  ) => Notification | null;
   markAsRead: (id: string) => void;
   markAllRead: () => void;
   deleteNotification: (id: string) => void;
@@ -94,6 +118,8 @@ interface NotificationContextValue {
   centerOpen: boolean;
   setCenterOpen: (open: boolean) => void;
   navigateToModule?: (mod: DashboardModule) => void;
+  beepMuted: boolean;
+  toggleBeepMuted: () => void;
 }
 
 const NotificationContext = createContext<NotificationContextValue | null>(null);
@@ -142,8 +168,22 @@ export function NotificationProvider({
   const [popups, setPopups] = useState<PopupNotification[]>([]);
   const [replyLoading, setReplyLoading] = useState<Record<string, boolean>>({});
   const [centerOpen, setCenterOpen] = useState(false);
+  const [beepMuted, setBeepMuted] = useState(() => {
+    try {
+      return localStorage.getItem('ywm_beep_muted') === 'true';
+    } catch { return false; }
+  });
   const initializedRef = useRef(false);
+  const isInitialLoadRef = useRef(true);
   const autoTimerRef = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
+
+  const toggleBeepMuted = useCallback(() => {
+    setBeepMuted((prev) => {
+      const next = !prev;
+      try { localStorage.setItem('ywm_beep_muted', String(next)); } catch {}
+      return next;
+    });
+  }, []);
 
   // ── Load from localStorage on mount ──
   useEffect(() => {
@@ -154,6 +194,9 @@ export function NotificationProvider({
           new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
       );
       setNotifications(items);
+
+      // Mark initial load complete — beeps should NOT play for these popups
+      isInitialLoadRef.current = true;
 
       // Seed welcome notifications if empty
       if (items.length === 0 && !initializedRef.current) {
@@ -170,7 +213,7 @@ export function NotificationProvider({
         seeded.forEach((n) => saveData(KV_PREFIXES.notification, n));
         setNotifications(seeded);
 
-        // Show welcome popups on first load
+        // Show welcome popups on first load (no beep)
         const unreadPopups = seeded
           .filter((n) => !n.dibaca)
           .slice(0, 2)
@@ -182,7 +225,7 @@ export function NotificationProvider({
         setPopups(unreadPopups);
       } else if (items.length > 0 && !initializedRef.current) {
         initializedRef.current = true;
-        // Show unread popups for existing notifications on first visit
+        // Show unread popups for existing notifications on first visit (no beep)
         const unreadPopups = items
           .filter((n) => !n.dibaca)
           .slice(0, 3)
@@ -193,6 +236,11 @@ export function NotificationProvider({
           }));
         setPopups(unreadPopups);
       }
+
+      // After initial load completes, future notifications should beep
+      requestAnimationFrame(() => {
+        isInitialLoadRef.current = false;
+      });
     }
     loadNotifications();
   }, []);
@@ -210,10 +258,21 @@ export function NotificationProvider({
   }, []);
 
   // ── Add notification ──
+  // Returns null if deduplicated (same title+module within 24h)
   const addNotification = useCallback(
     (
-      partial: Omit<Notification, 'id' | 'createdAt' | 'updatedAt' | 'dibaca'>
-    ): Notification => {
+      partial: Omit<Notification, 'id' | 'createdAt' | 'updatedAt' | 'dibaca'>,
+      options?: { suppressBeep?: boolean; suppressPopup?: boolean }
+    ): Notification | null => {
+      // ── 24-hour deduplication: same title + module ──
+      const dedupeKey = notifDedupeKey(partial);
+      const TWENTY_FOUR_H = 24 * 3600_000;
+      const isDuplicate = notifications.some((n) => {
+        return notifDedupeKey(n) === dedupeKey &&
+          Date.now() - new Date(n.createdAt).getTime() < TWENTY_FOUR_H;
+      });
+      if (isDuplicate) return null;
+
       const now = new Date().toISOString();
       const notification: Notification = {
         ...partial,
@@ -226,41 +285,48 @@ export function NotificationProvider({
       saveData(KV_PREFIXES.notification, notification);
       reloadNotifications();
 
-      // Play notification beep sound
-      playNotificationBeep();
+      // Play beep only for genuine new notifications (not page load, not suppressed, not muted)
+      const shouldPlayBeep = !options?.suppressBeep && !isInitialLoadRef.current && !beepMuted;
+      if (shouldPlayBeep) {
+        playNotificationBeep();
+      }
 
-      // Show browser push notification
-      showBrowserNotification(notification.judul, notification.pesan, notification.link);
+      // Show browser push notification only for genuine new notifications
+      if (!isInitialLoadRef.current) {
+        showBrowserNotification(notification.judul, notification.pesan, notification.link);
+      }
 
       // Add popup for new notification (max 3 visible)
-      const popup: PopupNotification = {
-        ...notification,
-        popupId: `popup_${notification.id}_${Date.now()}`,
-        dismissed: false,
-      };
+      if (!options?.suppressPopup) {
+        const popup: PopupNotification = {
+          ...notification,
+          popupId: `popup_${notification.id}_${Date.now()}`,
+          dismissed: false,
+        };
 
-      setPopups((prev) => {
-        const active = prev.filter((p) => !p.dismissed);
-        if (active.length >= 3) {
-          // Dismiss the oldest popup
-          const oldest = active[0];
-          if (oldest) {
-            clearTimeout(autoTimerRef.current[oldest.popupId]);
-            delete autoTimerRef.current[oldest.popupId];
+        setPopups((prev) => {
+          const active = prev.filter((p) => !p.dismissed);
+          if (active.length >= 3) {
+            // Dismiss the oldest popup
+            const oldest = active[0];
+            if (oldest) {
+              clearTimeout(autoTimerRef.current[oldest.popupId]);
+              delete autoTimerRef.current[oldest.popupId];
+            }
+            return [
+              ...prev.map((p) =>
+                p.popupId === oldest?.popupId ? { ...p, dismissed: true } : p
+              ),
+              popup,
+            ];
           }
-          return [
-            ...prev.map((p) =>
-              p.popupId === oldest?.popupId ? { ...p, dismissed: true } : p
-            ),
-            popup,
-          ];
-        }
-        return [...prev, popup];
-      });
+          return [...prev, popup];
+        });
+      }
 
       return notification;
     },
-    [reloadNotifications]
+    [reloadNotifications, beepMuted, notifications]
   );
 
   // ── Mark as read ──
@@ -410,103 +476,62 @@ export function NotificationProvider({
   }, []);
 
   // ── Auto-generate smart notifications (check every 60s) ──
+  // Deduplication is now handled by addNotification (24h window on title+module),
+  // so the smart checks simply try to add — duplicates are silently dropped.
   useEffect(() => {
     const checkSmartNotifications = async () => {
       // Check for low stock items
       const spareParts = await getData<{ id: string; nama: string; kode: string; stok: number; stokMinimum: number }>(KV_PREFIXES.sparePart);
 
-      const existingNotifs = await getData<Notification>(KV_PREFIXES.notification);
-
-      spareParts.forEach((part) => {
+      for (const part of spareParts) {
         if (part.stok <= part.stokMinimum) {
-          const existingAlert = existingNotifs.find(
-            (n) =>
-              n.modul === 'spare-parts' &&
-              n.judul.includes(part.nama) &&
-              n.tipe === 'bahaya' &&
-              // Only if alert is less than 1 hour old
-              Date.now() - new Date(n.createdAt).getTime() < 3600_000
-          );
-
-          if (!existingAlert) {
-            // Check if there's any recent alert for this part (even if older)
-            const anyRecentAlert = existingNotifs.find(
-              (n) =>
-                n.modul === 'spare-parts' &&
-                n.judul.includes(part.nama) &&
-                Date.now() - new Date(n.createdAt).getTime() < 7200_000 // 2 hours
-            );
-
-            if (!anyRecentAlert) {
-              addNotification({
-                judul: `Stok ${part.nama} di bawah minimum!`,
-                pesan: `${part.nama} (${part.kode}) stok saat ini ${part.stok} pcs, minimum ${part.stokMinimum} pcs. Segera lakukan pemesanan ulang.`,
-                tipe: part.stok <= part.stokMinimum / 2 ? 'bahaya' : 'peringatan',
-                modul: 'spare-parts',
-                link: '/dashboard?module=spare-parts',
-              });
-            }
-          }
+          addNotification({
+            judul: `Stok ${part.nama} di bawah minimum!`,
+            pesan: `${part.nama} (${part.kode}) stok saat ini ${part.stok} pcs, minimum ${part.stokMinimum} pcs. Segera lakukan pemesanan ulang.`,
+            tipe: part.stok <= part.stokMinimum / 2 ? 'bahaya' : 'peringatan',
+            modul: 'spare-parts',
+            link: '/dashboard?module=spare-parts',
+          });
+          // addNotification returns null if deduplicated — no need to pre-check
         }
-      });
+      }
 
       // Check for overdue maintenance
       const maintenanceRecords = await getData<{ id: string; judul: string; status: string; prioritas: string; tanggalMulai: string }>(KV_PREFIXES.maintenance);
 
-      maintenanceRecords.forEach((rec) => {
-        if (
-          rec.status === 'berjalan' &&
-          rec.prioritas === 'kritis'
-        ) {
+      for (const rec of maintenanceRecords) {
+        if (rec.status === 'berjalan' && rec.prioritas === 'kritis') {
           const daysSinceStart = Math.floor(
             (Date.now() - new Date(rec.tanggalMulai).getTime()) /
               (1000 * 60 * 60 * 24)
           );
 
           if (daysSinceStart >= 2) {
-            const existingAlert = existingNotifs.find(
-              (n) =>
-                n.modul === 'maintenance' &&
-                n.judul.includes(rec.judul) &&
-                Date.now() - new Date(n.createdAt).getTime() < 7200_000
-            );
-
-            if (!existingAlert) {
-              addNotification({
-                judul: `Work Order "${rec.judul}" overdue ${daysSinceStart} hari`,
-                pesan: `Work Order "${rec.judul}" sudah berjalan ${daysSinceStart} hari tanpa selesai. Prioritas: KRITIS. Segera tindak lanjuti.`,
-                tipe: 'bahaya',
-                modul: 'maintenance',
-                link: '/dashboard?module=maintenance',
-              });
-            }
+            addNotification({
+              judul: `Work Order "${rec.judul}" overdue ${daysSinceStart} hari`,
+              pesan: `Work Order "${rec.judul}" sudah berjalan ${daysSinceStart} hari tanpa selesai. Prioritas: KRITIS. Segera tindak lanjuti.`,
+              tipe: 'bahaya',
+              modul: 'maintenance',
+              link: '/dashboard?module=maintenance',
+            });
           }
         }
-      });
+      }
 
       // Check for overdue Pispot (pelumasan terlewat)
       const pispotRecords = await getData<{ id: string; namaPeralatan: string; kodePeralatan: string; status: string; kondisi: string; bulan: string }>(KV_PREFIXES.pispot);
 
-      pispotRecords.forEach((rec) => {
+      for (const rec of pispotRecords) {
         if (rec.status === 'terlewat') {
-          const existingAlert = existingNotifs.find(
-            (n) =>
-              n.modul === 'pispot' &&
-              n.judul.includes(rec.namaPeralatan) &&
-              Date.now() - new Date(n.createdAt).getTime() < 7200_000
-          );
-
-          if (!existingAlert) {
-            addNotification({
-              judul: `Pelumasan ${rec.namaPeralatan} terlewat`,
-              pesan: `Pelumasan ${rec.namaPeralatan} (${rec.kodePeralatan}) bulan ${rec.bulan} terlewat. Kondisi: ${rec.kondisi}. Segera lakukan pelumasan.`,
-              tipe: rec.kondisi === 'rusak' ? 'bahaya' : 'peringatan',
-              modul: 'pispot',
-              link: '/dashboard?module=pispot',
-            });
-          }
+          addNotification({
+            judul: `Pelumasan ${rec.namaPeralatan} terlewat`,
+            pesan: `Pelumasan ${rec.namaPeralatan} (${rec.kodePeralatan}) bulan ${rec.bulan} terlewat. Kondisi: ${rec.kondisi}. Segera lakukan pelumasan.`,
+            tipe: rec.kondisi === 'rusak' ? 'bahaya' : 'peringatan',
+            modul: 'pispot',
+            link: '/dashboard?module=pispot',
+          });
         }
-      });
+      }
     };
 
     // Run once after a short delay, then every 60 seconds
@@ -534,6 +559,8 @@ export function NotificationProvider({
     centerOpen,
     setCenterOpen,
     navigateToModule,
+    beepMuted,
+    toggleBeepMuted,
   };
 
   return (

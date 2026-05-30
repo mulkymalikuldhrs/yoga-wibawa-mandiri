@@ -6,13 +6,14 @@ const Footer = () => {
     { name: 'Beranda', path: '/' },
     { name: 'Tentang Kami', path: '/tentang' },
     { name: 'Layanan', path: '/layanan' },
+    { name: 'Produk', path: '/produk' },
     { name: 'Galeri', path: '/galeri' },
     { name: 'Lokasi', path: '/lokasi' },
     { name: 'Kontak', path: '/kontak' },
   ];
 
   return (
-    <footer className="bg-slate-900 text-white">
+    <footer className="bg-slate-900/80 backdrop-blur-xl text-white border-t border-white/10">
       <div className="container mx-auto px-4 py-12">
         <div className="grid md:grid-cols-4 gap-8">
           {/* Company Info */}
@@ -33,11 +34,16 @@ const Footer = () => {
               fasilitas modern dan distribusi yang luas di seluruh Aceh dan Sumatera Utara.
             </p>
             
-            {/* Partnership Badge — text only, no logo */}
+            {/* Partnership Badge — with Semen Padang logo */}
             <div className="flex items-center space-x-3 mb-6">
-              <div className="px-3 py-2 bg-slate-800 rounded-lg border border-slate-700">
+              <div className="flex items-center gap-2 px-3 py-2 bg-white/5 backdrop-blur-sm rounded-lg border border-white/10">
+                <img 
+                  src="/lovable-uploads/LOGO PT SEMEN PADANG HITAM.png" 
+                  alt="Semen Padang Logo" 
+                  className="h-6 object-contain brightness-0 invert"
+                />
                 <span className="text-gray-400 text-xs font-medium">Mitra Resmi</span>
-                <span className="text-white text-sm font-bold ml-2">Semen Padang</span>
+                <span className="text-white text-sm font-bold">Semen Padang</span>
               </div>
             </div>
 
@@ -55,7 +61,7 @@ const Footer = () => {
 
             {/* WhatsApp Contact */}
             <a
-              href="https://wa.me/6285322624038"
+              href="https://wa.me/6285322624048"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-5 py-2.5 rounded-lg transition-colors font-medium"
@@ -110,11 +116,11 @@ const Footer = () => {
               </div>
               <div className="flex items-center space-x-3">
                 <Phone className="text-cyan-400" size={18} />
-                <p className="text-gray-300 text-sm">+6285322624038</p>
+                <a href="tel:+6285322624048" className="text-gray-300 text-sm hover:text-white hover:underline">+6285322624048</a>
               </div>
               <div className="flex items-center space-x-3">
                 <Mail className="text-cyan-400" size={18} />
-                <p className="text-gray-300 text-sm">info@ywm.co.id</p>
+                <a href="mailto:info@ywm.co.id" className="text-gray-300 text-sm hover:text-white hover:underline">info@ywm.co.id</a>
               </div>
               <div className="flex items-center space-x-3">
                 <Clock className="text-cyan-400" size={18} />

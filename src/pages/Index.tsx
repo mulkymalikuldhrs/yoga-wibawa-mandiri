@@ -25,73 +25,80 @@ const Index = () => {
           />
         </div>
         
+        {/* Glassmorphic overlay orbs on hero */}
+        <div className="absolute top-1/4 right-1/4 w-64 h-64 bg-red-400/20 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute bottom-1/4 left-1/4 w-48 h-48 bg-amber-300/15 rounded-full blur-3xl pointer-events-none" />
+        
         <div className="relative z-10 text-center text-white px-4 animate-fade-in">
-          <h1 className="text-5xl md:text-7xl font-bold mb-6 leading-tight">
-            PT. Yoga Wibawa <span className="text-yellow-400">Mandiri</span>
-          </h1>
-          <p className="text-xl md:text-2xl mb-4 max-w-3xl mx-auto leading-relaxed">
-            Pengantongan Semen Padang Terpercaya di Lhokseumawe
-            <br />dengan Teknologi Modern dan Kualitas Terjamin
-          </p>
-          
-          {/* AI Badge */}
-          <div className="inline-flex items-center space-x-2 bg-gradient-to-r from-blue-600 to-purple-600 px-4 py-2 rounded-full mb-8">
-            <Bot size={20} />
-            <span className="text-sm font-medium">AI-Powered Website</span>
-            <Zap size={16} className="text-yellow-300" />
-          </div>
-          
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <button 
-              onClick={() => scrollToSection('layanan')}
-              className="bg-ywm-red hover:bg-red-700 text-white px-8 py-4 rounded-lg font-semibold text-lg transition-all transform hover:scale-105 flex items-center justify-center"
-            >
-              Lihat Layanan Kami
-              <ArrowRight className="ml-2" size={20} />
-            </button>
-            <Link 
-              to="/dashboard" 
-              className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-8 py-4 rounded-lg font-semibold text-lg transition-all transform hover:scale-105 flex items-center justify-center"
-            >
-              <Bot className="mr-2" size={20} />
-              AI Dashboard
-            </Link>
-            <button 
-              onClick={() => scrollToSection('kontak')}
-              className="border-2 border-white text-white hover:bg-white hover:text-ywm-red px-8 py-4 rounded-lg font-semibold text-lg transition-all transform hover:scale-105"
-            >
-              Hubungi Kami
-            </button>
+          {/* Glassmorphic hero card */}
+          <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl p-8 md:p-12 max-w-4xl mx-auto shadow-2xl">
+            <h1 className="text-5xl md:text-7xl font-bold mb-6 leading-tight">
+              PT. Yoga Wibawa <span className="text-yellow-400">Mandiri</span>
+            </h1>
+            <p className="text-xl md:text-2xl mb-4 max-w-3xl mx-auto leading-relaxed">
+              Pengantongan Semen Padang Terpercaya di Lhokseumawe
+              <br />dengan Teknologi Modern dan Kualitas Terjamin
+            </p>
+            
+            {/* AI Badge */}
+            <div className="inline-flex items-center space-x-2 bg-gradient-to-r from-blue-600/80 to-purple-600/80 backdrop-blur-md px-4 py-2 rounded-full mb-8 border border-white/20">
+              <Bot size={20} />
+              <span className="text-sm font-medium">AI-Powered Website</span>
+              <Zap size={16} className="text-yellow-300" />
+            </div>
+            
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <button 
+                onClick={() => scrollToSection('layanan')}
+                className="bg-ywm-red/90 backdrop-blur-md hover:bg-red-700 text-white px-8 py-4 rounded-lg font-semibold text-lg transition-all transform hover:scale-105 flex items-center justify-center border border-red-400/30"
+              >
+                Lihat Layanan Kami
+                <ArrowRight className="ml-2" size={20} />
+              </button>
+              <Link 
+                to="/dashboard" 
+                className="bg-gradient-to-r from-blue-600/80 to-purple-600/80 backdrop-blur-md hover:from-blue-700 hover:to-purple-700 text-white px-8 py-4 rounded-lg font-semibold text-lg transition-all transform hover:scale-105 flex items-center justify-center border border-white/20"
+              >
+                <Bot className="mr-2" size={20} />
+                AI Dashboard
+              </Link>
+              <button 
+                onClick={() => scrollToSection('kontak')}
+                className="border-2 border-white/50 backdrop-blur-md text-white hover:bg-white/20 px-8 py-4 rounded-lg font-semibold text-lg transition-all transform hover:scale-105"
+              >
+                Hubungi Kami
+              </button>
+            </div>
           </div>
         </div>
       </section>
 
       {/* Stats Section */}
-      <section className="py-16 bg-white">
+      <section className="py-16">
         <div className="container mx-auto px-4">
           <div className="grid md:grid-cols-4 gap-8 text-center">
-            <div className="animate-fade-in">
+            <div className="glass-frosted rounded-2xl p-6 animate-fade-in">
               <div className="w-16 h-16 bg-ywm-red rounded-full flex items-center justify-center mx-auto mb-4">
                 <Factory className="text-white" size={32} />
               </div>
               <h3 className="text-3xl font-bold text-ywm-dark mb-2">15+</h3>
               <p className="text-gray-600">Tahun Pengalaman</p>
             </div>
-            <div className="animate-fade-in">
+            <div className="glass-frosted rounded-2xl p-6 animate-fade-in">
               <div className="w-16 h-16 bg-ywm-red rounded-full flex items-center justify-center mx-auto mb-4">
                 <Truck className="text-white" size={32} />
               </div>
               <h3 className="text-3xl font-bold text-ywm-dark mb-2">500K+</h3>
               <p className="text-gray-600">Ton Semen per Tahun</p>
             </div>
-            <div className="animate-fade-in">
+            <div className="glass-frosted rounded-2xl p-6 animate-fade-in">
               <div className="w-16 h-16 bg-ywm-red rounded-full flex items-center justify-center mx-auto mb-4">
                 <Award className="text-white" size={32} />
               </div>
-              <h3 className="text-3xl font-bold text-ywm-dark mb-2">ISO</h3>
+              <h3 className="text-3xl font-bold text-ywm-dark mb-2">ISO 9001:2015</h3>
               <p className="text-gray-600">Sertifikat Kualitas</p>
             </div>
-            <div className="animate-fade-in">
+            <div className="glass-frosted rounded-2xl p-6 animate-fade-in">
               <div className="w-16 h-16 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Bot className="text-white" size={32} />
               </div>
@@ -103,7 +110,7 @@ const Index = () => {
       </section>
 
       {/* About Preview */}
-      <section id="tentang" className="py-20 bg-gray-50">
+      <section id="tentang" className="py-20">
         <div className="container mx-auto px-4">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="animate-fade-in">
@@ -120,8 +127,8 @@ const Index = () => {
                 konstruksi di seluruh wilayah dengan distribusi yang efisien dan tepat waktu.
               </p>
               
-              {/* Developer Credit */}
-              <div className="bg-gradient-to-r from-blue-50 to-purple-50 p-4 rounded-lg mb-6 border-l-4 border-blue-500">
+              {/* Developer Credit — glassmorphic */}
+              <div className="glass-frosted p-5 rounded-xl mb-6 border-l-4 border-blue-500">
                 <p className="text-sm text-gray-600 mb-1">Website AI-Powered ini dikembangkan oleh:</p>
                 <p className="font-semibold text-ywm-dark">Mulky Malikul Dhaher</p>
                 <p className="text-sm text-blue-600">Technical Engineer - PT. Yoga Wibawa Mandiri</p>
@@ -139,7 +146,7 @@ const Index = () => {
               <img 
                 src="https://images.unsplash.com/photo-1466442929976-97f336a657be?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" 
                 alt="Fasilitas Modern"
-                className="rounded-lg shadow-2xl"
+                className="rounded-xl shadow-2xl"
                 loading="lazy"
               />
             </div>
@@ -148,7 +155,7 @@ const Index = () => {
       </section>
 
       {/* Services Preview */}
-      <section id="layanan" className="py-20 bg-white">
+      <section id="layanan" className="py-20">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-ywm-dark mb-4">
@@ -161,7 +168,7 @@ const Index = () => {
           </div>
           
           <div className="grid md:grid-cols-3 gap-8">
-            <div className="text-center p-8 rounded-lg shadow-lg hover:shadow-xl transition-shadow animate-fade-in">
+            <div className="glass-frosted text-center p-8 rounded-2xl hover:shadow-xl transition-shadow animate-fade-in">
               <div className="w-20 h-20 bg-ywm-red rounded-full flex items-center justify-center mx-auto mb-6">
                 <Factory className="text-white" size={40} />
               </div>
@@ -172,7 +179,7 @@ const Index = () => {
               </p>
             </div>
             
-            <div className="text-center p-8 rounded-lg shadow-lg hover:shadow-xl transition-shadow animate-fade-in">
+            <div className="glass-frosted text-center p-8 rounded-2xl hover:shadow-xl transition-shadow animate-fade-in">
               <div className="w-20 h-20 bg-ywm-red rounded-full flex items-center justify-center mx-auto mb-6">
                 <Truck className="text-white" size={40} />
               </div>
@@ -183,7 +190,7 @@ const Index = () => {
               </p>
             </div>
             
-            <div className="text-center p-8 rounded-lg shadow-lg hover:shadow-xl transition-shadow animate-fade-in">
+            <div className="glass-frosted text-center p-8 rounded-2xl hover:shadow-xl transition-shadow animate-fade-in">
               <div className="w-20 h-20 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-6">
                 <Bot className="text-white" size={40} />
               </div>
@@ -210,26 +217,28 @@ const Index = () => {
       {/* CTA Section */}
       <section id="kontak" className="py-20 bg-ywm-red text-white">
         <div className="container mx-auto px-4 text-center">
-          <h2 className="text-4xl font-bold mb-6">
-            Siap Bermitra dengan Kami?
-          </h2>
-          <p className="text-xl mb-8 max-w-2xl mx-auto">
-            Hubungi tim kami untuk konsultasi dan penawaran terbaik 
-            sesuai kebutuhan proyek konstruksi Anda.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link 
-              to="/kontak" 
-              className="bg-white text-ywm-red px-8 py-4 rounded-lg font-semibold text-lg hover:bg-gray-100 transition-colors transform hover:scale-105"
-            >
-              Hubungi Sekarang
-            </Link>
-            <Link 
-              to="/lokasi" 
-              className="border-2 border-white text-white hover:bg-white hover:text-ywm-red px-8 py-4 rounded-lg font-semibold text-lg transition-all transform hover:scale-105"
-            >
-              Lihat Lokasi
-            </Link>
+          <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl p-12 max-w-3xl mx-auto">
+            <h2 className="text-4xl font-bold mb-6">
+              Siap Bermitra dengan Kami?
+            </h2>
+            <p className="text-xl mb-8 max-w-2xl mx-auto">
+              Hubungi tim kami untuk konsultasi dan penawaran terbaik 
+              sesuai kebutuhan proyek konstruksi Anda.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Link 
+                to="/kontak" 
+                className="bg-white/90 backdrop-blur-md text-ywm-red px-8 py-4 rounded-lg font-semibold text-lg hover:bg-white transition-colors transform hover:scale-105"
+              >
+                Hubungi Sekarang
+              </Link>
+              <Link 
+                to="/lokasi" 
+                className="border-2 border-white/60 backdrop-blur-md text-white hover:bg-white/20 px-8 py-4 rounded-lg font-semibold text-lg transition-all transform hover:scale-105"
+              >
+                Lihat Lokasi
+              </Link>
+            </div>
           </div>
         </div>
       </section>

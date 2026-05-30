@@ -7,6 +7,7 @@ import { cn } from '@/lib/utils';
 import GlassCard from '@/components/dashboard/GlassCard';
 import { getData, saveData, deleteData, formatTanggal } from '@/lib/supabase-data';
 import { KV_PREFIXES, type Notification } from '@/types/dashboard';
+import { useDashboardContext } from '@/contexts/DashboardContext';
 import {
   Search, Bell, Info, AlertTriangle, AlertOctagon, CheckCircle2, Eye, EyeOff, Trash2, MessageSquare, ExternalLink,
 } from 'lucide-react';
@@ -21,6 +22,7 @@ const TIPE_CONFIG: Record<string, { color: string; bg: string; label: string; ic
 };
 
 export default function NotificationsModule() {
+  const { onModuleChange } = useDashboardContext();
   const [data, setData] = useState<Notification[]>([]);
   const [search, setSearch] = useState('');
   const [filterTipe, setFilterTipe] = useState('');
@@ -249,9 +251,16 @@ export default function NotificationsModule() {
                     </button>
                   </div>
                   {selectedNotif.link && (
-                    <a href={selectedNotif.link} className="flex items-center justify-center gap-2 w-full px-3 py-2 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-white text-sm hover:opacity-90 transition-all">
+                    <button
+                      onClick={() => {
+                        const mod = selectedNotif.link as any;
+                        onModuleChange(mod);
+                        setSelectedNotif(null);
+                      }}
+                      className="flex items-center justify-center gap-2 w-full px-3 py-2 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-white text-sm hover:opacity-90 transition-all"
+                    >
                       <ExternalLink size={14} /> Buka Modul Terkait
-                    </a>
+                    </button>
                   )}
                   <button onClick={() => { setDeleteConfirm(selectedNotif.id); setSelectedNotif(null); }} className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-xl text-red-600/60 text-xs hover:text-red-600 hover:bg-red-50/80 transition-all">
                     <Trash2 size={12} /> Hapus Notifikasi

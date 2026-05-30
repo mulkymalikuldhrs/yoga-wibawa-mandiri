@@ -153,13 +153,15 @@ function PopupCard({
       className={cn(
         'w-[360px] max-w-[calc(100vw-2rem)] backdrop-blur-xl bg-white/90',
         'border border-white/60 rounded-2xl shadow-2xl shadow-black/[0.08]',
-        'transition-all duration-300',
+        'transition-all duration-500 ease-out',
         tc.glow,
         popup.dismissed
-          ? 'translate-x-[120%] opacity-0'
-          : 'translate-x-0 opacity-100',
-        'animate-in slide-in-from-right-4 fade-in duration-500'
+          ? 'translate-x-[120%] opacity-0 scale-95'
+          : 'translate-x-0 opacity-100 scale-100'
       )}
+      style={{
+        animation: popup.dismissed ? undefined : 'ywm-slide-in-right 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+      }}
     >
       {/* Progress bar */}
       <div className="h-0.5 rounded-t-2xl overflow-hidden bg-white/50">
@@ -311,7 +313,7 @@ export default function NotificationPopup() {
   if (activePopups.length === 0) return null;
 
   return (
-    <div className="fixed bottom-24 right-4 z-40 flex flex-col-reverse gap-3 pointer-events-none sm:bottom-28 sm:right-6">
+    <div className="fixed top-4 right-4 z-40 flex flex-col gap-3 pointer-events-none sm:top-6 sm:right-6" style={{ animation: 'none' }}>
       {activePopups.map((popup) => (
         <div key={popup.popupId} className="pointer-events-auto">
           <PopupCard

@@ -15,7 +15,6 @@ import {
 } from '@/types/dashboard';
 import {
   Plus, Download, Search, Cylinder, Info, Edit2, Trash2,
-  TrendingUp, TrendingDown,
 } from 'lucide-react';
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend,
@@ -49,21 +48,23 @@ function hitungKekosongan(silo: SiloId, ukuran: number[], pengeluaran: number) {
   // Volume Silinder = 145.42 × tSilinder
   const volumeSilinder = config.areaSilinder * tSilinder;
 
-  // Volume Conis = 48.47 × tConis (untuk conis penuh: × tConisMax / tConisMax × tConisMax)
-  // Formula asli: 48.47 * tConis (ketika ≤ 18m) atau 48.47 * tConis/tConisMax * tConisMax
+  // Volume Conis = 48.47 × tConis (untuk conis penuh)
+  // Formula asli: 48.47 * tConis (ketika ≤ 18m) atau proporsional saat conis sebagian
+  // Proporsional: areaConis * tConis * (tConis / tConisMax) — scaling berdasarkan rasio isi conis
   const volumeConis = tinggiRataRata <= config.tinggiSilinder
     ? config.areaConis * tConis // conis penuh terisi
-    : config.areaConis * tConis / config.tConisMax * config.tConisMax; // conis sebagian
+    : config.areaConis * tConis * (tConis / config.tConisMax); // conis sebagian (proporsional)
 
   // Total Volume Silo = volumeSilinder + volumeConis
   const volumeTotal = volumeSilinder + volumeConis;
 
-  // Kekosongan: (tinggi rata-rata - 2.5m) × 145
-  const kekosonganBase = (tinggiRataRata - 2.5) * 145;
+  // Kekosongan: (tinggi rata-rata - 2.5m) × areaSilinder
+  const kekosonganBase = (tinggiRataRata - 2.5) * config.areaSilinder;
   const kekosongan = kekosonganBase > 0 ? kekosonganBase : 0;
 
-  // Space Silo = kekosongan - pengeluaran
-  const spaceSilo = kekosongan - pengeluaran;
+  // Space Silo = kekosongan - pengeluaran (minimum 0, tidak boleh negatif)
+  const spaceSiloRaw = kekosongan - pengeluaran;
+  const spaceSilo = spaceSiloRaw > 0 ? spaceSiloRaw : 0;
 
   return {
     jumlah: Math.round(jumlah * 1000) / 1000,
@@ -75,6 +76,7 @@ function hitungKekosongan(silo: SiloId, ukuran: number[], pengeluaran: number) {
     volumeTotal: Math.round(volumeTotal * 1000) / 1000,
     kekosongan: Math.round(kekosongan * 1000) / 1000,
     spaceSilo: Math.round(spaceSilo * 1000) / 1000,
+    isOverCapacity: spaceSiloRaw <= 0 && pengeluaran > 0,
   };
 }
 
@@ -96,6 +98,7 @@ const EMPTY_FORM: Omit<SiloCalculation, 'id' | 'createdAt' | 'updatedAt'> = {
   volumeTotal: 0,
   kekosongan: 0,
   spaceSilo: 0,
+  isOverCapacity: false,
   pengeluaran: 0,
   keterangan: '',
   petugas: '',
@@ -234,6 +237,7 @@ export default function SiloCalculationModule() {
       volumeTotal: item.volumeTotal,
       kekosongan: item.kekosongan,
       spaceSilo: item.spaceSilo,
+      isOverCapacity: item.isOverCapacity ?? false,
       pengeluaran: item.pengeluaran,
       keterangan: item.keterangan,
       petugas: item.petugas,
@@ -398,8 +402,8 @@ export default function SiloCalculationModule() {
             <p><span className="text-cyan-600">(c)</span> Tinggi Rata-Rata = Jumlah / 7</p>
             <p><span className="text-cyan-600">(d)</span> t Silinder = 18 - (c) — jika (c) &gt; 18m maka = 0</p>
             <p><span className="text-cyan-600">(e)</span> t Conis: ≤18m → A=4.6, B=2.9; &gt;18m → A=22.6-(c), B=20.9-(c)</p>
-            <p>Volume Silinder = 145.42 × (d); Volume Conis = 48.47 × (e); Total = Silinder + Conis</p>
-            <p>Kekosongan = ((c) - 2.5) × 145; Space Silo = Kekosongan - Pengeluaran</p>
+            <p>Volume Silinder = 145.42 × (d); Volume Conis = 48.47 × (e) [penuh] atau 48.47 × (e) × (e/tConisMax) [sebagian/proporsional]; Total = Silinder + Conis</p>
+            <p>Kekosongan = ((c) - 2.5) × 145.42; Space Silo = Kekosongan - Pengeluaran</p>
           </div>
         </div>
       </GlassCard>
@@ -579,10 +583,18 @@ export default function SiloCalculationModule() {
               </div>
               <div>
                 <label className="text-slate-500 text-xs mb-1 block">Space Silo</label>
-                <div className="w-full px-3 py-2 bg-white/[0.03] border border-white/[0.08] rounded-xl text-amber-600 text-sm font-medium">
+                <div className={cn(
+                  'w-full px-3 py-2 rounded-xl text-sm font-medium',
+                  form.isOverCapacity
+                    ? 'bg-red-50/80 border border-red-200/60 text-red-600'
+                    : 'bg-white/[0.03] border border-white/[0.08] text-amber-600'
+                )}>
                   {form.spaceSilo.toLocaleString()} m³
+                  {form.isOverCapacity && (
+                    <span className="ml-2 text-[10px] font-normal">⚠ Silo penuh/over-capacity</span>
+                  )}
                 </div>
-                <p className="text-slate-400 text-[10px] mt-1">Kekosongan - Pengeluaran</p>
+                <p className="text-slate-400 text-[10px] mt-1">Kekosongan - Pengeluaran {form.isOverCapacity && '(diklem ke 0)'}</p>
               </div>
             </div>
 

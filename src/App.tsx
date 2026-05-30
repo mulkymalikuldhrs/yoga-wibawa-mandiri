@@ -15,6 +15,7 @@ const Services = lazy(() => import("./pages/Services"));
 const Gallery = lazy(() => import("./pages/Gallery"));
 const Location = lazy(() => import("./pages/Location"));
 const Contact = lazy(() => import("./pages/Contact"));
+const Products = lazy(() => import("./pages/Products"));
 const Dashboard = lazy(() => import("./pages/Dashboard"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
@@ -39,6 +40,7 @@ const App = () => (
               <Route path="/" element={<Index />} />
               <Route path="/tentang" element={<About />} />
               <Route path="/layanan" element={<Services />} />
+              <Route path="/produk" element={<Products />} />
               <Route path="/galeri" element={<Gallery />} />
               <Route path="/lokasi" element={<Location />} />
               <Route path="/kontak" element={<Contact />} />

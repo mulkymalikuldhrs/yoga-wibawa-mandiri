@@ -28,6 +28,7 @@ import {
   DialogDescription,
   DialogFooter,
 } from '@/components/ui/dialog';
+import DeleteConfirmDialog from '@/components/dashboard/DeleteConfirmDialog';
 
 const STATUS_CONFIG: Record<string, { color: string; bg: string; label: string; icon: React.ReactNode }> = {
   terjadwal: { color: 'text-cyan-600', bg: 'bg-cyan-100/80', label: 'Terjadwal', icon: <Clock size={14} /> },
