@@ -34,8 +34,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     const tables = [
       'spare_parts', 'production', 'maintenance',
-      'team_activity', 'safety', 'finance',
-      'hr', 'notifications', 'chat_history'
+      'team_activity', 'safety_incident', 'finance',
+      'employee', 'notifications', 'chat_history',
+      'pispot', 'documents', 'silo_calculation', 'silo_opname'
     ];
 
     const existingTables: string[] = [];

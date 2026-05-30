@@ -27,7 +27,16 @@ export function deleteData(prefix: string, id: string): void {
 }
 
 export function generateId(): string {
-  return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+  // Use crypto.randomUUID() for UUID-compatible IDs (Supabase uses UUID PRIMARY KEY)
+  if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+    return crypto.randomUUID();
+  }
+  // Fallback: generate a UUID v4-like string
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+    const r = (Math.random() * 16) | 0;
+    const v = c === 'x' ? r : (r & 0x3) | 0x8;
+    return v.toString(16);
+  });
 }
 
 export function formatRupiah(amount: number): string {
@@ -73,8 +82,12 @@ export function exportToCSV(data: Record<string, unknown>[], filename: string): 
     ...data.map((row) =>
       headers
         .map((h) => {
-          const val = row[h];
-          const str = String(val ?? '');
+          const val = row[h as keyof typeof row];
+          let str = String(val ?? '');
+          // Prevent CSV formula injection: prefix dangerous characters
+          if (/^[=+\-@\t\r]/.test(str)) {
+            str = "'" + str;
+          }
           return str.includes(',') || str.includes('"') ? `"${str.replace(/"/g, '""')}"` : str;
         })
         .join(',')

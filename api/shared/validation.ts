@@ -1,18 +1,24 @@
 // ============================================================
 // Shared validation for /api/db/data
-// Field allowlists per table + sanitize/validate helpers
+// Field allowlists per table (snake_case matching Supabase schema)
+// + sanitize/validate helpers
+// Updated: Fixed field names to match actual Supabase columns
 // ============================================================
 
 const TABLE_FIELDS: Record<string, string[]> = {
-  spare_parts: ['nama', 'kode', 'kategori', 'stok', 'stokMinimum', 'satuan', 'lokasi', 'harga', 'pemasok', 'catatan', 'id', 'created_at', 'updated_at'],
-  production: ['tanggal', 'shift', 'mesin', 'target', 'aktual', 'satuan', 'kualitas', 'catatan', 'id', 'created_at', 'updated_at'],
-  maintenance: ['judul', 'mesin', 'jenis', 'prioritas', 'status', 'tanggalMulai', 'tanggalSelesai', 'teknisi', 'estimasiBiaya', 'catatan', 'id', 'created_at', 'updated_at'],
-  team_activity: ['namaKaryawan', 'divisi', 'aktivitas', 'status', 'jamMasuk', 'jamKeluar', 'tanggal', 'catatan', 'id', 'created_at', 'updated_at'],
-  safety: ['judul', 'tanggal', 'lokasi', 'severity', 'status', 'pelapor', 'korban', 'deskripsi', 'tindakan', 'id', 'created_at', 'updated_at'],
-  finance: ['tanggal', 'jenis', 'kategori', 'deskripsi', 'jumlah', 'metodePembayaran', 'referensi', 'catatan', 'id', 'created_at', 'updated_at'],
-  hr: ['nama', 'nip', 'jabatan', 'divisi', 'tanggalMasuk', 'gajiPokok', 'status', 'noTelepon', 'email', 'alamat', 'id', 'created_at', 'updated_at'],
-  notifications: ['title', 'type', 'category', 'message', 'isRead', 'id', 'created_at', 'updated_at'],
-  chat_history: ['role', 'content', 'timestamp', 'id', 'created_at', 'updated_at'],
+  spare_parts: ['id', 'nama', 'kode', 'kategori', 'stok', 'stok_minimum', 'satuan', 'lokasi', 'harga', 'pemasok', 'catatan', 'created_at', 'updated_at'],
+  production: ['id', 'tanggal', 'shift', 'mesin', 'target', 'aktual', 'satuan', 'kualitas', 'catatan', 'created_at', 'updated_at'],
+  maintenance: ['id', 'judul', 'mesin', 'jenis', 'prioritas', 'status', 'tanggal_mulai', 'tanggal_selesai', 'teknisi', 'estimasi_biaya', 'catatan', 'created_at', 'updated_at'],
+  team_activity: ['id', 'nama_karyawan', 'divisi', 'aktivitas', 'status', 'jam_masuk', 'jam_keluar', 'tanggal', 'catatan', 'created_at', 'updated_at'],
+  safety_incident: ['id', 'judul', 'tanggal', 'lokasi', 'severity', 'status', 'pelapor', 'korban', 'deskripsi', 'tindakan', 'created_at', 'updated_at'],
+  finance: ['id', 'tanggal', 'jenis', 'kategori', 'deskripsi', 'jumlah', 'metode_pembayaran', 'referensi', 'catatan', 'created_at', 'updated_at'],
+  employee: ['id', 'nama', 'nip', 'jabatan', 'divisi', 'tanggal_masuk', 'gaji_pokok', 'status', 'no_telepon', 'email', 'alamat', 'created_at', 'updated_at'],
+  notifications: ['id', 'judul', 'pesan', 'tipe', 'dibaca', 'modul', 'action_url', 'created_at', 'updated_at'],
+  chat_history: ['id', 'session_id', 'role', 'content', 'tokens_used', 'created_at', 'updated_at'],
+  pispot: ['id', 'nama_peralatan', 'kode_peralatan', 'lokasi', 'jenis_pelumas', 'spesifikasi', 'volume', 'periode', 'bulan', 'tanggal_pelaksanaan', 'petugas', 'status', 'kondisi', 'catatan', 'tindak_lanjut', 'created_at', 'updated_at'],
+  documents: ['id', 'nama', 'jenis', 'kategori', 'ukuran', 'url', 'ocr_text', 'diunggah_oleh', 'catatan', 'created_at', 'updated_at'],
+  silo_calculation: ['id', 'silo', 'tanggal', 'jam', 'ukuran', 'jumlah', 'tinggi_rata_rata', 't_silinder', 't_conis', 'volume_silinder', 'volume_conis', 'volume_total', 'kekosongan', 'space_silo', 'pengeluaran', 'keterangan', 'petugas', 'created_at', 'updated_at'],
+  silo_opname: ['id', 'tanggal', 'jam', 'kapal', 'opname1_tanggal', 'opname1_jam', 'opname1_ukuran_a', 'opname1_ukuran_b', 'opname1_volume_a', 'opname1_volume_b', 'opname1_total_volume', 'opname2_tanggal', 'opname2_jam', 'opname2_ukuran_a', 'opname2_ukuran_b', 'opname2_volume_a', 'opname2_volume_b', 'opname2_total_volume', 'pengeluaran_zak', 'semen_curah_terbongkar', 'catatan', 'petugas', 'created_at', 'updated_at'],
 };
 
 const MAX_DATA_SIZE_BYTES = 100 * 1024; // 100KB max payload per record
@@ -45,8 +51,8 @@ export function validateData(data: Record<string, unknown>): string | null {
     return `Data too large: ${size} bytes (max ${MAX_DATA_SIZE_BYTES})`;
   }
 
-  // Basic type validation for known risky fields
-  const numericFields = ['stok', 'stokMinimum', 'harga', 'target', 'aktual', 'estimasiBiaya', 'gajiPokok', 'jumlah'];
+  // Basic type validation for known numeric fields (snake_case matching DB)
+  const numericFields = ['stok', 'stok_minimum', 'harga', 'target', 'aktual', 'estimasi_biaya', 'gaji_pokok', 'jumlah', 'ukuran', 'pengeluaran_zak', 'semen_curah_terbongkar'];
   for (const field of numericFields) {
     if (field in data && data[field] !== null && data[field] !== undefined) {
       const val = Number(data[field]);
@@ -56,7 +62,8 @@ export function validateData(data: Record<string, unknown>): string | null {
     }
   }
 
-  const stringFields = ['nama', 'kode', 'judul', 'deskripsi', 'catatan', 'lokasi', 'pelapor', 'teknisi', 'pemasok'];
+  // Basic type validation for known string fields (snake_case matching DB)
+  const stringFields = ['nama', 'kode', 'judul', 'deskripsi', 'catatan', 'lokasi', 'pelapor', 'teknisi', 'pemasok', 'pesan', 'tindakan', 'keterangan', 'petugas', 'kapal'];
   for (const field of stringFields) {
     if (field in data && data[field] !== null && data[field] !== undefined) {
       if (typeof data[field] !== 'string') {

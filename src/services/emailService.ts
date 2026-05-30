@@ -21,7 +21,7 @@ export const sendContactEmail = async (formData: ContactFormData): Promise<boole
 
     // Prepare email template parameters
     const templateParams = {
-      to_email: 'mulkymalikuldhaher@mail.com',
+      to_email: 'info@ywm.co.id',
       from_name: formData.name,
       from_email: formData.email,
       phone: formData.phone,
@@ -76,7 +76,7 @@ export const sendContactEmailFormspree = async (formData: ContactFormData): Prom
         message: formData.message,
         _replyto: formData.email,
         _subject: `Pesan Baru dari Website: ${formData.subject}`,
-        _cc: 'mulkymalikuldhaher@mail.com'
+        _cc: 'info@ywm.co.id'
       }),
     });
 

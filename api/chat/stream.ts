@@ -1,13 +1,14 @@
 // ============================================================
 // Vercel Serverless Function — /api/chat/stream
 // AI chat streaming endpoint using SSE
-// Updated: Shared system prompt + rate limiting
+// Updated: Shared system prompt + rate limiting + proper CORS
 // ============================================================
 
 import ZAI from 'z-ai-web-dev-sdk';
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { YWM_SYSTEM_PROMPT } from '../../shared/system-prompt';
 import { checkRateLimit, getClientIp } from '../../shared/rate-limit';
+import { setCorsHeaders, handleCorsPreflightRequest } from '../../shared/cors';
 
 // Keep AI instance warm
 let zaiInstance: any = null;
@@ -24,14 +25,11 @@ async function getAI() {
 }
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-  // CORS
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  // CORS — use shared helper (checks origin against allowed list)
+  setCorsHeaders(req, res);
 
-  if (req.method === 'OPTIONS') {
-    return res.status(200).end();
-  }
+  // Handle CORS preflight
+  if (handleCorsPreflightRequest(req, res)) return;
 
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
@@ -52,6 +50,17 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const { messages } = req.body;
     if (!messages || !Array.isArray(messages)) {
       return res.status(400).json({ error: 'Messages array required' });
+    }
+
+    // Limit message count and size
+    if (messages.length > 50) {
+      return res.status(400).json({ error: 'Too many messages. Maximum 50 messages per request.' });
+    }
+
+    for (const msg of messages) {
+      if (msg.content && typeof msg.content === 'string' && msg.content.length > 10000) {
+        return res.status(400).json({ error: 'Message too long. Maximum 10000 characters per message.' });
+      }
     }
 
     // SSE headers
@@ -84,10 +93,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   } catch (err: any) {
     console.error('[YWM AI Vercel Stream] Error:', err.message);
     if (!res.headersSent) {
-      return res.status(500).json({ error: err.message });
+      return res.status(500).json({ error: 'Gagal streaming respons AI' });
     }
     try {
-      res.write(`data: ${JSON.stringify({ error: err.message })}\n\n`);
+      res.write(`data: ${JSON.stringify({ error: 'Stream error' })}\n\n`);
       res.write('data: [DONE]\n\n');
       return res.end();
     } catch {

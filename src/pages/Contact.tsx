@@ -108,27 +108,12 @@ const Contact = () => {
           message: ''
         });
       } else {
-        // Fallback: Show success message even if email service fails
-        // In production, you might want to store the message in a database
+        // Email service failed — show honest error and suggest alternatives
         toast({
-          title: "📧 Pesan Diterima!",
-          description: "Pesan Anda telah diterima. Kami akan segera menghubungi Anda kembali.",
+          title: "⚠️ Gagal Mengirim Email",
+          description: "Layanan email sedang bermasalah. Silakan hubungi kami langsung di info@ywm.co.id atau +6285322624038.",
+          variant: "destructive"
         });
-
-        // Reset form
-        setFormData({
-          name: '',
-          email: '',
-          phone: '',
-          company: '',
-          subject: '',
-          message: ''
-        });
-
-        // Form data logged server-side only (no PII in console)
-        if (import.meta.env.DEV) {
-          console.info('[Contact] Form submitted successfully at', new Date().toISOString());
-        }
       }
     } catch (error) {
       if (import.meta.env.DEV) console.error('Form submission error:', error);
@@ -306,7 +291,7 @@ const Contact = () => {
                   <div className="flex items-center space-x-2">
                     <Mail className="text-blue-600" size={16} />
                     <p className="text-sm text-blue-800">
-                      <strong>Pesan akan dikirim ke:</strong> mulkymalikuldhaher@mail.com
+                      <strong>Pesan akan dikirim ke:</strong> info@ywm.co.id
                     </p>
                   </div>
                   <p className="text-xs text-blue-600 mt-1">

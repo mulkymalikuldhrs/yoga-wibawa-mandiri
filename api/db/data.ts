@@ -7,11 +7,14 @@
 import { createClient } from '@supabase/supabase-js';
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { sanitizeData, validateData } from '../shared/validation';
+import { setCorsHeaders, handleCorsPreflightRequest } from '../shared/cors';
+import { requireAuth } from '../shared/auth';
 
 const VALID_TABLES = [
   'spare_parts', 'production', 'maintenance',
-  'team_activity', 'safety', 'finance',
-  'hr', 'notifications', 'chat_history'
+  'team_activity', 'safety_incident', 'finance',
+  'employee', 'notifications', 'chat_history',
+  'pispot', 'documents', 'silo_calculation', 'silo_opname'
 ];
 
 function getSupabase() {

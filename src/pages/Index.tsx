@@ -37,7 +37,7 @@ const Index = () => {
           {/* AI Badge */}
           <div className="inline-flex items-center space-x-2 bg-gradient-to-r from-blue-600 to-purple-600 px-4 py-2 rounded-full mb-8">
             <Bot size={20} />
-            <span className="text-sm font-medium">AI-Powered Website | JS Puter AI</span>
+            <span className="text-sm font-medium">AI-Powered Website</span>
             <Zap size={16} className="text-yellow-300" />
           </div>
           

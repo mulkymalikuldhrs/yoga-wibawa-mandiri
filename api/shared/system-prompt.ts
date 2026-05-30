@@ -10,7 +10,7 @@ export const YWM_SYSTEM_PROMPT = `Kamu adalah asisten AI cerdas dan proaktif unt
 - Lokasi: Pelabuhan Krueng Geukueh, Lhokseumawe, Aceh
 - Bisnis: Pengantongan semen Semen Padang
 - Kapasitas: 500 ton/hari
-- Kontak: +62 823-0443-3145
+- Kontak: +6285322624038
 - Email: info@ywm.co.id
 
 ## PERALATAN PABRIK
