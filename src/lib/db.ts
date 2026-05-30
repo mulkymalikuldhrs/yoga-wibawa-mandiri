@@ -116,6 +116,50 @@ export interface DbOpnameRecord {
   updated_at: string;
 }
 
+export interface DbOpnameSiloRecord {
+  id: string;
+  tanggal: string;
+  tipe: 'sebelum_bongkar' | 'sesudah_bongkar';
+  silo_a_h: number[];
+  silo_b_h: number[];
+  silo_a_avg_height: number;
+  silo_b_avg_height: number;
+  total_empty_space: number;
+  pengeluaran: number;
+  cement_from_ship: number;
+  nama_kapal: string;
+  catatan: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface DbDischargeOperation {
+  id: string;
+  tanggal: string;
+  mulai_pembongkaran: string;
+  rate_bongkar_min: number;
+  rate_bongkar_max: number;
+  sisa_muatan: number;
+  estimasi_waktu_min: number;
+  estimasi_waktu_max: number;
+  estimasi_selesai_min: string;
+  estimasi_selesai_max: string;
+  cargo_discharge_pcc: number;
+  total_cargo_discharge_pcc: number;
+  balance_cargo_pcc: number;
+  total_cargo_balance: number;
+  pengeluaran_truck: number;
+  pengeluaran_curah: number;
+  discharge_started_silo_a: string;
+  discharge_started_silo_b: string;
+  kekosongan_silo_a: Record<string, unknown>;
+  kekosongan_silo_b: Record<string, unknown>;
+  nama_kapal: string;
+  catatan: string;
+  created_at: string;
+  updated_at: string;
+}
+
 export interface DbPispotRecord {
   id: string;
   tanggal: string;
@@ -124,6 +168,21 @@ export interface DbPispotRecord {
   nozzle: string;
   produksi_zak: number;
   produksi_ton: number;
+  catatan: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface DbPispotGrease {
+  id: string;
+  tanggal: string;
+  packer: string;
+  jenis_grease: string;
+  jumlah: number;
+  satuan: string;
+  interval_jam: number;
+  jam_pelumasan: string;
+  teknisi: string;
   catatan: string;
   created_at: string;
   updated_at: string;
@@ -279,7 +338,6 @@ export async function getLowStockParts(): Promise<DbSparePart[]> {
       .select('*')
       .order('created_at', { ascending: false });
     if (error) throw error;
-    // Filter in JS since we need column comparison
     return ((data as DbSparePart[]) || []).filter(p => p.stok <= p.stok_minimum);
   } catch {
     return [];
@@ -380,7 +438,6 @@ export async function getDashboardStats() {
     fetchAll<DbTeamActivity>(TABLES.TEAM_ACTIVITIES),
   ]);
 
-  // Also count terjadwal maintenance
   const scheduledMaintenance = await count(TABLES.MAINTENANCE_RECORDS, { status: 'terjadwal' });
 
   const lowStockItems = sparePartsList.filter(p => p.stok <= p.stok_minimum).length;
@@ -409,8 +466,11 @@ export async function aiQueryData(module: string, filters?: Record<string, any>)
     'notifications': TABLES.NOTIFICATIONS,
     'silo': TABLES.SILO_DATA,
     'opname': TABLES.OPNAME_RECORDS,
+    'opname-silo': 'opname_silo_records',
     'pispot': TABLES.PISPOT_RECORDS,
+    'pispot-grease': 'pispot_grease',
     'production': TABLES.PRODUCTION_DATA,
+    'discharge': 'discharge_operations',
   };
 
   const table = tableMap[module];
@@ -442,7 +502,10 @@ export async function aiInsertData(module: string, data: Record<string, any>): P
     'notifications': TABLES.NOTIFICATIONS,
     'silo': TABLES.SILO_DATA,
     'opname': TABLES.OPNAME_RECORDS,
+    'opname-silo': 'opname_silo_records',
     'pispot': TABLES.PISPOT_RECORDS,
+    'pispot-grease': 'pispot_grease',
+    'discharge': 'discharge_operations',
   };
 
   const table = tableMap[module];
@@ -461,7 +524,10 @@ export async function aiUpdateData(module: string, id: string, data: Record<stri
     'notifications': TABLES.NOTIFICATIONS,
     'silo': TABLES.SILO_DATA,
     'opname': TABLES.OPNAME_RECORDS,
+    'opname-silo': 'opname_silo_records',
     'pispot': TABLES.PISPOT_RECORDS,
+    'pispot-grease': 'pispot_grease',
+    'discharge': 'discharge_operations',
   };
 
   const table = tableMap[module];

@@ -1,36 +1,34 @@
+# YWM AI Dashboard — Worklog
+
 ---
 Task ID: 1
 Agent: Main Agent
-Task: Fix AI Agent - Make it smart, responsive, with data input capability + floating chatbot button
+Task: Complete audit and massive upgrade of YWM AI Dashboard
 
 Work Log:
-- Analyzed existing Puter.js-based AI implementation (broken - requires external auth)
-- Identified root cause: Puter.js requires authentication and often doesn't load
-- Created Express backend server with z-ai-web-dev-sdk (server/ai-server.js)
-- Moved AI logic to Vite middleware plugin (vite.config.ts) for better integration
-- Replaced Puter.js with z-ai-web-dev-sdk in all frontend components
-- Created new ywm-ai.ts service module for API calls
-- Built FloatingChatBot.tsx component with:
-  - Floating button with pulse animation and status indicator
-  - Chat window with glassmorphic design matching dashboard theme
-  - Quick action buttons (6 actions: Ringkasan, Stok, Perawatan, Produksi, Safety, Input Data)
-  - Data input confirmation card
-  - Voice input support (Web Speech API)
-  - Auto-scroll, keyboard shortcuts
-- Updated AiAssistantPanel.tsx to use new backend
-- Updated ChatBot.tsx (public website) to use new backend with fallback
-- Updated DashboardLayout.tsx to include FloatingChatBot
-- Comprehensive YWM system prompt with:
-  - Company profile, equipment details (Packer A/B, Silo A/B)
-  - All 12 dashboard modules with field definitions
-  - Data input format (ACTION:INPUT_DATA)
-  - Safety-first rules, proactive warnings
-- Tested successfully: AI responds intelligently, parses data input correctly
+- Read all key source files: Dashboard.tsx, App.tsx, package.json, DashboardSidebar.tsx, GlassCard.tsx, DashboardLayout.tsx, Products.tsx, index.css, vite.config.ts, types/dashboard.ts, FloatingChatBot.tsx
+- Analyzed 24-point user requirement list
+- Installed @supabase/supabase-js and pg packages
+- Created supabase-schema.sql with 11 tables, indexes, RLS policies, seed data, triggers
+- Created src/lib/supabase.ts (Supabase client with anon + service keys)
+- Created src/lib/db.ts (comprehensive DB service layer with all CRUD operations)
+- Rewrote Dashboard.tsx with full Supabase integration + localStorage fallback
+- Added Stok Opname module (opname_records table)
+- Added Produksi Packer/Pispot module (pispot_records table)
+- Added DB status indicator in sidebar (connected/disconnected/checking)
+- Added device popup notifications with Web Notifications API + beep sound
+- Updated FloatingChatBot with Supabase DB data insertion + on/off toggle
+- Updated DashboardSidebar with Opname & Pispot modules
+- Updated DashboardLayout with dbStatus and unreadNotifs props
+- Updated types/dashboard.ts with OpnameRecord, PispotRecord, SiloData types
+- Updated index.html CSP to allow Supabase connections
+- Updated service worker to v2
+- Built project successfully (5.14s, no errors)
+- Could NOT push to GitHub or deploy to Vercel (no auth tokens available)
 
 Stage Summary:
-- AI now uses z-ai-web-dev-sdk instead of Puter.js (no more auth issues)
-- Floating chatbot button added to dashboard
-- AI can input data through natural language (tested: "Input spare part: Bearing 6205, stok 10, min 5, Gudang A, harga 150000")
-- AI responds with structured ACTION:INPUT_DATA blocks for data operations
-- Vite middleware handles API routes (/api/health, /api/chat, /api/chat/stream, /api/smart-parse)
-- Key files modified: vite.config.ts, ywm-ai.ts, FloatingChatBot.tsx, AiAssistantPanel.tsx, ChatBot.tsx, DashboardLayout.tsx
+- All code changes committed locally (13 files changed, 2244 insertions, 870 deletions)
+- Build succeeds locally
+- User needs to: 1) Push to GitHub, 2) Run supabase-schema.sql in Supabase Dashboard SQL Editor
+- Supabase credentials configured in src/lib/supabase.ts
+- App works in offline mode (localStorage) when DB is not connected

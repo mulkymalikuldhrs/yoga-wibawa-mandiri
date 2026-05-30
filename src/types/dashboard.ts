@@ -1,7 +1,7 @@
 // ============================================================
-// TypeScript Types for YWM Dashboard
+// TypeScript Types for YWM Dashboard v2
 // PT. Yoga Wibawa Mandiri — Cement Packaging Company
-// With Supabase DB integration
+// With Silo Calculation, Discharge, and Grease tracking
 // ============================================================
 
 // --- Base ---
@@ -79,7 +79,7 @@ export interface Document extends WithId, Timestamped {
   catatan: string;
 }
 
-// --- Opname (Stok Opname) ---
+// --- Opname (Stok Opname Umum) ---
 export interface OpnameRecord extends WithId, Timestamped {
   tanggal: string;
   kategori: string;
@@ -87,6 +87,46 @@ export interface OpnameRecord extends WithId, Timestamped {
   jumlah: number;
   satuan: string;
   keterangan: string;
+}
+
+// --- Opname Silo (Detailed Silo Measurements) ---
+export interface OpnameSiloRecord extends WithId, Timestamped {
+  tanggal: string;
+  tipe: 'sebelum_bongkar' | 'sesudah_bongkar';
+  siloAH: number[]; // 7 measurements
+  siloBH: number[]; // 7 measurements
+  siloAAvgHeight: number;
+  siloBAvgHeight: number;
+  totalEmptySpace: number; // MT
+  pengeluaran: number; // MT
+  cementFromShip: number; // MT
+  namaKapal: string;
+  catatan: string;
+}
+
+// --- Discharge Operation ---
+export interface DischargeOperation extends WithId, Timestamped {
+  tanggal: string;
+  mulaiPembongkaran: string; // HH:MM
+  rateBongkarMin: number; // tons/jam
+  rateBongkarMax: number; // tons/jam
+  sisaMuatan: number; // MT
+  estimasiWaktuMin: number; // jam
+  estimasiWaktuMax: number; // jam
+  estimasiSelesaiMin: string; // HH:MM
+  estimasiSelesaiMax: string; // HH:MM
+  cargoDischargePCC: number; // MT
+  totalCargoDischargePCC: number; // MT
+  balanceCargoPCC: number; // MT
+  totalCargoBalance: number; // MT
+  pengeluaranTruck: number; // MT
+  pengeluaranCurah: number; // MT
+  dischargeStartedSiloA: string; // HH:MM
+  dischargeStartedSiloB: string; // HH:MM
+  kekosonganSiloA: Record<string, unknown>;
+  kekosonganSiloB: Record<string, unknown>;
+  namaKapal: string;
+  catatan: string;
 }
 
 // --- Pispot (Produksi Packer) ---
@@ -97,6 +137,19 @@ export interface PispotRecord extends WithId, Timestamped {
   nozzle: string;
   produksiZak: number;
   produksiTon: number;
+  catatan: string;
+}
+
+// --- Pispot Grease (Pelumasan) ---
+export interface PispotGrease extends WithId, Timestamped {
+  tanggal: string;
+  packer: string;
+  jenisGrease: string;
+  jumlah: number; // kg or liter
+  satuan: string;
+  intervalJam: number;
+  jamPelumasan: string; // HH:MM
+  teknisi: string;
   catatan: string;
 }
 
@@ -146,6 +199,9 @@ export type DashboardModule =
   | 'documents'
   | 'opname'
   | 'pispot'
+  | 'silo-calculation'
+  | 'discharge'
+  | 'pispot-grease'
   | 'notifications';
 
 export interface DashboardModuleInfo {

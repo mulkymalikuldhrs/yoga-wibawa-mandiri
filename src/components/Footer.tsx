@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { MapPin, Phone, Mail, Clock, Facebook, Instagram, Linkedin, Code } from 'lucide-react';
+import { MapPin, Phone, Mail, Clock, Facebook, Instagram, Linkedin, Code, MessageCircle } from 'lucide-react';
 
 const Footer = () => {
   const navigationItems = [
@@ -22,16 +22,17 @@ const Footer = () => {
               <img 
                 src="/lovable-uploads/ywm-logo.png" 
                 alt="PT. Yoga Wibawa Mandiri Logo"
-                className="w-14 h-14 rounded-full shadow-lg mr-4 object-contain"
+                className="w-14 h-14 rounded-full shadow-lg mr-4 object-contain bg-white p-0.5"
               />
               <div>
                 <h3 className="font-bold text-xl tracking-tight">PT. Yoga Wibawa Mandiri</h3>
-                <p className="text-gray-300 text-sm">Pengantongan Semen Padang | Lhokseumawe</p>
+                <p className="text-gray-400 text-sm">Pengantongan Semen Padang | Aceh Utara</p>
               </div>
             </div>
             <p className="text-gray-300 mb-6 leading-relaxed">
-              Perusahaan pengantongan Semen Padang terpercaya di Lhokseumawe dengan 
-              fasilitas modern dan distribusi yang luas di seluruh Aceh dan Sumatera Utara.
+              Perusahaan pengantongan Semen Padang PCC terpercaya di Aceh Utara dengan 
+              fasilitas modern — 2 silo berkapasitas 500 ton, 2 mesin pengantongan Zak 40kg,
+              serta distribusi yang luas di seluruh Aceh dan Sumatera Utara.
             </p>
             
             {/* Partnership Badge */}
@@ -39,9 +40,31 @@ const Footer = () => {
               <img 
                 src="/lovable-uploads/35616003-ad4f-4d69-940c-91a3a5a41f07.png" 
                 alt="Semen Padang Logo"
-                className="w-12 h-12 rounded-lg"
+                className="w-12 h-12 rounded-lg object-contain bg-white p-0.5"
               />
               <span className="text-gray-300 text-sm font-medium">Mitra Resmi Semen Padang</span>
+            </div>
+
+            {/* WhatsApp Quick Contact */}
+            <div className="flex flex-col sm:flex-row gap-3 mb-6">
+              <a
+                href="https://wa.me/6285322624048?text=Halo%2C%20saya%20ingin%20memesan%20Semen%20Padang"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 bg-[#25D366] hover:bg-[#1EBE5A] text-white px-4 py-2.5 rounded-lg text-sm font-semibold transition-colors"
+              >
+                <MessageCircle size={16} />
+                Pemesanan: +62 853-2262-4048
+              </a>
+              <a
+                href="https://wa.me/6285322624038?text=Halo%2C%20saya%20ingin%20bertanya%20tentang%20Semen%20Padang"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 bg-gray-700 hover:bg-gray-600 text-white px-4 py-2.5 rounded-lg text-sm font-semibold transition-colors"
+              >
+                <Phone size={16} />
+                Informasi: +62 853-2262-4038
+              </a>
             </div>
 
             {/* AI Powered Badge */}
@@ -75,7 +98,7 @@ const Footer = () => {
                 <li key={item.path}>
                   <Link 
                     to={item.path} 
-                    className="text-gray-300 hover:text-white hover:pl-2 transition-all duration-300 block"
+                    className="text-gray-300 hover:text-white hover:pl-2 transition-all duration-300 block text-sm"
                   >
                     {item.name}
                   </Link>
@@ -84,7 +107,7 @@ const Footer = () => {
               <li>
                 <Link 
                   to="/dashboard" 
-                  className="text-blue-400 hover:text-blue-300 hover:pl-2 transition-all duration-300 block font-medium"
+                  className="text-blue-400 hover:text-blue-300 hover:pl-2 transition-all duration-300 block font-medium text-sm"
                 >
                   🤖 AI Dashboard
                 </Link>
@@ -97,30 +120,40 @@ const Footer = () => {
             <h4 className="font-bold text-lg mb-6 text-ywm-red">Kontak Kami</h4>
             <div className="space-y-4">
               <div className="flex items-start space-x-3">
-                <MapPin className="text-ywm-red mt-1" size={18} />
+                <MapPin className="text-ywm-red mt-1 shrink-0" size={18} />
                 <div>
                   <p className="text-gray-300 text-sm font-medium">Kantor Pusat:</p>
-                  <p className="text-gray-300 text-sm">Medan, Sumatera Utara</p>
+                  <p className="text-gray-400 text-sm">Jl. Paduan Tenaga No. 12, Medan</p>
                 </div>
               </div>
-                <div className="flex items-start space-x-3">
-                  <MapPin className="text-ywm-red mt-1" size={18} />
-                  <div>
-                    <p className="text-gray-300 text-sm font-medium">Packing Plant:</p>
-                    <p className="text-gray-300 text-sm">Jl. Pelabuhan Umum, Kr. Geukuh<br />Aceh Utara, Aceh</p>
-                  </div>
+              <div className="flex items-start space-x-3">
+                <MapPin className="text-ywm-red mt-1 shrink-0" size={18} />
+                <div>
+                  <p className="text-gray-300 text-sm font-medium">Packing Plant:</p>
+                  <p className="text-gray-400 text-sm">Jl. Pelabuhan Umum, Kr. Geukuh<br />Aceh Utara, Aceh</p>
                 </div>
+              </div>
+              <a href="https://wa.me/6285322624048" target="_blank" rel="noopener noreferrer" className="flex items-center space-x-3 hover:text-white transition-colors">
+                <Phone className="text-ywm-red shrink-0" size={18} />
+                <div>
+                  <p className="text-gray-300 text-sm font-medium">Pemesanan:</p>
+                  <p className="text-gray-400 text-sm">+62 853-2262-4048</p>
+                </div>
+              </a>
               <a href="https://wa.me/6285322624038" target="_blank" rel="noopener noreferrer" className="flex items-center space-x-3 hover:text-white transition-colors">
-                <Phone className="text-ywm-red" size={18} />
-                <p className="text-gray-300 text-sm">+62 853-2262-4038</p>
+                <Phone className="text-ywm-red shrink-0" size={18} />
+                <div>
+                  <p className="text-gray-300 text-sm font-medium">Informasi:</p>
+                  <p className="text-gray-400 text-sm">+62 853-2262-4038</p>
+                </div>
               </a>
               <div className="flex items-center space-x-3">
-                <Mail className="text-ywm-red" size={18} />
-                <p className="text-gray-300 text-sm">yogawibawamandiri@gmail.com</p>
+                <Mail className="text-ywm-red shrink-0" size={18} />
+                <p className="text-gray-400 text-sm">yogawibawamandiri@gmail.com</p>
               </div>
               <div className="flex items-center space-x-3">
-                <Clock className="text-ywm-red" size={18} />
-                <p className="text-gray-300 text-sm">Senin - Jumat: 08:00 - 17:00</p>
+                <Clock className="text-ywm-red shrink-0" size={18} />
+                <p className="text-gray-400 text-sm">Senin - Jumat: 08:00 - 17:00</p>
               </div>
             </div>
           </div>
@@ -128,17 +161,17 @@ const Footer = () => {
 
         <div className="border-t border-gray-700 mt-12 pt-8">
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
-            <p className="text-gray-300 text-sm text-center md:text-left">
+            <p className="text-gray-400 text-sm text-center md:text-left">
               © {new Date().getFullYear()} PT. Yoga Wibawa Mandiri. Semua hak cipta dilindungi.
             </p>
             <div className="text-center md:text-right">
-              <p className="text-gray-400 text-xs mb-1">
+              <p className="text-gray-500 text-xs mb-1">
                 Developed with ❤️ by <span className="text-ywm-red font-medium">Mulky Malikul Dhaher</span>
               </p>
-              <p className="text-gray-400 text-xs mb-1">
+              <p className="text-gray-500 text-xs mb-1">
                 <span className="text-blue-400">Technical Engineer</span> - PT. Yoga Wibawa Mandiri
               </p>
-              <p className="text-gray-500 text-xs">
+              <p className="text-gray-600 text-xs">
                 🤖 Powered by JS Puter AI | 🚀 React + TypeScript
               </p>
             </div>

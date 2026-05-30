@@ -1,6 +1,7 @@
 -- ============================================================
--- YWM AI Dashboard — Supabase Database Schema
+-- YWM AI Dashboard — Supabase Database Schema v2
 -- PT. Yoga Wibawa Mandiri
+-- Updated: Silo calculations, discharge operations, grease tracking
 -- RUN THIS IN: Supabase Dashboard → SQL Editor → New Query
 -- ============================================================
 
@@ -113,7 +114,7 @@ CREATE TABLE IF NOT EXISTS notifications (
 );
 
 -- ══════════════════════════════════════════════════════════
--- SILO DATA (Data Silo)
+-- SILO DATA (Data Silo - current status)
 -- ══════════════════════════════════════════════════════════
 CREATE TABLE IF NOT EXISTS silo_data (
   id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
@@ -126,16 +127,74 @@ CREATE TABLE IF NOT EXISTS silo_data (
 );
 
 -- ══════════════════════════════════════════════════════════
--- OPNAME RECORDS (Stok Opname)
+-- OPNAME SILO RECORDS (Stok Opname Silo - detailed measurements)
+-- Based on Opname Silo (Complete)-1.xlsx
 -- ══════════════════════════════════════════════════════════
-CREATE TABLE IF NOT EXISTS opname_records (
+CREATE TABLE IF NOT EXISTS opname_silo_records (
   id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
-  tanggal DATE DEFAULT CURRENT_DATE,
-  kategori TEXT DEFAULT '',
-  item TEXT NOT NULL,
-  jumlah NUMERIC DEFAULT 0,
-  satuan TEXT DEFAULT 'pcs',
-  keterangan TEXT DEFAULT '',
+  tanggal DATE NOT NULL DEFAULT CURRENT_DATE,
+  tipe TEXT NOT NULL CHECK (tipe IN ('sebelum_bongkar','sesudah_bongkar')),
+  -- Silo A measurements (7 holes)
+  silo_a_h1 NUMERIC DEFAULT 0,
+  silo_a_h2 NUMERIC DEFAULT 0,
+  silo_a_h3 NUMERIC DEFAULT 0,
+  silo_a_h4 NUMERIC DEFAULT 0,
+  silo_a_h5 NUMERIC DEFAULT 0,
+  silo_a_h6 NUMERIC DEFAULT 0,
+  silo_a_h7 NUMERIC DEFAULT 0,
+  -- Silo B measurements (7 holes)
+  silo_b_h1 NUMERIC DEFAULT 0,
+  silo_b_h2 NUMERIC DEFAULT 0,
+  silo_b_h3 NUMERIC DEFAULT 0,
+  silo_b_h4 NUMERIC DEFAULT 0,
+  silo_b_h5 NUMERIC DEFAULT 0,
+  silo_b_h6 NUMERIC DEFAULT 0,
+  silo_b_h7 NUMERIC DEFAULT 0,
+  -- Calculated results
+  silo_a_avg_height NUMERIC DEFAULT 0,
+  silo_b_avg_height NUMERIC DEFAULT 0,
+  total_empty_space NUMERIC DEFAULT 0, -- MT
+  -- Pengeluaran between opname I & II
+  pengeluaran NUMERIC DEFAULT 0, -- MT
+  -- Net result
+  cement_from_ship NUMERIC DEFAULT 0, -- MT
+  -- Kapal info
+  nama_kapal TEXT DEFAULT '',
+  catatan TEXT DEFAULT '',
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- ══════════════════════════════════════════════════════════
+-- DISCHARGE OPERATIONS (Operasi Pembongkaran)
+-- Based on Operasi_Pembongkaran.xlsx
+-- ══════════════════════════════════════════════════════════
+CREATE TABLE IF NOT EXISTS discharge_operations (
+  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+  tanggal DATE NOT NULL DEFAULT CURRENT_DATE,
+  mulai_pembongkaran TEXT DEFAULT '', -- HH:MM WIB
+  rate_bongkar_min NUMERIC DEFAULT 250, -- tons/jam
+  rate_bongkar_max NUMERIC DEFAULT 286, -- tons/jam
+  sisa_muatan NUMERIC DEFAULT 0, -- MT
+  estimasi_waktu_min NUMERIC DEFAULT 0, -- jam
+  estimasi_waktu_max NUMERIC DEFAULT 0, -- jam
+  estimasi_selesai_min TEXT DEFAULT '', -- HH:MM WIB
+  estimasi_selesai_max TEXT DEFAULT '', -- HH:MM WIB
+  -- Cargo tracking
+  cargo_discharge_pcc NUMERIC DEFAULT 0, -- MT
+  total_cargo_discharge_pcc NUMERIC DEFAULT 0, -- MT
+  balance_cargo_pcc NUMERIC DEFAULT 0, -- MT
+  total_cargo_balance NUMERIC DEFAULT 0, -- MT
+  pengeluaran_truck NUMERIC DEFAULT 0, -- MT
+  pengeluaran_curah NUMERIC DEFAULT 0, -- MT
+  -- Silo-specific discharge start
+  discharge_started_silo_a TEXT DEFAULT '', -- HH:MM WIB
+  discharge_started_silo_b TEXT DEFAULT '', -- HH:MM WIB
+  -- Kekosongan calculations
+  kekosongan_silo_a JSONB DEFAULT '{}',
+  kekosongan_silo_b JSONB DEFAULT '{}',
+  nama_kapal TEXT DEFAULT '',
+  catatan TEXT DEFAULT '',
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
@@ -151,6 +210,39 @@ CREATE TABLE IF NOT EXISTS pispot_records (
   nozzle TEXT DEFAULT '',
   produksi_zak INTEGER DEFAULT 0,
   produksi_ton NUMERIC DEFAULT 0,
+  catatan TEXT DEFAULT '',
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- ══════════════════════════════════════════════════════════
+-- OPNAME RECORDS (Stok Opname Umum - non-silo)
+-- ══════════════════════════════════════════════════════════
+CREATE TABLE IF NOT EXISTS opname_records (
+  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+  tanggal DATE DEFAULT CURRENT_DATE,
+  kategori TEXT DEFAULT '',
+  item TEXT NOT NULL,
+  jumlah NUMERIC DEFAULT 0,
+  satuan TEXT DEFAULT 'pcs',
+  keterangan TEXT DEFAULT '',
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- ══════════════════════════════════════════════════════════
+-- PISPOT GREASE (Pelumasan Packer)
+-- ══════════════════════════════════════════════════════════
+CREATE TABLE IF NOT EXISTS pispot_grease (
+  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+  tanggal DATE DEFAULT CURRENT_DATE,
+  packer TEXT DEFAULT 'A',
+  jenis_grease TEXT DEFAULT '',
+  jumlah NUMERIC DEFAULT 0, -- kg or liter
+  satuan TEXT DEFAULT 'kg',
+  interval_jam NUMERIC DEFAULT 0, -- hours between lubrication
+  jam_pelumasan TEXT DEFAULT '', -- HH:MM
+  teknisi TEXT DEFAULT '',
   catatan TEXT DEFAULT '',
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
@@ -189,7 +281,7 @@ DECLARE
   policy_exists INTEGER;
 BEGIN
   FOR t IN SELECT tablename FROM pg_tables WHERE schemaname = 'public' 
-    AND tablename IN ('spare_parts','team_activities','maintenance_records','safety_incidents','documents','notifications','silo_data','opname_records','pispot_records','chat_messages','production_data')
+    AND tablename IN ('spare_parts','team_activities','maintenance_records','safety_incidents','documents','notifications','silo_data','opname_records','opname_silo_records','discharge_operations','pispot_records','pispot_grease','chat_messages','production_data')
   LOOP
     EXECUTE format('ALTER TABLE %I ENABLE ROW LEVEL SECURITY;', t);
     SELECT COUNT(*) INTO policy_exists FROM pg_policies WHERE tablename = t AND policyname = 'Allow all for anon';
@@ -281,6 +373,14 @@ SELECT * FROM (VALUES
 ) AS v(bulan, zak, curah, tahun)
 WHERE NOT EXISTS (SELECT 1 FROM production_data LIMIT 1);
 
+-- Sample pispot grease
+INSERT INTO pispot_grease (tanggal, packer, jenis_grease, jumlah, satuan, interval_jam, jam_pelumasan, teknisi, catatan)
+SELECT * FROM (VALUES
+  (CURRENT_DATE, 'A', 'Lithium EP2', 2.5, 'kg', 8, '07:30', 'Budi Santoso', 'Pelumasan rutin bearing packer A'),
+  (CURRENT_DATE, 'B', 'Lithium EP2', 2.5, 'kg', 8, '08:00', 'Rizki Hidayat', 'Pelumasan rutin bearing packer B')
+) AS v(tanggal, packer, jenis_grease, jumlah, satuan, interval_jam, jam_pelumasan, teknisi, catatan)
+WHERE NOT EXISTS (SELECT 1 FROM pispot_grease LIMIT 1);
+
 -- ══════════════════════════════════════════════════════════
 -- INDEXES
 -- ══════════════════════════════════════════════════════════
@@ -294,6 +394,9 @@ CREATE INDEX IF NOT EXISTS idx_chat_messages_session ON chat_messages(session_id
 CREATE INDEX IF NOT EXISTS idx_production_data_tahun ON production_data(tahun);
 CREATE INDEX IF NOT EXISTS idx_pispot_tanggal ON pispot_records(tanggal);
 CREATE INDEX IF NOT EXISTS idx_opname_tanggal ON opname_records(tanggal);
+CREATE INDEX IF NOT EXISTS idx_opname_silo_tanggal ON opname_silo_records(tanggal);
+CREATE INDEX IF NOT EXISTS idx_discharge_ops_tanggal ON discharge_operations(tanggal);
+CREATE INDEX IF NOT EXISTS idx_pispot_grease_tanggal ON pispot_grease(tanggal);
 
 -- Updated_at trigger
 CREATE OR REPLACE FUNCTION update_updated_at()
@@ -309,9 +412,36 @@ DECLARE
   t TEXT;
 BEGIN
   FOR t IN SELECT tablename FROM pg_tables WHERE schemaname = 'public' 
-    AND tablename IN ('spare_parts','team_activities','maintenance_records','safety_incidents','documents','notifications','silo_data','opname_records','pispot_records','production_data')
+    AND tablename IN ('spare_parts','team_activities','maintenance_records','safety_incidents','documents','notifications','silo_data','opname_records','opname_silo_records','discharge_operations','pispot_records','pispot_grease','production_data')
   LOOP
     EXECUTE format('DROP TRIGGER IF EXISTS set_updated_at ON %I;', t);
     EXECUTE format('CREATE TRIGGER set_updated_at BEFORE UPDATE ON %I FOR EACH ROW EXECUTE FUNCTION update_updated_at();', t);
   END LOOP;
 END $$;
+
+-- ══════════════════════════════════════════════════════════
+-- AUTO-NOTIFICATION FUNCTION
+-- Creates a notification when spare part stock drops below minimum
+-- ══════════════════════════════════════════════════════════
+CREATE OR REPLACE FUNCTION check_low_stock_notification()
+RETURNS TRIGGER AS $$
+BEGIN
+  IF NEW.stok <= NEW.stok_minimum AND (OLD.stok > OLD.stok_minimum OR TG_OP = 'INSERT') THEN
+    INSERT INTO notifications (judul, pesan, tipe, dibaca, modul, link)
+    VALUES (
+      CONCAT('Stok Rendah: ', NEW.nama),
+      CONCAT(NEW.nama, ' (', NEW.kode, ') stok hanya ', NEW.stok, ' ', NEW.satuan, ', minimum ', NEW.stok_minimum, ' ', NEW.satuan),
+      CASE WHEN NEW.stok <= NEW.stok_minimum / 2 THEN 'bahaya' ELSE 'peringatan' END,
+      FALSE,
+      'spare-parts',
+      '/dashboard'
+    );
+  END IF;
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS notify_low_stock ON spare_parts;
+CREATE TRIGGER notify_low_stock
+  AFTER INSERT OR UPDATE ON spare_parts
+  FOR EACH ROW EXECUTE FUNCTION check_low_stock_notification();

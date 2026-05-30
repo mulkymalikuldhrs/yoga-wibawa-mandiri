@@ -18,6 +18,7 @@ import {
   remove,
   markNotificationRead,
   markAllNotificationsRead,
+  getProductionData,
   type DbSparePart,
   type DbTeamActivity,
   type DbMaintenanceRecord,
@@ -26,7 +27,21 @@ import {
   type DbSiloData,
   type DbOpnameRecord,
   type DbPispotRecord,
+  type DbOpnameSiloRecord,
+  type DbDischargeOperation,
+  type DbPispotGrease,
+  type DbProductionData,
 } from '@/lib/db';
+import {
+  calculateOpnameSilo,
+  calculateFullOpname,
+  calculateKekosongan,
+  calculateDischargeOperation,
+  calculateSiloFillLevel,
+  formatMT,
+  formatHours,
+  SILO_CONSTANTS,
+} from '@/lib/silo-calculations';
 import type {
   DashboardModule,
   SparePart,
@@ -37,6 +52,9 @@ import type {
   OpnameRecord,
   PispotRecord,
   SiloData,
+  OpnameSiloRecord,
+  DischargeOperation,
+  PispotGrease,
 } from '@/types/dashboard';
 import {
   Package,
@@ -74,6 +92,9 @@ import {
   RefreshCw,
   Wifi,
   WifiOff,
+  Calculator,
+  Ship,
+  Droplets,
 } from 'lucide-react';
 import {
   BarChart,
@@ -179,8 +200,38 @@ const mapSilo = (db: DbSiloData): SiloData => ({
   holes: db.holes, createdAt: db.created_at, updatedAt: db.updated_at,
 });
 
-// ── Chart data (fallback) ──
-const PRODUCTION_DATA = [
+const mapOpnameSilo = (db: DbOpnameSiloRecord): OpnameSiloRecord => ({
+  id: db.id, tanggal: db.tanggal, tipe: db.tipe,
+  siloAH: db.silo_a_h, siloBH: db.silo_b_h,
+  siloAAvgHeight: db.silo_a_avg_height, siloBAvgHeight: db.silo_b_avg_height,
+  totalEmptySpace: db.total_empty_space, pengeluaran: db.pengeluaran,
+  cementFromShip: db.cement_from_ship, namaKapal: db.nama_kapal,
+  catatan: db.catatan, createdAt: db.created_at, updatedAt: db.updated_at,
+});
+
+const mapDischargeOp = (db: DbDischargeOperation): DischargeOperation => ({
+  id: db.id, tanggal: db.tanggal, mulaiPembongkaran: db.mulai_pembongkaran,
+  rateBongkarMin: db.rate_bongkar_min, rateBongkarMax: db.rate_bongkar_max,
+  sisaMuatan: db.sisa_muatan, estimasiWaktuMin: db.estimasi_waktu_min,
+  estimasiWaktuMax: db.estimasi_waktu_max, estimasiSelesaiMin: db.estimasi_selesai_min,
+  estimasiSelesaiMax: db.estimasi_selesai_max, cargoDischargePCC: db.cargo_discharge_pcc,
+  totalCargoDischargePCC: db.total_cargo_discharge_pcc, balanceCargoPCC: db.balance_cargo_pcc,
+  totalCargoBalance: db.total_cargo_balance, pengeluaranTruck: db.pengeluaran_truck,
+  pengeluaranCurah: db.pengeluaran_curah, dischargeStartedSiloA: db.discharge_started_silo_a,
+  dischargeStartedSiloB: db.discharge_started_silo_b, kekosonganSiloA: db.kekosongan_silo_a,
+  kekosonganSiloB: db.kekosongan_silo_b, namaKapal: db.nama_kapal, catatan: db.catatan,
+  createdAt: db.created_at, updatedAt: db.updated_at,
+});
+
+const mapGrease = (db: DbPispotGrease): PispotGrease => ({
+  id: db.id, tanggal: db.tanggal, packer: db.packer, jenisGrease: db.jenis_grease,
+  jumlah: db.jumlah, satuan: db.satuan, intervalJam: db.interval_jam,
+  jamPelumasan: db.jam_pelumasan, teknisi: db.teknisi, catatan: db.catatan,
+  createdAt: db.created_at, updatedAt: db.updated_at,
+});
+
+// ── Chart fallback data (used when DB returns empty) ──
+const PRODUCTION_DATA_FALLBACK = [
   { bulan: 'Jan', zak: 4200, curah: 1800 },
   { bulan: 'Feb', zak: 3800, curah: 2100 },
   { bulan: 'Mar', zak: 4500, curah: 1700 },
@@ -193,21 +244,6 @@ const PRODUCTION_DATA = [
   { bulan: 'Okt', zak: 4300, curah: 1800 },
   { bulan: 'Nov', zak: 4100, curah: 2100 },
   { bulan: 'Des', zak: 4500, curah: 2400 },
-];
-
-const MAINTENANCE_TREND = [
-  { bulan: 'Jan', preventif: 8, korektif: 3, darurat: 1 },
-  { bulan: 'Feb', preventif: 7, korektif: 5, darurat: 2 },
-  { bulan: 'Mar', preventif: 9, korektif: 2, darurat: 0 },
-  { bulan: 'Apr', preventif: 6, korektif: 4, darurat: 1 },
-  { bulan: 'Mei', preventif: 10, korektif: 3, darurat: 1 },
-  { bulan: 'Jun', preventif: 8, korektif: 2, darurat: 0 },
-];
-
-const STOCK_PIE = [
-  { name: 'Aman', value: 45, color: '#22c55e' },
-  { name: 'Peringatan', value: 15, color: '#eab308' },
-  { name: 'Kritis', value: 8, color: '#ef4444' },
 ];
 
 const CHART_COLORS = {
@@ -326,6 +362,10 @@ export default function Dashboard() {
   const [siloData, setSiloData] = useState<SiloData[]>([]);
   const [opnameRecords, setOpnameRecords] = useState<OpnameRecord[]>([]);
   const [pispotRecords, setPispotRecords] = useState<PispotRecord[]>([]);
+  const [opnameSiloRecords, setOpnameSiloRecords] = useState<OpnameSiloRecord[]>([]);
+  const [dischargeOps, setDischargeOps] = useState<DischargeOperation[]>([]);
+  const [pispotGreaseRecords, setPispotGreaseRecords] = useState<PispotGrease[]>([]);
+  const [productionData, setProductionData] = useState<{bulan:string; zak:number; curah:number}[]>(PRODUCTION_DATA_FALLBACK);
   const [soundEnabled, setSoundEnabled] = useState(true);
 
   // ── Edit states ──
@@ -339,6 +379,16 @@ export default function Dashboard() {
   const [newOpname, setNewOpname] = useState({ tanggal: new Date().toISOString().slice(0, 10), kategori: '', item: '', jumlah: 0, satuan: 'pcs', keterangan: '' });
   const [newPispot, setNewPispot] = useState({ tanggal: new Date().toISOString().slice(0, 10), shift: 'pagi' as PispotRecord['shift'], packer: 'A', nozzle: '', produksiZak: 0, produksiTon: 0, catatan: '' });
 
+  // ── Silo Calculation states ──
+  const [siloCalcInputs, setSiloCalcInputs] = useState({ siloA: [0,0,0,0,0,0,0], siloB: [0,0,0,0,0,0,0], dischargeRate: 286, startTime: '08:00', pengeluaranTruck: 0, pengeluaranCurah: 0 });
+  const [siloCalcResults, setSiloCalcResults] = useState<any>(null);
+
+  // ── Discharge Operation states ──
+  const [newDischarge, setNewDischarge] = useState({ tanggal: new Date().toISOString().slice(0, 10), mulaiPembongkaran: '08:00', rateMin: 250, rateMax: 286, sisaMuatan: 0, cargoPCC: 0, totalCargoPCC: 0, balanceCargoPCC: 0, pengeluaranTruck: 0, pengeluaranCurah: 0, dischargeStartedA: '', dischargeStartedB: '', namaKapal: '', catatan: '' });
+
+  // ── Pispot Grease states ──
+  const [newGrease, setNewGrease] = useState({ tanggal: new Date().toISOString().slice(0, 10), packer: 'A', jenisGrease: 'Lithium EP2', jumlah: 0, satuan: 'kg', intervalJam: 8, jamPelumasan: '07:30', teknisi: '', catatan: '' });
+
   // ── Notification permission ──
   const notifPermissionRef = useRef<NotificationPermission>('default');
 
@@ -350,7 +400,7 @@ export default function Dashboard() {
 
     if (connected) {
       try {
-        const [parts, team, maint, safe, notifs, silos, opnames, pispots] = await Promise.all([
+        const [parts, team, maint, safe, notifs, silos, opnames, pispots, opnameSiloData, dischargeData, greaseData, prodData] = await Promise.all([
           fetchAll<DbSparePart>('spare_parts'),
           fetchAll<DbTeamActivity>('team_activities'),
           fetchAll<DbMaintenanceRecord>('maintenance_records'),
@@ -359,6 +409,10 @@ export default function Dashboard() {
           fetchAll<DbSiloData>('silo_data'),
           fetchAll<DbOpnameRecord>('opname_records'),
           fetchAll<DbPispotRecord>('pispot_records'),
+          fetchAll<DbOpnameSiloRecord>('opname_silo_records'),
+          fetchAll<DbDischargeOperation>('discharge_operations'),
+          fetchAll<DbPispotGrease>('pispot_grease'),
+          getProductionData(new Date().getFullYear()),
         ]);
         setSpareParts(parts.map(mapSparePart));
         setTeamActivity(team.map(mapTeamActivity));
@@ -368,6 +422,10 @@ export default function Dashboard() {
         setSiloData(silos.map(mapSilo));
         setOpnameRecords(opnames.map(mapOpname));
         setPispotRecords(pispots.map(mapPispot));
+        setOpnameSiloRecords(opnameSiloData.map(mapOpnameSilo));
+        setDischargeOps(dischargeData.map(mapDischargeOp));
+        setPispotGreaseRecords(greaseData.map(mapGrease));
+        if (prodData.length > 0) setProductionData(prodData.map(p => ({ bulan: p.bulan, zak: p.zak, curah: p.curah })));
       } catch (err) {
         console.warn('[Dashboard] DB load failed, using localStorage:', err);
         loadLocalData();
@@ -387,6 +445,9 @@ export default function Dashboard() {
     setSiloData(loadLocal<SiloData>('silo'));
     setOpnameRecords(loadLocal<OpnameRecord>('opname'));
     setPispotRecords(loadLocal<PispotRecord>('pispot'));
+    setOpnameSiloRecords(loadLocal<OpnameSiloRecord>('opname-silo'));
+    setDischargeOps(loadLocal<DischargeOperation>('discharge'));
+    setPispotGreaseRecords(loadLocal<PispotGrease>('pispot-grease'));
   };
 
   useEffect(() => {
@@ -497,12 +558,42 @@ export default function Dashboard() {
   // OVERVIEW MODULE
   // ══════════════════════════════════════════════════════════
   const renderOverview = () => {
+    // Compute real stock distribution from spare parts data
+    const stockSafe = spareParts.filter(p => p.stok > p.stokMinimum).length;
+    const stockWarning = spareParts.filter(p => p.stok <= p.stokMinimum && p.stok > p.stokMinimum * 0.5).length;
+    const stockCritical = spareParts.filter(p => p.stok <= p.stokMinimum * 0.5).length;
+    const stockPieData = [
+      { name: 'Aman', value: stockSafe || 1, color: '#22c55e' },
+      { name: 'Peringatan', value: stockWarning, color: '#eab308' },
+      { name: 'Kritis', value: stockCritical, color: '#ef4444' },
+    ];
+
+    // Compute maintenance trend from real data (last 6 months)
+    const maintenanceTrend = (() => {
+      const months = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
+      const now = new Date();
+      const result = [];
+      for (let i = 5; i >= 0; i--) {
+        const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+        const m = months[d.getMonth()];
+        const monthStr = d.toISOString().slice(0, 7);
+        const monthRecords = maintenance.filter(r => r.tanggalMulai?.startsWith(monthStr));
+        result.push({
+          bulan: m,
+          preventif: monthRecords.filter(r => r.jenis === 'preventif').length,
+          korektif: monthRecords.filter(r => r.jenis === 'korektif').length,
+          darurat: monthRecords.filter(r => r.jenis === 'darurat').length,
+        });
+      }
+      return result;
+    })();
+
     const statCards = [
-      { label: 'Total Suku Cadang', value: stats.totalSpareParts, icon: <Package size={20} />, color: 'text-blue-600', bg: 'bg-blue-50', trend: '+3', up: true },
-      { label: 'Stok Rendah', value: stats.lowStockItems, icon: <AlertTriangle size={20} />, color: 'text-yellow-600', bg: 'bg-yellow-50', trend: '+1', up: false },
-      { label: 'Perawatan Aktif', value: stats.activeMaintenance, icon: <Wrench size={20} />, color: 'text-orange-600', bg: 'bg-orange-50', trend: '0', up: true },
-      { label: 'Insiden Terbuka', value: stats.openIncidents, icon: <ShieldCheck size={20} />, color: 'text-red-600', bg: 'bg-red-50', trend: '-1', up: true },
-      { label: 'Notifikasi Baru', value: stats.unreadNotifications, icon: <Bell size={20} />, color: 'text-purple-600', bg: 'bg-purple-50', trend: '+2', up: false },
+      { label: 'Total Suku Cadang', value: stats.totalSpareParts, icon: <Package size={20} />, color: 'text-blue-600', bg: 'bg-blue-50', trend: String(spareParts.length), up: true },
+      { label: 'Stok Rendah', value: stats.lowStockItems, icon: <AlertTriangle size={20} />, color: 'text-yellow-600', bg: 'bg-yellow-50', trend: stats.lowStockItems > 0 ? '!' : '0', up: stats.lowStockItems === 0 },
+      { label: 'Perawatan Aktif', value: stats.activeMaintenance, icon: <Wrench size={20} />, color: 'text-orange-600', bg: 'bg-orange-50', trend: String(stats.activeMaintenance), up: true },
+      { label: 'Insiden Terbuka', value: stats.openIncidents, icon: <ShieldCheck size={20} />, color: 'text-red-600', bg: 'bg-red-50', trend: stats.openIncidents === 0 ? '0' : '!', up: stats.openIncidents === 0 },
+      { label: 'Notifikasi Baru', value: stats.unreadNotifications, icon: <Bell size={20} />, color: 'text-purple-600', bg: 'bg-purple-50', trend: String(stats.unreadNotifications), up: stats.unreadNotifications === 0 },
     ];
 
     const attendanceData = [
@@ -577,7 +668,7 @@ export default function Dashboard() {
             <GlassCardContent>
               <div className="h-64">
                 <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={PRODUCTION_DATA}>
+                  <BarChart data={productionData}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
                     <XAxis dataKey="bulan" tick={{ fill: '#9ca3af', fontSize: 11 }} axisLine={false} />
                     <YAxis tick={{ fill: '#9ca3af', fontSize: 11 }} axisLine={false} />
@@ -637,7 +728,7 @@ export default function Dashboard() {
             <GlassCardContent>
               <div className="h-64">
                 <ResponsiveContainer width="100%" height="100%">
-                  <AreaChart data={PRODUCTION_DATA}>
+                  <AreaChart data={productionData}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
                     <XAxis dataKey="bulan" tick={{ fill: '#9ca3af', fontSize: 11 }} axisLine={false} />
                     <YAxis tick={{ fill: '#9ca3af', fontSize: 11 }} axisLine={false} />
@@ -658,7 +749,7 @@ export default function Dashboard() {
             <GlassCardContent>
               <div className="h-64">
                 <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={MAINTENANCE_TREND}>
+                  <LineChart data={maintenanceTrend}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
                     <XAxis dataKey="bulan" tick={{ fill: '#9ca3af', fontSize: 11 }} axisLine={false} />
                     <YAxis tick={{ fill: '#9ca3af', fontSize: 11 }} axisLine={false} />
@@ -681,15 +772,15 @@ export default function Dashboard() {
               <div className="h-64 flex items-center justify-center">
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
-                    <Pie data={STOCK_PIE} cx="50%" cy="50%" innerRadius={60} outerRadius={90} paddingAngle={3} dataKey="value">
-                      {STOCK_PIE.map((entry, index) => (<Cell key={`cell-${index}`} fill={entry.color} />))}
+                    <Pie data={stockPieData} cx="50%" cy="50%" innerRadius={60} outerRadius={90} paddingAngle={3} dataKey="value">
+                      {stockPieData.map((entry, index) => (<Cell key={`cell-${index}`} fill={entry.color} />))}
                     </Pie>
                     <Tooltip content={<ChartTooltip />} />
                   </PieChart>
                 </ResponsiveContainer>
               </div>
               <div className="flex justify-center gap-6 mt-2">
-                {STOCK_PIE.map(item => (
+                {stockPieData.map(item => (
                   <div key={item.name} className="flex items-center gap-2">
                     <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: item.color }} />
                     <span className="text-gray-500 text-xs">{item.name} ({item.value})</span>
@@ -1324,6 +1415,309 @@ export default function Dashboard() {
   };
 
   // ══════════════════════════════════════════════════════════
+  // SILO CALCULATION MODULE (Kalkulasi Silo)
+  // ══════════════════════════════════════════════════════════
+  const renderSiloCalculation = () => {
+    const handleCalculate = () => {
+      try {
+        const kekosonganA = calculateKekosongan('A', siloCalcInputs.siloA, siloCalcInputs.pengeluaranTruck, siloCalcInputs.pengeluaranCurah, siloCalcInputs.dischargeRate, siloCalcInputs.startTime);
+        const kekosonganB = calculateKekosongan('B', siloCalcInputs.siloB, siloCalcInputs.pengeluaranTruck, siloCalcInputs.pengeluaranCurah, siloCalcInputs.dischargeRate, siloCalcInputs.startTime);
+        const opnameA = calculateOpnameSilo('A', siloCalcInputs.siloA);
+        const opnameB = calculateOpnameSilo('B', siloCalcInputs.siloB);
+        setSiloCalcResults({ kekosonganA, kekosonganB, opnameA, opnameB });
+      } catch (err: any) {
+        alert('Error: ' + err.message);
+      }
+    };
+
+    const inputNumCls = 'w-full px-3 py-2 rounded-lg bg-white border border-gray-200 text-[#212121] text-sm focus:outline-none focus:border-red-400 text-center';
+
+    return (
+      <div className="p-6 space-y-6">
+        <div><h1 className="text-2xl font-bold text-[#212121]">Kalkulasi Silo</h1><p className="text-gray-400 text-sm">Kalkulasi kekosongan silo dan estimasi pembongkaran berdasarkan pengukuran 7 titik</p></div>
+
+        {/* Constants Reference */}
+        <GlassCard>
+          <GlassCardHeader><h2 className="text-[#212121] font-semibold text-sm">Konstanta Silo</h2><Database size={16} className="text-gray-400" /></GlassCardHeader>
+          <GlassCardContent>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-xs">
+              <div className="p-3 rounded-lg bg-gray-50"><p className="text-gray-400">Luas Penampang Silinder</p><p className="text-[#212121] font-bold">{SILO_CONSTANTS.CYLINDER_CROSS_SECTION} m²</p></div>
+              <div className="p-3 rounded-lg bg-gray-50"><p className="text-gray-400">Faktor Volume Conis</p><p className="text-[#212121] font-bold">{SILO_CONSTANTS.CONIS_VOLUME_FACTOR} m³/m</p></div>
+              <div className="p-3 rounded-lg bg-gray-50"><p className="text-gray-400">Tinggi Conis A / B</p><p className="text-[#212121] font-bold">{SILO_CONSTANTS.SILO_A_CONIS_HEIGHT}m / {SILO_CONSTANTS.SILO_B_CONIS_HEIGHT}m</p></div>
+              <div className="p-3 rounded-lg bg-gray-50"><p className="text-gray-400">Batas Tinggi Silinder</p><p className="text-[#212121] font-bold">{SILO_CONSTANTS.CYLINDER_HEIGHT_LIMIT} m</p></div>
+            </div>
+          </GlassCardContent>
+        </GlassCard>
+
+        {/* Measurement Inputs */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <GlassCard>
+            <GlassCardHeader><h2 className="text-[#212121] font-semibold text-sm">Silo A — 7 Titik Ukur</h2></GlassCardHeader>
+            <GlassCardContent>
+              <div className="grid grid-cols-7 gap-2">
+                {siloCalcInputs.siloA.map((h, i) => (
+                  <div key={i}>
+                    <label className="text-gray-400 text-[10px] text-center block">H{i+1}</label>
+                    <input type="number" step="0.01" value={h || ''} onChange={e => {
+                      const arr = [...siloCalcInputs.siloA]; arr[i] = +e.target.value;
+                      setSiloCalcInputs(p => ({ ...p, siloA: arr }));
+                    }} className={inputNumCls} placeholder="0" />
+                  </div>
+                ))}
+              </div>
+            </GlassCardContent>
+          </GlassCard>
+          <GlassCard>
+            <GlassCardHeader><h2 className="text-[#212121] font-semibold text-sm">Silo B — 7 Titik Ukur</h2></GlassCardHeader>
+            <GlassCardContent>
+              <div className="grid grid-cols-7 gap-2">
+                {siloCalcInputs.siloB.map((h, i) => (
+                  <div key={i}>
+                    <label className="text-gray-400 text-[10px] text-center block">H{i+1}</label>
+                    <input type="number" step="0.01" value={h || ''} onChange={e => {
+                      const arr = [...siloCalcInputs.siloB]; arr[i] = +e.target.value;
+                      setSiloCalcInputs(p => ({ ...p, siloB: arr }));
+                    }} className={inputNumCls} placeholder="0" />
+                  </div>
+                ))}
+              </div>
+            </GlassCardContent>
+          </GlassCard>
+        </div>
+
+        {/* Discharge Parameters */}
+        <GlassCard>
+          <GlassCardHeader><h2 className="text-[#212121] font-semibold text-sm">Parameter Pembongkaran</h2></GlassCardHeader>
+          <GlassCardContent>
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+              <div><label className={labelCls}>Rate Discharge (MT/jam)</label><input type="number" value={siloCalcInputs.dischargeRate} onChange={e => setSiloCalcInputs(p => ({ ...p, dischargeRate: +e.target.value }))} className={inputCls} /></div>
+              <div><label className={labelCls}>Mulai Bongkar</label><input type="time" value={siloCalcInputs.startTime} onChange={e => setSiloCalcInputs(p => ({ ...p, startTime: e.target.value }))} className={inputCls} /></div>
+              <div><label className={labelCls}>Pengeluaran Truck (MT)</label><input type="number" step="0.1" value={siloCalcInputs.pengeluaranTruck || ''} onChange={e => setSiloCalcInputs(p => ({ ...p, pengeluaranTruck: +e.target.value }))} className={inputCls} /></div>
+              <div><label className={labelCls}>Pengeluaran Curah (MT)</label><input type="number" step="0.1" value={siloCalcInputs.pengeluaranCurah || ''} onChange={e => setSiloCalcInputs(p => ({ ...p, pengeluaranCurah: +e.target.value }))} className={inputCls} /></div>
+              <div className="flex items-end"><button onClick={handleCalculate} className={btnPrimaryCls + ' w-full'}><Calculator size={14} className="mr-1" /> Hitung</button></div>
+            </div>
+          </GlassCardContent>
+        </GlassCard>
+
+        {/* Results */}
+        {siloCalcResults && (
+          <div className="space-y-6">
+            <h2 className="text-lg font-bold text-[#212121] flex items-center gap-2"><BarChart3 size={20} className="text-red-600" /> Hasil Perhitungan</h2>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <GlassCard variant="accent">
+                <GlassCardHeader><h2 className="text-[#212121] font-semibold text-sm">Opname Silo A</h2></GlassCardHeader>
+                <GlassCardContent>
+                  <div className="space-y-2 text-sm">
+                    <div className="flex justify-between"><span className="text-gray-500">Tinggi Rata-rata</span><span className="text-[#212121] font-medium">{siloCalcResults.opnameA.avgHeight} m</span></div>
+                    <div className="flex justify-between"><span className="text-gray-500">t Silinder Kosong</span><span className="text-[#212121] font-medium">{siloCalcResults.opnameA.tCylinderEmpty} m</span></div>
+                    <div className="flex justify-between"><span className="text-gray-500">t Conis Kosong</span><span className="text-[#212121] font-medium">{siloCalcResults.opnameA.tConisEmpty} m</span></div>
+                    <div className="flex justify-between"><span className="text-gray-500">Volume Silinder Kosong</span><span className="text-[#212121] font-medium">{formatMT(siloCalcResults.opnameA.volumeCylinderEmpty)}</span></div>
+                    <div className="flex justify-between"><span className="text-gray-500">Volume Conis Kosong</span><span className="text-[#212121] font-medium">{formatMT(siloCalcResults.opnameA.volumeConisEmpty)}</span></div>
+                    <div className="flex justify-between border-t pt-2"><span className="text-[#212121] font-semibold">Total Kekosongan</span><span className="text-red-600 font-bold">{formatMT(siloCalcResults.opnameA.totalEmptyVolume)}</span></div>
+                  </div>
+                </GlassCardContent>
+              </GlassCard>
+              <GlassCard variant="accent">
+                <GlassCardHeader><h2 className="text-[#212121] font-semibold text-sm">Opname Silo B</h2></GlassCardHeader>
+                <GlassCardContent>
+                  <div className="space-y-2 text-sm">
+                    <div className="flex justify-between"><span className="text-gray-500">Tinggi Rata-rata</span><span className="text-[#212121] font-medium">{siloCalcResults.opnameB.avgHeight} m</span></div>
+                    <div className="flex justify-between"><span className="text-gray-500">t Silinder Kosong</span><span className="text-[#212121] font-medium">{siloCalcResults.opnameB.tCylinderEmpty} m</span></div>
+                    <div className="flex justify-between"><span className="text-gray-500">t Conis Kosong</span><span className="text-[#212121] font-medium">{siloCalcResults.opnameB.tConisEmpty} m</span></div>
+                    <div className="flex justify-between"><span className="text-gray-500">Volume Silinder Kosong</span><span className="text-[#212121] font-medium">{formatMT(siloCalcResults.opnameB.volumeCylinderEmpty)}</span></div>
+                    <div className="flex justify-between"><span className="text-gray-500">Volume Conis Kosong</span><span className="text-[#212121] font-medium">{formatMT(siloCalcResults.opnameB.volumeConisEmpty)}</span></div>
+                    <div className="flex justify-between border-t pt-2"><span className="text-[#212121] font-semibold">Total Kekosongan</span><span className="text-red-600 font-bold">{formatMT(siloCalcResults.opnameB.totalEmptyVolume)}</span></div>
+                  </div>
+                </GlassCardContent>
+              </GlassCard>
+            </div>
+            <GlassCard>
+              <GlassCardHeader><h2 className="text-[#212121] font-semibold text-sm">Estimasi Waktu Pembongkaran</h2></GlassCardHeader>
+              <GlassCardContent>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {['A', 'B'].map(silo => {
+                    const k = silo === 'A' ? siloCalcResults.kekosonganA : siloCalcResults.kekosonganB;
+                    return (
+                      <div key={silo} className="p-4 rounded-xl bg-gray-50">
+                        <h3 className="text-[#212121] font-semibold text-sm mb-3">Silo {silo}</h3>
+                        <div className="space-y-2 text-sm">
+                          <div className="flex justify-between"><span className="text-gray-500">Rata-rata</span><span>{k.avgHeight} m</span></div>
+                          <div className="flex justify-between"><span className="text-gray-500">Kekosongan (-2.5m)</span><span>{formatMT(k.volume2_5)}</span></div>
+                          <div className="flex justify-between"><span className="text-gray-500">Kekosongan (-2.0m)</span><span>{formatMT(k.volume2_0)}</span></div>
+                          <div className="flex justify-between"><span className="text-gray-500">Space Silo (-2.5m)</span><span className="font-medium">{formatMT(k.spaceSilo2_5)}</span></div>
+                          <div className="flex justify-between"><span className="text-gray-500">Space Silo (-2.0m)</span><span className="font-medium">{formatMT(k.spaceSilo2_0)}</span></div>
+                          <div className="flex justify-between border-t pt-2"><span className="text-gray-500">Waktu Isi (-2.5m)</span><span className="text-blue-600 font-medium">{formatHours(k.hoursToFill2_5)}</span></div>
+                          <div className="flex justify-between"><span className="text-gray-500">Waktu Isi (-2.0m)</span><span className="text-blue-600 font-medium">{formatHours(k.hoursToFill2_0)}</span></div>
+                          <div className="flex justify-between"><span className="text-gray-500">Est. Selesai (-2.5m)</span><span className="text-emerald-600 font-bold">{k.estimatedComplete2_5} WIB</span></div>
+                          <div className="flex justify-between"><span className="text-gray-500">Est. Selesai (-2.0m)</span><span className="text-emerald-600 font-bold">{k.estimatedComplete2_0} WIB</span></div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </GlassCardContent>
+            </GlassCard>
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  // ══════════════════════════════════════════════════════════
+  // DISCHARGE MODULE (Pembongkaran)
+  // ══════════════════════════════════════════════════════════
+  const renderDischarge = () => {
+    const handleSave = async () => {
+      const op = calculateDischargeOperation(newDischarge.mulaiPembongkaran, newDischarge.sisaMuatan, newDischarge.rateMin, newDischarge.rateMax);
+      const data = {
+        tanggal: newDischarge.tanggal, mulai_pembongkaran: newDischarge.mulaiPembongkaran,
+        rate_bongkar_min: newDischarge.rateMin, rate_bongkar_max: newDischarge.rateMax,
+        sisa_muatan: newDischarge.sisaMuatan, estimasi_waktu_min: op.estimatedTimeMin,
+        estimasi_waktu_max: op.estimatedTimeMax, estimasi_selesai_min: op.estimatedCompleteMin,
+        estimasi_selesai_max: op.estimatedCompleteMax, cargo_discharge_pcc: newDischarge.cargoPCC,
+        total_cargo_discharge_pcc: newDischarge.totalCargoPCC, balance_cargo_pcc: newDischarge.balanceCargoPCC,
+        total_cargo_balance: newDischarge.totalCargoPCC + newDischarge.balanceCargoPCC,
+        pengeluaran_truck: newDischarge.pengeluaranTruck, pengeluaran_curah: newDischarge.pengeluaranCurah,
+        discharge_started_silo_a: newDischarge.dischargeStartedA, discharge_started_silo_b: newDischarge.dischargeStartedB,
+        nama_kapal: newDischarge.namaKapal, catatan: newDischarge.catatan,
+      };
+      const result = await dbInsert('discharge_operations', data);
+      const newItem: DischargeOperation = { id: result?.id || genId(), tanggal: newDischarge.tanggal, mulaiPembongkaran: newDischarge.mulaiPembongkaran, rateBongkarMin: newDischarge.rateMin, rateBongkarMax: newDischarge.rateMax, sisaMuatan: newDischarge.sisaMuatan, estimasiWaktuMin: op.estimatedTimeMin, estimasiWaktuMax: op.estimatedTimeMax, estimasiSelesaiMin: op.estimatedCompleteMin, estimasiSelesaiMax: op.estimatedCompleteMax, cargoDischargePCC: newDischarge.cargoPCC, totalCargoDischargePCC: newDischarge.totalCargoPCC, balanceCargoPCC: newDischarge.balanceCargoPCC, totalCargoBalance: newDischarge.totalCargoPCC + newDischarge.balanceCargoPCC, pengeluaranTruck: newDischarge.pengeluaranTruck, pengeluaranCurah: newDischarge.pengeluaranCurah, dischargeStartedSiloA: newDischarge.dischargeStartedA, dischargeStartedSiloB: newDischarge.dischargeStartedB, kekosonganSiloA: {}, kekosonganSiloB: {}, namaKapal: newDischarge.namaKapal, catatan: newDischarge.catatan, createdAt: nowISO(), updatedAt: nowISO() };
+      setDischargeOps(prev => [newItem, ...prev]);
+      saveLocal('discharge', [newItem, ...dischargeOps]);
+      sendBrowserNotification('Operasi Pembongkaran', `Data pembongkaran berhasil disimpan — ${formatMT(newDischarge.sisaMuatan)} sisa muatan`);
+      setNewDischarge({ tanggal: new Date().toISOString().slice(0, 10), mulaiPembongkaran: '08:00', rateMin: 250, rateMax: 286, sisaMuatan: 0, cargoPCC: 0, totalCargoPCC: 0, balanceCargoPCC: 0, pengeluaranTruck: 0, pengeluaranCurah: 0, dischargeStartedA: '', dischargeStartedB: '', namaKapal: '', catatan: '' });
+      setShowAddForm(false);
+    };
+
+    return (
+      <div className="p-6 space-y-6">
+        <div className="flex items-center justify-between flex-wrap gap-3">
+          <div><h1 className="text-2xl font-bold text-[#212121]">Pembongkaran</h1><p className="text-gray-400 text-sm">Operasi pembongkaran semen dari kapal</p></div>
+          <button onClick={() => setShowAddForm(!showAddForm)} className={btnSecondaryCls}><Plus size={16} /> Input Operasi</button>
+        </div>
+        {showAddForm && (
+          <GlassCard>
+            <GlassCardHeader><h2 className="text-[#212121] font-semibold text-sm">Operasi Pembongkaran Baru</h2></GlassCardHeader>
+            <GlassCardContent>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div><label className={labelCls}>Tanggal</label><input type="date" value={newDischarge.tanggal} onChange={e => setNewDischarge(p => ({ ...p, tanggal: e.target.value }))} className={inputCls} /></div>
+                <div><label className={labelCls}>Nama Kapal</label><input value={newDischarge.namaKapal} onChange={e => setNewDischarge(p => ({ ...p, namaKapal: e.target.value }))} className={inputCls} placeholder="MV ..." /></div>
+                <div><label className={labelCls}>Mulai Bongkar</label><input type="time" value={newDischarge.mulaiPembongkaran} onChange={e => setNewDischarge(p => ({ ...p, mulaiPembongkaran: e.target.value }))} className={inputCls} /></div>
+                <div><label className={labelCls}>Rate Min (MT/jam)</label><input type="number" value={newDischarge.rateMin} onChange={e => setNewDischarge(p => ({ ...p, rateMin: +e.target.value }))} className={inputCls} /></div>
+                <div><label className={labelCls}>Rate Max (MT/jam)</label><input type="number" value={newDischarge.rateMax} onChange={e => setNewDischarge(p => ({ ...p, rateMax: +e.target.value }))} className={inputCls} /></div>
+                <div><label className={labelCls}>Sisa Muatan (MT)</label><input type="number" step="0.01" value={newDischarge.sisaMuatan || ''} onChange={e => setNewDischarge(p => ({ ...p, sisaMuatan: +e.target.value }))} className={inputCls} /></div>
+                <div><label className={labelCls}>Cargo Discharge PCC (MT)</label><input type="number" step="0.01" value={newDischarge.cargoPCC || ''} onChange={e => setNewDischarge(p => ({ ...p, cargoPCC: +e.target.value }))} className={inputCls} /></div>
+                <div><label className={labelCls}>Total Cargo PCC (MT)</label><input type="number" step="0.01" value={newDischarge.totalCargoPCC || ''} onChange={e => setNewDischarge(p => ({ ...p, totalCargoPCC: +e.target.value }))} className={inputCls} /></div>
+                <div><label className={labelCls}>Balance Cargo PCC (MT)</label><input type="number" step="0.01" value={newDischarge.balanceCargoPCC || ''} onChange={e => setNewDischarge(p => ({ ...p, balanceCargoPCC: +e.target.value }))} className={inputCls} /></div>
+                <div><label className={labelCls}>Pengeluaran Truck (MT)</label><input type="number" step="0.01" value={newDischarge.pengeluaranTruck || ''} onChange={e => setNewDischarge(p => ({ ...p, pengeluaranTruck: +e.target.value }))} className={inputCls} /></div>
+                <div><label className={labelCls}>Pengeluaran Curah (MT)</label><input type="number" step="0.01" value={newDischarge.pengeluaranCurah || ''} onChange={e => setNewDischarge(p => ({ ...p, pengeluaranCurah: +e.target.value }))} className={inputCls} /></div>
+                <div className="md:col-span-3"><label className={labelCls}>Catatan</label><input value={newDischarge.catatan} onChange={e => setNewDischarge(p => ({ ...p, catatan: e.target.value }))} className={inputCls} /></div>
+              </div>
+              <div className="flex gap-2 mt-4">
+                <button onClick={handleSave} className={btnPrimaryCls}><Save size={14} className="mr-1" /> Simpan</button>
+                <button onClick={() => setShowAddForm(false)} className="px-4 py-2 rounded-xl bg-gray-100 text-gray-600 hover:bg-gray-200 text-sm">Batal</button>
+              </div>
+            </GlassCardContent>
+          </GlassCard>
+        )}
+        <div className="space-y-3">
+          {dischargeOps.map(op => (
+            <GlassCard key={op.id} className="p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <div className="flex items-center gap-2 mb-1">
+                    <Ship size={14} className="text-red-600" />
+                    <h3 className="text-[#212121] font-semibold text-sm">{op.namaKapal || 'Kapal'}</h3>
+                    <span className="text-xs px-2 py-0.5 rounded-full bg-blue-100 text-blue-600">{op.tanggal}</span>
+                  </div>
+                  <div className="flex gap-3 text-xs text-gray-400">
+                    <span>Mulai: {op.mulaiPembongkaran} WIB</span>
+                    <span>Sisa: {formatMT(op.sisaMuatan)}</span>
+                    <span>Est. Selesai: {op.estimasiSelesaiMin} - {op.estimasiSelesaiMax} WIB</span>
+                  </div>
+                </div>
+                <button onClick={async () => { await dbRemove('discharge_operations', op.id); setDischargeOps(prev => prev.filter(d => d.id !== op.id)); }} className="p-1.5 rounded-lg hover:bg-red-50 text-gray-400 hover:text-red-600"><Trash2 size={14} /></button>
+              </div>
+            </GlassCard>
+          ))}
+          {dischargeOps.length === 0 && <p className="text-gray-400 text-sm text-center py-8">Belum ada data pembongkaran</p>}
+        </div>
+      </div>
+    );
+  };
+
+  // ══════════════════════════════════════════════════════════
+  // PISPOT GREASE MODULE (Pelumasan Grease)
+  // ══════════════════════════════════════════════════════════
+  const renderPispotGrease = () => {
+    const handleSave = async () => {
+      if (!newGrease.teknisi) return;
+      const data = {
+        tanggal: newGrease.tanggal, packer: newGrease.packer, jenis_grease: newGrease.jenisGrease,
+        jumlah: newGrease.jumlah, satuan: newGrease.satuan, interval_jam: newGrease.intervalJam,
+        jam_pelumasan: newGrease.jamPelumasan, teknisi: newGrease.teknisi, catatan: newGrease.catatan,
+      };
+      const result = await dbInsert('pispot_grease', data);
+      const newItem: PispotGrease = { id: result?.id || genId(), ...newGrease, createdAt: nowISO(), updatedAt: nowISO() };
+      setPispotGreaseRecords(prev => [newItem, ...prev]);
+      saveLocal('pispot-grease', [newItem, ...pispotGreaseRecords]);
+      sendBrowserNotification('Pelumasan Grease', `Packer ${newGrease.packer} — ${newGrease.jenisGrease} ${newGrease.jumlah}${newGrease.satuan}`);
+      setNewGrease({ tanggal: new Date().toISOString().slice(0, 10), packer: 'A', jenisGrease: 'Lithium EP2', jumlah: 0, satuan: 'kg', intervalJam: 8, jamPelumasan: '07:30', teknisi: '', catatan: '' });
+      setShowAddForm(false);
+    };
+
+    return (
+      <div className="p-6 space-y-6">
+        <div className="flex items-center justify-between flex-wrap gap-3">
+          <div><h1 className="text-2xl font-bold text-[#212121]">Pelumasan Grease</h1><p className="text-gray-400 text-sm">Pencatatan pelumasan packer dan peralatan</p></div>
+          <button onClick={() => setShowAddForm(!showAddForm)} className={btnSecondaryCls}><Plus size={16} /> Input Pelumasan</button>
+        </div>
+        {showAddForm && (
+          <GlassCard>
+            <GlassCardHeader><h2 className="text-[#212121] font-semibold text-sm">Pelumasan Baru</h2></GlassCardHeader>
+            <GlassCardContent>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div><label className={labelCls}>Tanggal</label><input type="date" value={newGrease.tanggal} onChange={e => setNewGrease(p => ({ ...p, tanggal: e.target.value }))} className={inputCls} /></div>
+                <div><label className={labelCls}>Packer</label><select value={newGrease.packer} onChange={e => setNewGrease(p => ({ ...p, packer: e.target.value }))} className={inputCls}><option value="A">Packer A</option><option value="B">Packer B</option></select></div>
+                <div><label className={labelCls}>Jenis Grease</label><input value={newGrease.jenisGrease} onChange={e => setNewGrease(p => ({ ...p, jenisGrease: e.target.value }))} className={inputCls} /></div>
+                <div><label className={labelCls}>Jumlah</label><input type="number" step="0.1" value={newGrease.jumlah || ''} onChange={e => setNewGrease(p => ({ ...p, jumlah: +e.target.value }))} className={inputCls} /></div>
+                <div><label className={labelCls}>Satuan</label><select value={newGrease.satuan} onChange={e => setNewGrease(p => ({ ...p, satuan: e.target.value }))} className={inputCls}><option value="kg">kg</option><option value="liter">liter</option></select></div>
+                <div><label className={labelCls}>Interval (jam)</label><input type="number" value={newGrease.intervalJam} onChange={e => setNewGrease(p => ({ ...p, intervalJam: +e.target.value }))} className={inputCls} /></div>
+                <div><label className={labelCls}>Jam Pelumasan</label><input type="time" value={newGrease.jamPelumasan} onChange={e => setNewGrease(p => ({ ...p, jamPelumasan: e.target.value }))} className={inputCls} /></div>
+                <div><label className={labelCls}>Teknisi *</label><input value={newGrease.teknisi} onChange={e => setNewGrease(p => ({ ...p, teknisi: e.target.value }))} className={inputCls} placeholder="Nama teknisi" /></div>
+                <div className="md:col-span-2"><label className={labelCls}>Catatan</label><input value={newGrease.catatan} onChange={e => setNewGrease(p => ({ ...p, catatan: e.target.value }))} className={inputCls} /></div>
+              </div>
+              <div className="flex gap-2 mt-4">
+                <button onClick={handleSave} className={btnPrimaryCls}><Save size={14} className="mr-1" /> Simpan</button>
+                <button onClick={() => setShowAddForm(false)} className="px-4 py-2 rounded-xl bg-gray-100 text-gray-600 hover:bg-gray-200 text-sm">Batal</button>
+              </div>
+            </GlassCardContent>
+          </GlassCard>
+        )}
+        <div className="space-y-3">
+          {pispotGreaseRecords.map(g => (
+            <GlassCard key={g.id} className="p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <div className="flex items-center gap-2 mb-1">
+                    <Droplets size={14} className="text-amber-600" />
+                    <h3 className="text-[#212121] font-semibold text-sm">Packer {g.packer} — {g.jenisGrease}</h3>
+                    <span className="text-xs px-2 py-0.5 rounded-full bg-amber-100 text-amber-600">{g.jumlah}{g.satuan}</span>
+                  </div>
+                  <div className="flex gap-3 text-xs text-gray-400"><span>{g.tanggal}</span><span>{g.jamPelumasan} WIB</span><span>Interval: {g.intervalJam} jam</span><span>Teknisi: {g.teknisi}</span></div>
+                </div>
+                <button onClick={async () => { await dbRemove('pispot_grease', g.id); setPispotGreaseRecords(prev => prev.filter(r => r.id !== g.id)); }} className="p-1.5 rounded-lg hover:bg-red-50 text-gray-400 hover:text-red-600"><Trash2 size={14} /></button>
+              </div>
+            </GlassCard>
+          ))}
+          {pispotGreaseRecords.length === 0 && <p className="text-gray-400 text-sm text-center py-8">Belum ada data pelumasan grease</p>}
+        </div>
+      </div>
+    );
+  };
+
+  // ══════════════════════════════════════════════════════════
   // MODULE ROUTER
   // ══════════════════════════════════════════════════════════
   const renderModule = () => {
@@ -1335,6 +1729,9 @@ export default function Dashboard() {
       case 'safety': return renderSafety();
       case 'opname': return renderOpname();
       case 'pispot': return renderPispot();
+      case 'silo-calculation': return renderSiloCalculation();
+      case 'discharge': return renderDischarge();
+      case 'pispot-grease': return renderPispotGrease();
       case 'documents': return renderDocuments();
       case 'notifications': return renderNotifications();
       default: return renderOverview();

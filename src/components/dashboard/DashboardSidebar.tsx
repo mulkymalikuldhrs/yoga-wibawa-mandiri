@@ -1,7 +1,7 @@
 // ============================================================
 // DashboardSidebar — White frosted glass navigation sidebar
 // YWM Red accent theme matching website
-// Includes Opname & Pispot modules
+// Includes all modules: Opname, Pispot, Silo Calc, Discharge, Grease
 // ============================================================
 
 import React from 'react';
@@ -20,6 +20,9 @@ import {
   ExternalLink,
   ClipboardCheck,
   Factory,
+  Calculator,
+  Ship,
+  Droplets,
 } from 'lucide-react';
 
 const MODULES: { id: DashboardModule; label: string; icon: React.ReactNode }[] = [
@@ -30,6 +33,9 @@ const MODULES: { id: DashboardModule; label: string; icon: React.ReactNode }[] =
   { id: 'safety', label: 'Keselamatan (HSE)', icon: <ShieldCheck size={20} /> },
   { id: 'opname', label: 'Stok Opname', icon: <ClipboardCheck size={20} /> },
   { id: 'pispot', label: 'Produksi Packer', icon: <Factory size={20} /> },
+  { id: 'silo-calculation', label: 'Kalkulasi Silo', icon: <Calculator size={20} /> },
+  { id: 'discharge', label: 'Pembongkaran', icon: <Ship size={20} /> },
+  { id: 'pispot-grease', label: 'Pelumasan Grease', icon: <Droplets size={20} /> },
   { id: 'documents', label: 'Dokumen & OCR', icon: <FileText size={20} /> },
   { id: 'notifications', label: 'Notifikasi', icon: <Bell size={20} /> },
 ];

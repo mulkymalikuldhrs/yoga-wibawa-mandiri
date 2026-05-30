@@ -5,9 +5,9 @@
 
 import { createClient } from '@supabase/supabase-js';
 
-const SUPABASE_URL = 'https://aymvpyehihbgmllcgilq.supabase.co';
-const SUPABASE_ANON_KEY = 'REDACTED_ANON_KEY';
-const SUPABASE_SERVICE_KEY = 'REDACTED_SERVICE_KEY';
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || 'https://aymvpyehihbgmllcgilq.supabase.co';
+const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
+const SUPABASE_SERVICE_KEY = import.meta.env.VITE_SUPABASE_SERVICE_KEY || '';
 
 // Public client (anon key - for frontend use, respects RLS)
 export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
@@ -43,7 +43,10 @@ export const TABLES = {
   NOTIFICATIONS: 'notifications',
   SILO_DATA: 'silo_data',
   OPNAME_RECORDS: 'opname_records',
+  OPNAME_SILO_RECORDS: 'opname_silo_records',
   PISPOT_RECORDS: 'pispot_records',
+  PISPOT_GREASE: 'pispot_grease',
+  DISCHARGE_OPERATIONS: 'discharge_operations',
   CHAT_MESSAGES: 'chat_messages',
   PRODUCTION_DATA: 'production_data',
 } as const;

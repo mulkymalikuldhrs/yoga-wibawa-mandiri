@@ -82,23 +82,19 @@ const Contact = () => {
     setIsSubmitting(true);
 
     try {
-      // Show loading toast
       toast({
         title: "Mengirim Pesan...",
         description: "Mohon tunggu, pesan Anda sedang dikirim.",
       });
 
-      // Try to send email
       const emailSent = await sendContactEmail(formData);
 
       if (emailSent) {
-        // Success
         toast({
           title: "✅ Pesan Berhasil Terkirim!",
           description: "Terima kasih atas pesan Anda. Tim kami akan menghubungi Anda dalam 24 jam.",
         });
 
-        // Reset form
         setFormData({
           name: '',
           email: '',
@@ -108,14 +104,11 @@ const Contact = () => {
           message: ''
         });
       } else {
-        // Fallback: Show success message even if email service fails
-        // In production, you might want to store the message in a database
         toast({
           title: "📧 Pesan Diterima!",
           description: "Pesan Anda telah diterima. Kami akan segera menghubungi Anda kembali.",
         });
 
-        // Reset form
         setFormData({
           name: '',
           email: '',
@@ -125,7 +118,6 @@ const Contact = () => {
           message: ''
         });
 
-        // Form data logged server-side only (no PII in console)
         if (import.meta.env.DEV) {
           console.info('[Contact] Form submitted successfully at', new Date().toISOString());
         }
@@ -135,7 +127,7 @@ const Contact = () => {
       
       toast({
         title: "❌ Gagal Mengirim",
-        description: "Terjadi kesalahan. Silakan coba lagi atau hubungi kami langsung.",
+        description: "Terjadi kesalahan. Silakan coba lagi atau hubungi kami langsung via WhatsApp.",
         variant: "destructive"
       });
     } finally {
@@ -146,18 +138,52 @@ const Contact = () => {
   return (
     <Layout>
       {/* Hero Section */}
-      <section className="py-20 bg-gradient-to-r from-ywm-red to-red-700 text-white">
-        <div className="container mx-auto px-4 text-center">
+      <section className="py-20 bg-gradient-to-r from-ywm-red to-red-700 text-white relative overflow-hidden">
+        <div className="absolute inset-0 bg-[url('/images/hero-factory.png')] bg-cover bg-center opacity-10"></div>
+        <div className="container mx-auto px-4 text-center relative z-10">
           <h1 className="text-5xl font-bold mb-6 animate-fade-in">Hubungi Kami</h1>
-          <p className="text-xl max-w-3xl mx-auto animate-fade-in">
-            Silakan hubungi kami untuk konsultasi, pemesanan, atau informasi lebih lanjut
+          <p className="text-xl max-w-3xl mx-auto animate-fade-in text-red-50">
+            Silakan hubungi kami untuk konsultasi, pemesanan, atau informasi lebih lanjut tentang produk Semen Padang PCC
           </p>
         </div>
       </section>
 
-      {/* Contact Form & Info */}
-      <section className="py-20 bg-white">
+      {/* Quick WhatsApp Contact */}
+      <section className="py-10 bg-gradient-to-r from-green-50 to-emerald-50 border-b border-green-100">
         <div className="container mx-auto px-4">
+          <div className="flex flex-col md:flex-row gap-6 justify-center items-center">
+            <a
+              href="https://wa.me/6285322624048?text=Halo%2C%20saya%20ingin%20memesan%20Semen%20Padang"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-3 bg-[#25D366] hover:bg-[#1EBE5A] text-white px-6 py-4 rounded-xl font-semibold text-lg transition-all transform hover:scale-105 shadow-lg"
+            >
+              <MessageCircle size={24} />
+              <div className="text-left">
+                <p className="font-bold">Pemesanan Produk</p>
+                <p className="text-green-100 text-sm">+62 853-2262-4048</p>
+              </div>
+            </a>
+            <a
+              href="https://wa.me/6285322624038?text=Halo%2C%20saya%20ingin%20bertanya%20tentang%20produk%20Semen%20Padang"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-3 bg-[#25D366] hover:bg-[#1EBE5A] text-white px-6 py-4 rounded-xl font-semibold text-lg transition-all transform hover:scale-105 shadow-lg"
+            >
+              <Phone size={24} />
+              <div className="text-left">
+                <p className="font-bold">Konsultasi & Informasi</p>
+                <p className="text-green-100 text-sm">+62 853-2262-4038</p>
+              </div>
+            </a>
+          </div>
+        </div>
+      </section>
+
+      {/* Contact Form & Info */}
+      <section className="py-20 bg-gradient-to-b from-gray-50 to-white relative">
+        <div className="absolute inset-0 bg-[url('/images/hero-factory.png')] bg-cover bg-center opacity-[0.03]"></div>
+        <div className="container mx-auto px-4 relative z-10">
           <div className="grid lg:grid-cols-2 gap-12">
             {/* Contact Form */}
             <div className="animate-fade-in">
@@ -183,7 +209,7 @@ const Contact = () => {
                       onChange={handleInputChange}
                       required
                       disabled={isSubmitting}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ywm-red focus:border-ywm-red transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-ywm-red focus:border-ywm-red transition-colors disabled:opacity-50 disabled:cursor-not-allowed bg-white/80 backdrop-blur-sm"
                       placeholder="Masukkan nama lengkap"
                     />
                   </div>
@@ -199,7 +225,7 @@ const Contact = () => {
                       onChange={handleInputChange}
                       required
                       disabled={isSubmitting}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ywm-red focus:border-ywm-red transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-ywm-red focus:border-ywm-red transition-colors disabled:opacity-50 disabled:cursor-not-allowed bg-white/80 backdrop-blur-sm"
                       placeholder="nama@email.com"
                     />
                   </div>
@@ -218,7 +244,7 @@ const Contact = () => {
                       onChange={handleInputChange}
                       required
                       disabled={isSubmitting}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ywm-red focus:border-ywm-red transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-ywm-red focus:border-ywm-red transition-colors disabled:opacity-50 disabled:cursor-not-allowed bg-white/80 backdrop-blur-sm"
                       placeholder="+62 xxx xxxx xxxx"
                     />
                   </div>
@@ -233,7 +259,7 @@ const Contact = () => {
                       value={formData.company}
                       onChange={handleInputChange}
                       disabled={isSubmitting}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ywm-red focus:border-ywm-red transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-ywm-red focus:border-ywm-red transition-colors disabled:opacity-50 disabled:cursor-not-allowed bg-white/80 backdrop-blur-sm"
                       placeholder="Nama perusahaan (opsional)"
                     />
                   </div>
@@ -250,10 +276,11 @@ const Contact = () => {
                     onChange={handleInputChange}
                     required
                     disabled={isSubmitting}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ywm-red focus:border-ywm-red transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-ywm-red focus:border-ywm-red transition-colors disabled:opacity-50 disabled:cursor-not-allowed bg-white/80 backdrop-blur-sm"
                   >
                     <option value="">Pilih subjek pesan</option>
-                    <option value="Pemesanan Semen">Pemesanan Semen</option>
+                    <option value="Pemesanan Semen Zak 40kg">Pemesanan Semen Zak 40kg</option>
+                    <option value="Pemesanan Semen Curah">Pemesanan Semen Curah</option>
                     <option value="Konsultasi Teknis">Konsultasi Teknis</option>
                     <option value="Kemitraan Bisnis">Kemitraan Bisnis</option>
                     <option value="Informasi Umum">Informasi Umum</option>
@@ -274,7 +301,7 @@ const Contact = () => {
                     required
                     rows={6}
                     disabled={isSubmitting}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ywm-red focus:border-ywm-red transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-ywm-red focus:border-ywm-red transition-colors disabled:opacity-50 disabled:cursor-not-allowed bg-white/80 backdrop-blur-sm"
                     placeholder="Tuliskan pesan atau pertanyaan Anda di sini..."
                     minLength={10}
                   ></textarea>
@@ -286,7 +313,7 @@ const Contact = () => {
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full bg-ywm-red text-white px-6 py-4 rounded-lg font-semibold text-lg hover:bg-red-700 transition-colors flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full bg-ywm-red text-white px-6 py-4 rounded-xl font-semibold text-lg hover:bg-red-700 transition-colors flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
                 >
                   {isSubmitting ? (
                     <>
@@ -302,7 +329,7 @@ const Contact = () => {
                 </button>
 
                 {/* Email destination info */}
-                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <div className="glass-card-gray p-4">
                   <div className="flex items-center space-x-2">
                     <Mail className="text-blue-600" size={16} />
                     <p className="text-sm text-blue-800">
@@ -324,7 +351,7 @@ const Contact = () => {
 
               <div className="space-y-6">
                 {/* Kantor Pusat */}
-                <div className="bg-gray-50 p-6 rounded-lg">
+                <div className="glass-card p-6">
                   <h3 className="text-xl font-semibold text-ywm-dark mb-4">Kantor Pusat</h3>
                   <div className="space-y-3">
                     <div className="flex items-start space-x-3">
@@ -348,7 +375,7 @@ const Contact = () => {
                 </div>
 
                 {/* Pabrik */}
-                <div className="bg-gray-50 p-6 rounded-lg">
+                <div className="glass-card p-6">
                   <h3 className="text-xl font-semibold text-ywm-dark mb-4">Packing Plant</h3>
                   <div className="space-y-3">
                     <div className="flex items-start space-x-3">
@@ -372,28 +399,28 @@ const Contact = () => {
                 </div>
 
                 {/* Jam Operasional */}
-                <div className="bg-ywm-red text-white p-6 rounded-lg">
+                <div className="glass-card-dark text-white p-6">
                   <h3 className="text-xl font-semibold mb-4">Jam Operasional</h3>
                   <div className="space-y-2">
                     <div className="flex items-center space-x-3">
                       <Clock size={20} />
                       <div>
                         <p className="font-medium">Senin - Jumat</p>
-                        <p className="text-gray-200">08:00 - 17:00 WIB</p>
+                        <p className="text-red-200">08:00 - 17:00 WIB</p>
                       </div>
                     </div>
                     <div className="flex items-center space-x-3">
                       <Clock size={20} />
                       <div>
                         <p className="font-medium">Sabtu</p>
-                        <p className="text-gray-200">08:00 - 12:00 WIB</p>
+                        <p className="text-red-200">08:00 - 12:00 WIB</p>
                       </div>
                     </div>
                     <div className="flex items-center space-x-3">
                       <Clock size={20} />
                       <div>
                         <p className="font-medium">Minggu</p>
-                        <p className="text-gray-200">Tutup</p>
+                        <p className="text-red-200">Tutup</p>
                       </div>
                     </div>
                   </div>
@@ -405,7 +432,7 @@ const Contact = () => {
       </section>
 
       {/* Emergency Contact */}
-      <section className="py-16 bg-gray-50">
+      <section className="py-16 bg-white">
         <div className="container mx-auto px-4">
           <div className="text-center">
             <h2 className="text-3xl font-bold text-ywm-dark mb-4">
@@ -433,7 +460,7 @@ const Contact = () => {
                 href="https://wa.me/6285322624038"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center space-x-3 bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-lg transition-colors"
+                className="flex items-center space-x-3 bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-xl transition-colors shadow-lg"
               >
                 <MessageCircle size={24} />
                 <div className="text-left">
