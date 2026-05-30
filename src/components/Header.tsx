@@ -24,7 +24,7 @@ const Header = () => {
       <div className="container mx-auto px-4">
         <div className="flex justify-between items-center py-4">
           {/* Logo PT. YWM — Primary */}
-          <div className="flex items-center">
+          <Link to="/" className="flex items-center">
             <img 
               src="/sp-black.png"
               alt="Semen Padang"

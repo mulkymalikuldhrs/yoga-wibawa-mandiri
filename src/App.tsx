@@ -16,7 +16,6 @@ const Products = lazy(() => import("./pages/Products"));
 const Gallery = lazy(() => import("./pages/Gallery"));
 const Location = lazy(() => import("./pages/Location"));
 const Contact = lazy(() => import("./pages/Contact"));
-const Products = lazy(() => import("./pages/Products"));
 const Dashboard = lazy(() => import("./pages/Dashboard"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
