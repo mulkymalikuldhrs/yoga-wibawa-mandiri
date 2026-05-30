@@ -1,4 +1,5 @@
-import { MessageCircle, X } from 'lucide-react';
+import MessageCircle from 'lucide-react/dist/esm/icons/message-circle';
+import { X } from 'lucide-react';
 import { useState } from 'react';
 
 const WHATSAPP_NUMBER = '6285322624048';

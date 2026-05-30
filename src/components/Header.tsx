@@ -2,6 +2,7 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Menu, X, Code, ShoppingBag } from 'lucide-react';
+import MessageCircle from 'lucide-react/dist/esm/icons/message-circle';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);

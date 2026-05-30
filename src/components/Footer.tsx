@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
-import { MapPin, Phone, Mail, Clock, Code, MessageCircle } from 'lucide-react';
+import { MapPin, Phone, Mail, Clock, Code } from 'lucide-react';
+import MessageCircle from 'lucide-react/dist/esm/icons/message-circle';
 
 const Footer = () => {
   const navigationItems = [

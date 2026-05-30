@@ -4,7 +4,8 @@
 // ============================================================
 
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { MessageCircle, X, Send, Bot, User, Loader2, Phone } from 'lucide-react';
+import MessageCircle from 'lucide-react/dist/esm/icons/message-circle';
+import { X, Send, Bot, User, Loader2, Phone } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { AiMessage } from '@/types/dashboard';
 import { chatWithAiStream, checkAIHealth, buildDashboardContext } from '@/lib/ywm-ai';

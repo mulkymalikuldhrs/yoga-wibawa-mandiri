@@ -1,6 +1,6 @@
 
 import Layout from '@/components/Layout';
-import { MapPin, Phone, Clock, Navigation, MessageCircle } from 'lucide-react';
+import { MapPin, Phone, Clock, Navigation } from 'lucide-react';
 
 const Location = () => {
   return (

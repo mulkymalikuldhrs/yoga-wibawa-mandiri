@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import Layout from '@/components/Layout';
-import { MapPin, Phone, Mail, Clock, Send, Loader2, MessageCircle, ExternalLink } from 'lucide-react';
+import { MapPin, Phone, Mail, Clock, Send, Loader2, ExternalLink } from 'lucide-react';
+import MessageCircle from 'lucide-react/dist/esm/icons/message-circle';
 import { useToast } from '@/hooks/use-toast';
 import { sendContactEmail, type ContactFormData } from '@/services/emailService';
 

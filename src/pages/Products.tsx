@@ -1,9 +1,10 @@
 import { useState } from 'react';
 import Layout from '@/components/Layout';
-import { 
+import {
   Package, Truck, Shield, Weight, Factory, Minus, Plus, 
-  MessageCircle, ShoppingBag, CheckCircle, Info, Headphones 
+  ShoppingBag, CheckCircle, Info, Headphones 
 } from 'lucide-react';
+import MessageCircle from 'lucide-react/dist/esm/icons/message-circle';
 
 const WHATSAPP_NUMBER = '6285322624048';
 const WHATSAPP_BASE_URL = `https://wa.me/${WHATSAPP_NUMBER}`;
