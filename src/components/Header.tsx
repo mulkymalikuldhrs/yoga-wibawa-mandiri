@@ -26,13 +26,13 @@ const Header = () => {
           {/* Logo PT. YWM */}
           <div className="flex items-center">
             <img 
-              src="/lovable-uploads/ywm-logo-kop-surat.png" 
+              src="/lovable-uploads/ywm-logo.png" 
               alt="PT. Yoga Wibawa Mandiri Logo"
-              className="w-20 h-20 rounded-xl shadow-lg"
+              className="w-16 h-16 rounded-full shadow-lg object-contain"
             />
             <div className="ml-4">
-              <h1 className="text-ywm-dark font-bold text-xl">PT. Yoga Wibawa Mandiri</h1>
-              <p className="text-gray-600 text-sm">Pengantongan Semen Padang Lhokseumawe</p>
+              <h1 className="text-ywm-dark font-bold text-xl tracking-tight">PT. Yoga Wibawa Mandiri</h1>
+              <p className="text-gray-600 text-sm">Pengantongan Semen Padang | Lhokseumawe</p>
             </div>
           </div>
 

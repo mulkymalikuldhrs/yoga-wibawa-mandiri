@@ -20,13 +20,13 @@ const Footer = () => {
           <div className="md:col-span-2">
             <div className="flex items-center mb-6">
               <img 
-                src="/lovable-uploads/ywm-logo-kop-surat.png" 
+                src="/lovable-uploads/ywm-logo.png" 
                 alt="PT. Yoga Wibawa Mandiri Logo"
-                className="w-16 h-16 rounded-xl shadow-lg mr-4"
+                className="w-14 h-14 rounded-full shadow-lg mr-4 object-contain"
               />
               <div>
-                <h3 className="font-bold text-xl">PT. Yoga Wibawa Mandiri</h3>
-                <p className="text-gray-300 text-sm">Pengantongan Semen Padang Lhokseumawe</p>
+                <h3 className="font-bold text-xl tracking-tight">PT. Yoga Wibawa Mandiri</h3>
+                <p className="text-gray-300 text-sm">Pengantongan Semen Padang | Lhokseumawe</p>
               </div>
             </div>
             <p className="text-gray-300 mb-6 leading-relaxed">
@@ -103,13 +103,13 @@ const Footer = () => {
                   <p className="text-gray-300 text-sm">Medan, Sumatera Utara</p>
                 </div>
               </div>
-              <div className="flex items-start space-x-3">
-                <MapPin className="text-ywm-red mt-1" size={18} />
-                <div>
-                  <p className="text-gray-300 text-sm font-medium">Pabrik:</p>
-                  <p className="text-gray-300 text-sm">Pelabuhan Krueng Geukueh<br />Lhokseumawe, Aceh</p>
+                <div className="flex items-start space-x-3">
+                  <MapPin className="text-ywm-red mt-1" size={18} />
+                  <div>
+                    <p className="text-gray-300 text-sm font-medium">Packing Plant:</p>
+                    <p className="text-gray-300 text-sm">Jl. Pelabuhan Umum, Kr. Geukuh<br />Aceh Utara, Aceh</p>
+                  </div>
                 </div>
-              </div>
               <a href="https://wa.me/6285322624038" target="_blank" rel="noopener noreferrer" className="flex items-center space-x-3 hover:text-white transition-colors">
                 <Phone className="text-ywm-red" size={18} />
                 <p className="text-gray-300 text-sm">+62 853-2262-4038</p>

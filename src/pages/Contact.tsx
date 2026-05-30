@@ -349,14 +349,14 @@ const Contact = () => {
 
                 {/* Pabrik */}
                 <div className="bg-gray-50 p-6 rounded-lg">
-                  <h3 className="text-xl font-semibold text-ywm-dark mb-4">Pabrik Pengantongan</h3>
+                  <h3 className="text-xl font-semibold text-ywm-dark mb-4">Packing Plant</h3>
                   <div className="space-y-3">
                     <div className="flex items-start space-x-3">
                       <MapPin className="text-ywm-red mt-1" size={20} />
                       <div>
                         <p className="text-gray-700">
-                          Pelabuhan Krueng Geukueh<br />
-                          Lhokseumawe, Aceh 24352
+                          Jl. Pelabuhan Umum, Kr. Geukuh<br />
+                          Aceh Utara, Aceh 24352
                         </p>
                       </div>
                     </div>

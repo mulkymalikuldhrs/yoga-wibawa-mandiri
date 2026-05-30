@@ -18,8 +18,8 @@ const Gallery = () => {
     {
       id: 3,
       src: "https://images.unsplash.com/photo-1501854140801-50d01698950b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-      title: "Pelabuhan Krueng Geukueh",
-      description: "Lokasi strategis untuk distribusi ke seluruh wilayah"
+      title: "Packing Plant YWM",
+      description: "Lokasi strategis di Jl. Pelabuhan Umum, Kr. Geukuh, Aceh Utara"
     },
     {
       id: 4,
@@ -119,7 +119,7 @@ const Gallery = () => {
             Ingin Melihat Fasilitas Kami Langsung?
           </h2>
           <p className="text-xl mb-8 max-w-2xl mx-auto">
-            Kunjungi pabrik kami di Pelabuhan Krueng Geukueh, Lhokseumawe untuk melihat 
+            Kunjungi packing plant kami di Jl. Pelabuhan Umum, Kr. Geukuh, Aceh Utara untuk melihat 
             proses produksi dan fasilitas modern yang kami miliki.
           </p>
           <a 

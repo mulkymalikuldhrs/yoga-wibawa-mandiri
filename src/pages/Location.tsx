@@ -23,7 +23,7 @@ const Location = () => {
               Pabrik <span className="text-ywm-red">Pengantongan</span>
             </h2>
             <p className="text-gray-600 text-lg max-w-2xl mx-auto">
-              Berlokasi strategis di Pelabuhan Krueng Geukueh, Lhokseumawe untuk kemudahan akses distribusi
+              Berlokasi strategis di Jl. Pelabuhan Umum, Kr. Geukuh, Aceh Utara untuk kemudahan akses distribusi
             </p>
           </div>
 
@@ -51,8 +51,8 @@ const Location = () => {
                   <div>
                     <h4 className="font-semibold text-ywm-dark">Alamat Lengkap</h4>
                     <p className="text-gray-600">
-                      Pelabuhan Krueng Geukueh<br />
-                      Lhokseumawe, Aceh 24352<br />
+                      Jl. Pelabuhan Umum, Kr. Geukuh<br />
+                      Aceh Utara, Aceh 24352<br />
                       Indonesia
                     </p>
                   </div>

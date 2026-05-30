@@ -55,9 +55,9 @@ export default function DashboardSidebar({
       {/* Logo / Title */}
       <div className="px-4 py-5 border-b border-white/10 flex items-center gap-3">
         <img 
-          src="/lovable-uploads/ywm-logo-kop-surat.png" 
+          src="/lovable-uploads/ywm-logo.png" 
           alt="YWM Logo"
-          className="w-9 h-9 rounded-lg object-contain flex-shrink-0"
+          className="w-9 h-9 rounded-full object-contain flex-shrink-0"
         />
         {!collapsed && (
           <div className="overflow-hidden">

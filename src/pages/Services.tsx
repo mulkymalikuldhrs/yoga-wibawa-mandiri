@@ -119,7 +119,7 @@ const Services = () => {
                   </div>
                   <div>
                     <h4 className="font-semibold text-ywm-dark">Lokasi Strategis</h4>
-                    <p className="text-gray-600">Berlokasi di Pelabuhan Krueng Geukueh untuk akses distribusi optimal</p>
+                    <p className="text-gray-600">Berlokasi di Jl. Pelabuhan Umum, Kr. Geukuh, Aceh Utara untuk akses distribusi optimal</p>
                   </div>
                 </div>
 

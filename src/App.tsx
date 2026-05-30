@@ -17,6 +17,7 @@ const Gallery = lazy(() => import("./pages/Gallery"));
 const Location = lazy(() => import("./pages/Location"));
 const Contact = lazy(() => import("./pages/Contact"));
 const NotFound = lazy(() => import("./pages/NotFound"));
+const Dashboard = lazy(() => import("./pages/Dashboard"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -43,6 +44,7 @@ const App = () => (
               <Route path="/galeri" element={<Gallery />} />
               <Route path="/lokasi" element={<Location />} />
               <Route path="/kontak" element={<Contact />} />
+              <Route path="/dashboard" element={<Dashboard />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </Suspense>

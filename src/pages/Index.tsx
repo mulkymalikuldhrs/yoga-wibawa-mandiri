@@ -22,7 +22,7 @@ const Index = () => {
             PT. Yoga Wibawa <span className="text-yellow-400">Mandiri</span>
           </h1>
           <p className="text-xl md:text-2xl mb-4 max-w-3xl mx-auto leading-relaxed">
-            Pengantongan Semen Padang Terpercaya di Lhokseumawe
+            Pengantongan Semen Padang Terpercaya di Aceh Utara
             <br />dengan Teknologi Modern dan Kualitas Terjamin
           </p>
           
@@ -105,7 +105,7 @@ const Index = () => {
               <p className="text-gray-700 text-lg leading-relaxed mb-6">
                 Didirikan sebagai mitra strategis Semen Padang di wilayah Aceh dan Sumatera Utara, 
                 PT. Yoga Wibawa Mandiri telah menjadi perusahaan pengantongan semen terpercaya 
-                dengan fasilitas modern di Pelabuhan Krueng Geukueh, Lhokseumawe.
+                dengan fasilitas modern di Jl. Pelabuhan Umum, Kr. Geukuh, Aceh Utara.
               </p>
               <p className="text-gray-700 text-lg leading-relaxed mb-8">
                 Dengan komitmen terhadap kualitas dan pelayanan prima, kami melayani kebutuhan 

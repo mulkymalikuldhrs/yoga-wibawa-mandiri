@@ -142,7 +142,7 @@ const ChatBot = () => {
       return 'Untuk informasi harga terbaru dan pemesanan:\n\n📞 Hubungi: +62 853-2262-4038\n📧 Email: yogawibawamandiri@gmail.com';
     }
     if (message.includes('lokasi') || message.includes('alamat')) {
-      return 'Pabrik kami berlokasi di Pelabuhan Krueng Geukueh, Lhokseumawe, Aceh.\n\n📞 Untuk kunjungan: +62 853-2262-4038';
+      return 'Packing plant kami berlokasi di Jl. Pelabuhan Umum, Kr. Geukuh, Aceh Utara.\n\n📞 Untuk kunjungan: +62 853-2262-4038';
     }
     
     return 'Terima kasih atas pertanyaan Anda.\n\n📞 Untuk bantuan langsung: +62 853-2262-4038\n📧 Email: yogawibawamandiri@gmail.com\n\nTim kami siap melayani Anda!';

@@ -25,8 +25,8 @@ const About = () => {
               </h2>
               <p className="text-gray-700 text-lg leading-relaxed mb-6">
                 PT. Yoga Wibawa Mandiri didirikan sebagai perusahaan yang bergerak di bidang 
-                pengantongan Semen Padang dengan lokasi strategis di Pelabuhan Krueng Geukueh, 
-                Lhokseumawe, Aceh.
+                pengantongan Semen Padang dengan lokasi strategis di Jl. Pelabuhan Umum, Kr. Geukuh,
+                Aceh Utara, Aceh.
               </p>
               <p className="text-gray-700 text-lg leading-relaxed mb-6">
                 Dengan visi menjadi perusahaan pengantongan semen terdepan di wilayah Aceh 
