@@ -1,7 +1,6 @@
 // ============================================================
 // FloatingChatBot — AI Chatbot with floating button
-// Smart AI that can answer questions AND input data
-// No more Puter.js — uses our own backend
+// White/Red theme matching YWM website
 // ============================================================
 
 import React, { useState, useRef, useEffect, useCallback } from 'react';
@@ -35,31 +34,26 @@ const QUICK_ACTIONS = [
     label: 'Ringkasan Hari Ini',
     icon: <Zap size={14} />,
     prompt: 'Beri ringkasan operasional hari ini untuk PT. Yoga Wibawa Mandiri. Apa saja yang perlu diperhatikan?',
-    color: 'text-amber-400',
   },
   {
     label: 'Cek Stok Rendah',
     icon: <Package size={14} />,
     prompt: 'Suku cadang mana yang stoknya mendekati batas minimum? Tampilkan daftar lengkap.',
-    color: 'text-orange-400',
   },
   {
     label: 'Jadwal Perawatan',
     icon: <Wrench size={14} />,
     prompt: 'Apa jadwal perawatan mesin minggu ini? Ada WO yang overdue?',
-    color: 'text-blue-400',
   },
   {
     label: 'Keselamatan Kerja',
     icon: <Shield size={14} />,
     prompt: 'Apakah ada insiden keselamatan yang perlu ditindaklanjuti? Tampilkan status HSE.',
-    color: 'text-red-400',
   },
   {
     label: 'Input Data',
     icon: <Database size={14} />,
     prompt: 'Saya ingin input data. Apa saja modul yang tersedia dan format yang diperlukan?',
-    color: 'text-purple-400',
   },
 ];
 
@@ -83,30 +77,30 @@ function DataInputCard({
   };
 
   return (
-    <div className="mt-2 rounded-xl border border-red-500/30 bg-red-500/5 p-3">
+    <div className="mt-2 rounded-xl border border-red-200 bg-red-50/50 p-3">
       <div className="flex items-center gap-2 mb-2">
-        <Database size={16} className="text-red-400" />
-        <span className="text-red-400 font-semibold text-sm">Input Data: {moduleLabels[module] || module}</span>
+        <Database size={16} className="text-red-600" />
+        <span className="text-red-600 font-semibold text-sm">Input Data: {moduleLabels[module] || module}</span>
       </div>
-      <div className="space-y-1 text-xs text-white/70">
+      <div className="space-y-1 text-xs text-gray-600">
         {Object.entries(data).map(([key, value]) => (
           <div key={key} className="flex justify-between">
-            <span className="text-white/50">{key}:</span>
-            <span className="text-white/90 font-medium">{String(value ?? '-')}</span>
+            <span className="text-gray-400">{key}:</span>
+            <span className="text-gray-800 font-medium">{String(value ?? '-')}</span>
           </div>
         ))}
       </div>
       <div className="flex gap-2 mt-3">
         <button
           onClick={onConfirm}
-          className="flex-1 py-1.5 rounded-lg bg-red-500/20 text-red-400 text-xs font-medium hover:bg-red-500/30 transition-all"
+          className="flex-1 py-1.5 rounded-lg bg-red-600 text-white text-xs font-medium hover:bg-red-700 transition-all"
         >
           <CheckCircle2 size={12} className="inline mr-1" />
           Simpan
         </button>
         <button
           onClick={onCancel}
-          className="flex-1 py-1.5 rounded-lg bg-white/5 text-white/50 text-xs font-medium hover:bg-white/10 transition-all"
+          className="flex-1 py-1.5 rounded-lg bg-gray-100 text-gray-500 text-xs font-medium hover:bg-gray-200 transition-all"
         >
           Batal
         </button>
@@ -212,7 +206,6 @@ export default function FloatingChatBot() {
     setMessages((prev) => [...prev, assistantMessage]);
 
     try {
-      // Use all previous messages for context
       const chatMessages = [...messages, userMessage].filter(
         (m) => m.id !== 'welcome'
       );
@@ -274,7 +267,6 @@ export default function FloatingChatBot() {
     (prompt: string) => {
       setInput(prompt);
       setTimeout(() => {
-        // Directly send
         const userMessage: AiMessage = {
           id: Date.now().toString(36),
           role: 'user',
@@ -331,7 +323,6 @@ export default function FloatingChatBot() {
   const handleConfirmDataInput = useCallback(() => {
     if (!pendingDataInput) return;
 
-    // Store data in localStorage as a simple persistence mechanism
     const storageKey = `ywm_data_${pendingDataInput.module}`;
     const existingData = JSON.parse(localStorage.getItem(storageKey) || '[]');
     existingData.push({
@@ -406,9 +397,7 @@ export default function FloatingChatBot() {
 
   // ── Format message content (basic markdown-like rendering) ──
   const formatContent = (content: string) => {
-    // Remove ACTION:INPUT_DATA blocks from display
     let cleaned = content.replace(/```ACTION:INPUT_DATA[\s\S]*?```/g, '');
-
     return cleaned;
   };
 
@@ -424,22 +413,22 @@ export default function FloatingChatBot() {
           aria-label="Buka Chat AI"
         >
           {/* Pulse ring */}
-          <div className="absolute inset-0 rounded-full bg-red-500/30 animate-ping" />
+          <div className="absolute inset-0 rounded-full bg-red-500/20 animate-ping" />
           {/* Main button */}
-          <div className="relative w-14 h-14 rounded-full bg-gradient-to-br from-red-600 to-red-800 
+          <div className="relative w-14 h-14 rounded-full bg-gradient-to-br from-red-600 to-red-700 
             flex items-center justify-center shadow-lg shadow-red-500/25
             transition-all duration-300 group-hover:scale-110 group-hover:shadow-xl group-hover:shadow-red-500/40">
             <MessageCircle size={24} className="text-white" />
           </div>
           {/* Status dot */}
           <div className={cn(
-            'absolute -top-0.5 -right-0.5 w-4 h-4 rounded-full border-2 border-[#0f0c29]',
+            'absolute -top-0.5 -right-0.5 w-4 h-4 rounded-full border-2 border-white',
             checkingAI ? 'bg-yellow-400 animate-pulse' :
             aiReady ? 'bg-emerald-400' : 'bg-red-400'
           )} />
           {/* Tooltip */}
-          <div className="absolute bottom-full right-0 mb-2 px-3 py-1.5 bg-white/10 backdrop-blur-xl 
-            border border-white/20 rounded-lg text-white text-xs whitespace-nowrap
+          <div className="absolute bottom-full right-0 mb-2 px-3 py-1.5 bg-white border border-gray-200 
+            rounded-lg text-[#212121] text-xs whitespace-nowrap shadow-sm
             opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
             {checkingAI ? 'Menghubungkan AI...' : aiReady ? 'Chat dengan AI YWM' : 'AI Offline'}
           </div>
@@ -451,26 +440,26 @@ export default function FloatingChatBot() {
       {/* ═══════════════════════════════════════════ */}
       {isOpen && (
         <div className="fixed bottom-6 right-6 z-50 w-[400px] h-[560px] 
-          bg-[#0f0c29]/95 backdrop-blur-xl border border-white/10 
-          rounded-2xl shadow-2xl shadow-black/40 flex flex-col
+          bg-white/95 backdrop-blur-xl border border-gray-200 
+          rounded-2xl shadow-2xl shadow-black/10 flex flex-col
           animate-in slide-in-from-bottom-4 fade-in duration-300">
           
           {/* ── Header ── */}
-          <div className="px-4 py-3 border-b border-white/10 flex items-center justify-between flex-shrink-0">
+          <div className="px-4 py-3 border-b border-gray-100 flex items-center justify-between flex-shrink-0">
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-red-500/20 to-red-700/20 
-                flex items-center justify-center border border-red-500/20">
-                <Bot size={18} className="text-red-400" />
+              <div className="w-9 h-9 rounded-xl bg-red-50 
+                flex items-center justify-center border border-red-100">
+                <Bot size={18} className="text-red-600" />
               </div>
               <div>
-                <h3 className="text-white font-semibold text-sm">Asisten AI YWM</h3>
+                <h3 className="text-[#212121] font-semibold text-sm">Asisten AI YWM</h3>
                 <div className="flex items-center gap-1.5">
                   <div className={cn(
                     'w-1.5 h-1.5 rounded-full',
                     checkingAI ? 'bg-yellow-400 animate-pulse' :
                     aiReady ? 'bg-emerald-400' : 'bg-red-400'
                   )} />
-                  <span className="text-white/40 text-xs">
+                  <span className="text-gray-400 text-xs">
                     {checkingAI ? 'Menghubungkan...' : aiReady ? 'Online — Siap membantu' : 'Offline — Cek server AI'}
                   </span>
                 </div>
@@ -478,27 +467,27 @@ export default function FloatingChatBot() {
             </div>
             <button
               onClick={() => setIsOpen(false)}
-              className="p-1.5 rounded-lg text-white/40 hover:text-white hover:bg-white/10 transition-all"
+              className="p-1.5 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-50 transition-all"
             >
               <X size={16} />
             </button>
           </div>
 
-          {/* ── Quick Actions (shown when no messages besides welcome) ── */}
+          {/* ── Quick Actions ── */}
           {showQuickActions && messages.length <= 1 && (
-            <div className="px-4 py-3 border-b border-white/5 flex-shrink-0">
-              <p className="text-white/30 text-xs mb-2">Aksi Cepat</p>
+            <div className="px-4 py-3 border-b border-gray-50 flex-shrink-0">
+              <p className="text-gray-400 text-xs mb-2">Aksi Cepat</p>
               <div className="grid grid-cols-2 gap-1.5">
                 {QUICK_ACTIONS.map((action) => (
                   <button
                     key={action.label}
                     onClick={() => handleQuickAction(action.prompt)}
                     disabled={isStreaming || !aiReady}
-                    className="flex items-center gap-1.5 px-2.5 py-2 rounded-lg bg-white/5 border border-white/5 
-                      text-white/60 hover:text-white hover:bg-white/10 hover:border-white/10 
+                    className="flex items-center gap-1.5 px-2.5 py-2 rounded-lg bg-gray-50 border border-gray-100 
+                      text-gray-600 hover:text-red-600 hover:bg-red-50 hover:border-red-200
                       transition-all text-xs disabled:opacity-30 disabled:cursor-not-allowed"
                   >
-                    <span className={action.color}>{action.icon}</span>
+                    <span className="text-red-500">{action.icon}</span>
                     {action.label}
                   </button>
                 ))}
@@ -507,7 +496,7 @@ export default function FloatingChatBot() {
           )}
 
           {/* ── Messages ── */}
-          <div ref={chatContainerRef} className="flex-1 overflow-y-auto p-4 space-y-3 custom-scrollbar">
+          <div ref={chatContainerRef} className="flex-1 overflow-y-auto p-4 space-y-3 custom-scrollbar-light">
             {messages.map((msg) => (
               <div
                 key={msg.id}
@@ -521,14 +510,14 @@ export default function FloatingChatBot() {
                   className={cn(
                     'w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0',
                     msg.role === 'user'
-                      ? 'bg-red-500/20'
-                      : 'bg-purple-500/20'
+                      ? 'bg-red-50'
+                      : 'bg-purple-50'
                   )}
                 >
                   {msg.role === 'user' ? (
-                    <User size={14} className="text-red-400" />
+                    <User size={14} className="text-red-600" />
                   ) : (
-                    <Bot size={14} className="text-purple-400" />
+                    <Bot size={14} className="text-purple-600" />
                   )}
                 </div>
 
@@ -537,15 +526,15 @@ export default function FloatingChatBot() {
                   className={cn(
                     'max-w-[82%] rounded-2xl px-3.5 py-2.5 text-sm leading-relaxed',
                     msg.role === 'user'
-                      ? 'bg-red-500/15 border border-red-500/20 text-white'
-                      : 'bg-white/5 border border-white/10 text-white/80'
+                      ? 'bg-red-600 text-white'
+                      : 'bg-gray-50 border border-gray-100 text-gray-700'
                   )}
                 >
                   <p className="whitespace-pre-wrap">{formatContent(msg.content)}</p>
                   
                   {/* Streaming indicator */}
                   {msg.content === '' && isStreaming && (
-                    <div className="flex items-center gap-1.5 text-white/40">
+                    <div className="flex items-center gap-1.5 text-gray-400">
                       <Loader2 size={12} className="animate-spin" />
                       <span className="text-xs">AI sedang berpikir...</span>
                     </div>
@@ -553,7 +542,7 @@ export default function FloatingChatBot() {
 
                   {/* Show typing cursor while streaming */}
                   {msg.content !== '' && isStreaming && msg.id.includes('_stream') && (
-                    <span className="inline-block w-1.5 h-4 bg-red-400/60 animate-pulse ml-0.5 align-text-bottom" />
+                    <span className="inline-block w-1.5 h-4 bg-red-600/60 animate-pulse ml-0.5 align-text-bottom" />
                   )}
                 </div>
               </div>
@@ -562,8 +551,8 @@ export default function FloatingChatBot() {
             {/* Data input confirmation card */}
             {pendingDataInput && (
               <div className="flex gap-2">
-                <div className="w-7 h-7 rounded-lg bg-red-500/20 flex items-center justify-center flex-shrink-0">
-                  <Database size={14} className="text-red-400" />
+                <div className="w-7 h-7 rounded-lg bg-red-50 flex items-center justify-center flex-shrink-0">
+                  <Database size={14} className="text-red-600" />
                 </div>
                 <DataInputCard
                   module={pendingDataInput.module}
@@ -578,9 +567,9 @@ export default function FloatingChatBot() {
           </div>
 
           {/* ── Input Area ── */}
-          <div className="p-3 border-t border-white/10 flex-shrink-0">
-            <div className="flex items-end gap-2 bg-white/5 border border-white/10 rounded-xl p-2 
-              focus-within:border-red-500/30 focus-within:bg-white/[0.07] transition-all">
+          <div className="p-3 border-t border-gray-100 flex-shrink-0">
+            <div className="flex items-end gap-2 bg-white border border-gray-200 rounded-xl p-2 
+              focus-within:border-red-300 focus-within:shadow-sm focus-within:shadow-red-50 transition-all">
               <textarea
                 ref={inputRef}
                 value={input}
@@ -595,7 +584,7 @@ export default function FloatingChatBot() {
                 }
                 disabled={!aiReady || isStreaming}
                 rows={1}
-                className="flex-1 bg-transparent text-white text-sm placeholder:text-white/30 
+                className="flex-1 bg-transparent text-[#212121] text-sm placeholder:text-gray-300 
                   resize-none outline-none max-h-24 min-h-[32px]"
               />
               <button
@@ -603,8 +592,8 @@ export default function FloatingChatBot() {
                 className={cn(
                   'p-2 rounded-lg transition-all flex-shrink-0',
                   isRecording
-                    ? 'bg-red-500/20 text-red-400 animate-pulse'
-                    : 'text-white/30 hover:text-white/60 hover:bg-white/5'
+                    ? 'bg-red-50 text-red-600 animate-pulse'
+                    : 'text-gray-300 hover:text-gray-500 hover:bg-gray-50'
                 )}
                 title={isRecording ? 'Berhenti merekam' : 'Input suara'}
               >
@@ -613,8 +602,7 @@ export default function FloatingChatBot() {
               <button
                 onClick={handleSend}
                 disabled={!input.trim() || isStreaming || !aiReady}
-                className="p-2 rounded-lg bg-gradient-to-r from-red-500/20 to-red-700/20 
-                  text-red-400 hover:from-red-500/30 hover:to-red-700/30 
+                className="p-2 rounded-lg bg-red-600 text-white hover:bg-red-700 
                   transition-all disabled:opacity-30 disabled:cursor-not-allowed flex-shrink-0"
                 title="Kirim"
               >
@@ -623,10 +611,10 @@ export default function FloatingChatBot() {
             </div>
             {/* Status bar */}
             <div className="flex items-center justify-between mt-1.5 px-1">
-              <span className="text-white/20 text-[10px]">Powered by YWM AI</span>
+              <span className="text-gray-300 text-[10px]">Powered by YWM AI</span>
               <button
                 onClick={() => setShowQuickActions(true)}
-                className="text-white/20 text-[10px] hover:text-white/40 transition-colors"
+                className="text-gray-300 text-[10px] hover:text-gray-500 transition-colors"
               >
                 Aksi Cepat
               </button>

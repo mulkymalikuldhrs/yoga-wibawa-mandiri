@@ -111,7 +111,6 @@ export type DashboardModule =
   | 'maintenance'
   | 'safety'
   | 'documents'
-  | 'analytics'
   | 'notifications';
 
 export interface DashboardModuleInfo {

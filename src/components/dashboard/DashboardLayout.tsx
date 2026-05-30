@@ -1,5 +1,6 @@
 // ============================================================
 // DashboardLayout — Layout wrapper with sidebar + AI panel + Floating Chat
+// WHITE/RED theme matching YWM website
 // ============================================================
 
 import React, { useState } from 'react';
@@ -24,7 +25,7 @@ export default function DashboardLayout({
   const [unreadNotifs] = useState(0);
 
   return (
-    <div className="h-screen flex overflow-hidden bg-gradient-to-br from-[#1a0a0a] via-[#2d1515] to-[#1a0a0a]">
+    <div className="h-screen flex overflow-hidden bg-gray-50">
       {/* Sidebar */}
       <DashboardSidebar
         activeModule={activeModule}
@@ -35,7 +36,7 @@ export default function DashboardLayout({
       />
 
       {/* Main Content */}
-      <main className="flex-1 overflow-y-auto custom-scrollbar">
+      <main className="flex-1 overflow-y-auto custom-scrollbar-light">
         {children}
       </main>
 

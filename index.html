@@ -8,6 +8,13 @@
     <meta name="keywords" content="YWM, Yoga Wibawa Mandiri, semen, pengantongan, packing plant, Lhokseumawe, Aceh Utara, Aceh, Semen Padang, dashboard, AI, Kr. Geukuh" />
     <meta name="author" content="Mulky Malikul Dhaher" />
 
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#C62828" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="YWM Dashboard" />
+    <link rel="manifest" href="/manifest.json" />
+
     <!-- Security Headers -->
     <meta http-equiv="X-Content-Type-Options" content="nosniff" />
     <meta http-equiv="X-Frame-Options" content="SAMEORIGIN" />
@@ -23,6 +30,7 @@
 
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="/lovable-uploads/ywm-logo.png" />
+    <link rel="apple-touch-icon" href="/lovable-uploads/ywm-logo.png" />
 
     <!-- Puter.js SDK (optional - only needed for legacy features) -->
     <!-- <script src="https://js.puter.com/v2/" defer></script> -->
@@ -35,5 +43,19 @@
 <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
+    <script>
+      // Register Service Worker for PWA
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js')
+            .then((registration) => {
+              console.log('SW registered:', registration.scope);
+            })
+            .catch((error) => {
+              console.log('SW registration failed:', error);
+            });
+        });
+      }
+    </script>
 </body>
 </html>

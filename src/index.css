@@ -122,7 +122,7 @@
     scroll-behavior: smooth;
   }
 
-  /* Custom scrollbar for dashboard */
+  /* Custom scrollbar for dark backgrounds (legacy) */
   .custom-scrollbar::-webkit-scrollbar {
     width: 6px;
   }
@@ -135,5 +135,20 @@
   }
   .custom-scrollbar::-webkit-scrollbar-thumb:hover {
     background: rgba(255, 255, 255, 0.25);
+  }
+
+  /* Custom scrollbar for light backgrounds (YWM white theme) */
+  .custom-scrollbar-light::-webkit-scrollbar {
+    width: 6px;
+  }
+  .custom-scrollbar-light::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .custom-scrollbar-light::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 3px;
+  }
+  .custom-scrollbar-light::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 0, 0, 0.2);
   }
 }

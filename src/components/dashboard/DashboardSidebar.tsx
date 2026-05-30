@@ -1,5 +1,6 @@
 // ============================================================
-// DashboardSidebar — Frosted glass navigation sidebar
+// DashboardSidebar — White frosted glass navigation sidebar
+// YWM Red accent theme matching website
 // ============================================================
 
 import React from 'react';
@@ -12,7 +13,6 @@ import {
   Wrench,
   ShieldCheck,
   FileText,
-  BarChart3,
   Bell,
   ChevronLeft,
   ChevronRight,
@@ -26,7 +26,6 @@ const MODULES: { id: DashboardModule; label: string; icon: React.ReactNode }[] =
   { id: 'maintenance', label: 'Perawatan', icon: <Wrench size={20} /> },
   { id: 'safety', label: 'Keselamatan (HSE)', icon: <ShieldCheck size={20} /> },
   { id: 'documents', label: 'Dokumen & OCR', icon: <FileText size={20} /> },
-  { id: 'analytics', label: 'Analitik', icon: <BarChart3 size={20} /> },
   { id: 'notifications', label: 'Notifikasi', icon: <Bell size={20} /> },
 ];
 
@@ -48,12 +47,12 @@ export default function DashboardSidebar({
   return (
     <aside
       className={cn(
-        'h-screen sticky top-0 backdrop-blur-xl bg-white/5 border-r border-white/10 transition-all duration-300 flex flex-col z-20',
+        'h-screen sticky top-0 backdrop-blur-xl bg-white/95 border-r border-gray-200 transition-all duration-300 flex flex-col z-20 shadow-sm',
         collapsed ? 'w-[72px]' : 'w-[260px]'
       )}
     >
       {/* Logo / Title */}
-      <div className="px-4 py-5 border-b border-white/10 flex items-center gap-3">
+      <div className="px-4 py-5 border-b border-gray-100 flex items-center gap-3">
         <img 
           src="/lovable-uploads/ywm-logo.png" 
           alt="YWM Logo"
@@ -61,14 +60,14 @@ export default function DashboardSidebar({
         />
         {!collapsed && (
           <div className="overflow-hidden">
-            <h1 className="text-white font-semibold text-sm truncate">YWM Dashboard</h1>
-            <p className="text-white/40 text-xs truncate">PT. Yoga Wibawa Mandiri</p>
+            <h1 className="text-[#212121] font-semibold text-sm truncate">YWM Dashboard</h1>
+            <p className="text-gray-400 text-xs truncate">PT. Yoga Wibawa Mandiri</p>
           </div>
         )}
       </div>
 
       {/* Nav Items */}
-      <nav className="flex-1 py-3 overflow-y-auto custom-scrollbar">
+      <nav className="flex-1 py-3 overflow-y-auto custom-scrollbar-light">
         {MODULES.map((mod) => {
           const isActive = activeModule === mod.id;
           return (
@@ -76,20 +75,20 @@ export default function DashboardSidebar({
               key={mod.id}
               onClick={() => onModuleChange(mod.id)}
               className={cn(
-                'w-full flex items-center gap-3 px-4 py-2.5 mx-2 rounded-xl transition-all duration-200 text-left',
+                'w-full flex items-center gap-3 px-4 py-2.5 mx-2 transition-all duration-200 text-left',
                 'max-w-[calc(100%-16px)]',
                 isActive
-                  ? 'bg-red-500/20 text-red-400 shadow-[0_0_15px_rgba(198,40,40,0.15)]'
-                  : 'text-white/60 hover:text-white hover:bg-white/5'
+                  ? 'bg-red-50 text-red-600 border-l-4 border-red-600 font-medium rounded-r-xl'
+                  : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50 border-l-4 border-transparent rounded-r-xl'
               )}
               title={collapsed ? mod.label : undefined}
             >
-              <span className="flex-shrink-0">{mod.icon}</span>
+              <span className={cn('flex-shrink-0', isActive ? 'text-red-600' : 'text-gray-400')}>{mod.icon}</span>
               {!collapsed && (
                 <span className="text-sm truncate">{mod.label}</span>
               )}
               {!collapsed && mod.id === 'notifications' && unreadCount > 0 && (
-                <span className="ml-auto bg-red-500/80 text-white text-xs px-2 py-0.5 rounded-full">
+                <span className="ml-auto bg-red-600 text-white text-xs px-2 py-0.5 rounded-full">
                   {unreadCount}
                 </span>
               )}
@@ -99,10 +98,10 @@ export default function DashboardSidebar({
       </nav>
 
       {/* Bottom Actions */}
-      <div className="border-t border-white/10 p-3 flex flex-col gap-1">
+      <div className="border-t border-gray-100 p-3 flex flex-col gap-1">
         <button
           onClick={() => window.open('/', '_blank')}
-          className="flex items-center gap-3 px-3 py-2 rounded-xl text-white/50 hover:text-white hover:bg-white/5 transition-all text-sm"
+          className="flex items-center gap-3 px-3 py-2 rounded-xl text-gray-400 hover:text-gray-700 hover:bg-gray-50 transition-all text-sm"
           title="Kembali ke Website"
         >
           <ExternalLink size={18} />
@@ -110,7 +109,7 @@ export default function DashboardSidebar({
         </button>
         <button
           onClick={onToggleCollapse}
-          className="flex items-center gap-3 px-3 py-2 rounded-xl text-white/50 hover:text-white hover:bg-white/5 transition-all text-sm"
+          className="flex items-center gap-3 px-3 py-2 rounded-xl text-gray-400 hover:text-gray-700 hover:bg-gray-50 transition-all text-sm"
           title={collapsed ? 'Perluas Sidebar' : 'Perkecil Sidebar'}
         >
           {collapsed ? <ChevronRight size={18} /> : <ChevronLeft size={18} />}
