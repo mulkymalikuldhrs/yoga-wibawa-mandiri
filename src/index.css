@@ -2,9 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
-*/
+/* ============================================================
+   YWM Design System — PT. Yoga Wibawa Mandiri
+   Colors, gradients, fonts, and global styles
+   ============================================================ */
 
 @layer base {
   :root {
@@ -94,6 +95,9 @@ All colors MUST be HSL.
 
   body {
     @apply bg-background text-foreground;
+    font-family: 'Inter', 'Poppins', -apple-system, BlinkMacSystemFont, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 }
 

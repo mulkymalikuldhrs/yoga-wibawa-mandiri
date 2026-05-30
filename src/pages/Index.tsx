@@ -18,12 +18,13 @@ const Index = () => {
         <div className="absolute inset-0 bg-black opacity-40"></div>
         <div className="absolute inset-0">
           <img 
-            src="https://images.unsplash.com/photo-1487958449943-2429e8be8625?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80" 
-            alt="Pabrik Semen Modern"
+            src="/images/hero-factory.png" 
+            alt="Pabrik Pengantongan Semen PT. Yoga Wibawa Mandiri"
             className="w-full h-full object-cover"
             loading="lazy"
           />
         </div>
+        <div className="absolute inset-0 bg-gradient-to-br from-ywm-red/80 via-red-800/70 to-gray-900/85"></div>
         
         {/* Glassmorphic overlay orbs on hero */}
         <div className="absolute top-1/4 right-1/4 w-64 h-64 bg-red-400/20 rounded-full blur-3xl pointer-events-none" />
@@ -81,15 +82,17 @@ const Index = () => {
               <div className="w-16 h-16 bg-ywm-red rounded-full flex items-center justify-center mx-auto mb-4">
                 <Factory className="text-white" size={32} />
               </div>
-              <h3 className="text-3xl font-bold text-ywm-dark mb-2">15+</h3>
-              <p className="text-gray-600">Tahun Pengalaman</p>
+              <h3 className="text-3xl font-bold text-ywm-dark mb-2">2</h3>
+              <p className="text-gray-600 font-medium">Silo Penyimpanan</p>
+              <p className="text-gray-400 text-sm">Kapasitas 500 ton/silo</p>
             </div>
             <div className="glass-frosted rounded-2xl p-6 animate-fade-in">
               <div className="w-16 h-16 bg-ywm-red rounded-full flex items-center justify-center mx-auto mb-4">
                 <Truck className="text-white" size={32} />
               </div>
-              <h3 className="text-3xl font-bold text-ywm-dark mb-2">500K+</h3>
-              <p className="text-gray-600">Ton Semen per Tahun</p>
+              <h3 className="text-3xl font-bold text-ywm-dark mb-2">1000+</h3>
+              <p className="text-gray-600 font-medium">Ton Kapasitas</p>
+              <p className="text-gray-400 text-sm">Total penyimpanan silo</p>
             </div>
             <div className="glass-frosted rounded-2xl p-6 animate-fade-in">
               <div className="w-16 h-16 bg-ywm-red rounded-full flex items-center justify-center mx-auto mb-4">
@@ -120,11 +123,12 @@ const Index = () => {
               <p className="text-gray-700 text-lg leading-relaxed mb-6">
                 Didirikan sebagai mitra strategis Semen Padang di wilayah Aceh dan Sumatera Utara, 
                 PT. Yoga Wibawa Mandiri telah menjadi perusahaan pengantongan semen terpercaya 
-                dengan fasilitas modern di Pelabuhan Krueng Geukueh, Lhokseumawe.
+                dengan fasilitas modern di Jl. Pelabuhan Umum, Kr. Geukuh, Aceh Utara.
               </p>
-              <p className="text-gray-700 text-lg leading-relaxed mb-8">
-                Dengan komitmen terhadap kualitas dan pelayanan prima, kami melayani kebutuhan 
-                konstruksi di seluruh wilayah dengan distribusi yang efisien dan tepat waktu.
+              <p className="text-gray-700 text-lg leading-relaxed mb-6">
+                Dilengkapi dengan 2 silo penyimpanan berkapasitas 500 ton masing-masing dan 
+                2 mesin pengantongan untuk kemasan Zak 40kg, kami siap memenuhi kebutuhan 
+                konstruksi Anda dengan distribusi yang efisien dan tepat waktu.
               </p>
               
               {/* Developer Credit — glassmorphic */}
@@ -163,7 +167,7 @@ const Index = () => {
             </h2>
             <p className="text-gray-600 text-lg max-w-2xl mx-auto">
               Kami menyediakan layanan pengantongan dan distribusi semen berkualitas tinggi 
-              dengan teknologi modern dan standar internasional.
+              dengan teknologi modern dan standar SNI.
             </p>
           </div>
           
@@ -174,8 +178,8 @@ const Index = () => {
               </div>
               <h3 className="text-xl font-semibold text-ywm-dark mb-4">Pengantongan Semen</h3>
               <p className="text-gray-600 leading-relaxed">
-                Proses pengantongan otomatis dengan kapasitas besar dan kontrol kualitas ketat 
-                untuk memastikan produk berkualitas tinggi.
+                Proses pengantongan otomatis dengan 2 mesin pengantong dan kontrol kualitas ketat 
+                untuk menghasilkan kemasan Zak 40kg berkualitas tinggi.
               </p>
             </div>
             
@@ -186,7 +190,7 @@ const Index = () => {
               <h3 className="text-xl font-semibold text-ywm-dark mb-4">Distribusi Luas</h3>
               <p className="text-gray-600 leading-relaxed">
                 Jaringan distribusi yang mencakup seluruh Aceh dan Sumatera Utara 
-                dengan armada transport yang handal dan tepat waktu.
+                dengan armada transport yang handal dan pengiriman tepat waktu.
               </p>
             </div>
             
@@ -205,7 +209,7 @@ const Index = () => {
           <div className="text-center mt-12">
             <Link 
               to="/layanan" 
-              className="inline-flex items-center bg-ywm-red text-white px-8 py-4 rounded-lg font-semibold text-lg hover:bg-red-700 transition-colors"
+              className="inline-flex items-center bg-ywm-red text-white px-8 py-4 rounded-xl font-semibold text-lg hover:bg-red-700 transition-colors shadow-lg"
             >
               Lihat Semua Layanan
               <ArrowRight className="ml-2" size={20} />

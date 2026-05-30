@@ -151,18 +151,52 @@ Mohon segera direspons. Terima kasih.`;
   return (
     <Layout>
       {/* Hero Section */}
-      <section className="py-20 bg-gradient-to-r from-ywm-red to-red-700 text-white">
-        <div className="container mx-auto px-4 text-center">
+      <section className="py-20 bg-gradient-to-r from-ywm-red to-red-700 text-white relative overflow-hidden">
+        <div className="absolute inset-0 bg-[url('/images/hero-factory.png')] bg-cover bg-center opacity-10"></div>
+        <div className="container mx-auto px-4 text-center relative z-10">
           <h1 className="text-5xl font-bold mb-6 animate-fade-in">Hubungi Kami</h1>
-          <p className="text-xl max-w-3xl mx-auto animate-fade-in">
-            Silakan hubungi kami untuk konsultasi, pemesanan, atau informasi lebih lanjut
+          <p className="text-xl max-w-3xl mx-auto animate-fade-in text-red-50">
+            Silakan hubungi kami untuk konsultasi, pemesanan, atau informasi lebih lanjut tentang produk Semen Padang PCC
           </p>
         </div>
       </section>
 
-      {/* Contact Form & Info */}
-      <section className="py-20 bg-white">
+      {/* Quick WhatsApp Contact */}
+      <section className="py-10 bg-gradient-to-r from-green-50 to-emerald-50 border-b border-green-100">
         <div className="container mx-auto px-4">
+          <div className="flex flex-col md:flex-row gap-6 justify-center items-center">
+            <a
+              href="https://wa.me/6285322624048?text=Halo%2C%20saya%20ingin%20memesan%20Semen%20Padang"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-3 bg-[#25D366] hover:bg-[#1EBE5A] text-white px-6 py-4 rounded-xl font-semibold text-lg transition-all transform hover:scale-105 shadow-lg"
+            >
+              <MessageCircle size={24} />
+              <div className="text-left">
+                <p className="font-bold">Pemesanan Produk</p>
+                <p className="text-green-100 text-sm">+62 853-2262-4048</p>
+              </div>
+            </a>
+            <a
+              href="https://wa.me/6285322624038?text=Halo%2C%20saya%20ingin%20bertanya%20tentang%20produk%20Semen%20Padang"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-3 bg-[#25D366] hover:bg-[#1EBE5A] text-white px-6 py-4 rounded-xl font-semibold text-lg transition-all transform hover:scale-105 shadow-lg"
+            >
+              <Phone size={24} />
+              <div className="text-left">
+                <p className="font-bold">Konsultasi & Informasi</p>
+                <p className="text-green-100 text-sm">+62 853-2262-4038</p>
+              </div>
+            </a>
+          </div>
+        </div>
+      </section>
+
+      {/* Contact Form & Info */}
+      <section className="py-20 bg-gradient-to-b from-gray-50 to-white relative">
+        <div className="absolute inset-0 bg-[url('/images/hero-factory.png')] bg-cover bg-center opacity-[0.03]"></div>
+        <div className="container mx-auto px-4 relative z-10">
           <div className="grid lg:grid-cols-2 gap-12">
             {/* Contact Form */}
             <div className="animate-fade-in">
@@ -353,14 +387,14 @@ Mohon segera direspons. Terima kasih.`;
                 </div>
 
                 {/* Kantor Pusat */}
-                <div className="bg-gray-50 p-6 rounded-lg">
+                <div className="glass-card p-6">
                   <h3 className="text-xl font-semibold text-ywm-dark mb-4">Kantor Pusat</h3>
                   <div className="space-y-3">
                     <div className="flex items-start space-x-3">
                       <MapPin className="text-ywm-red mt-1 flex-shrink-0" size={20} />
                       <div>
                         <p className="text-gray-700">
-                          Jl. Gatot Subroto No. 123<br />
+                          Jl. Paduan Tenaga No. 12<br />
                           Medan, Sumatera Utara 20112
                         </p>
                       </div>
@@ -377,15 +411,15 @@ Mohon segera direspons. Terima kasih.`;
                 </div>
 
                 {/* Pabrik */}
-                <div className="bg-gray-50 p-6 rounded-lg">
-                  <h3 className="text-xl font-semibold text-ywm-dark mb-4">Pabrik Pengantongan</h3>
+                <div className="glass-card p-6">
+                  <h3 className="text-xl font-semibold text-ywm-dark mb-4">Packing Plant</h3>
                   <div className="space-y-3">
                     <div className="flex items-start space-x-3">
                       <MapPin className="text-ywm-red mt-1 flex-shrink-0" size={20} />
                       <div>
                         <p className="text-gray-700">
-                          Pelabuhan Krueng Geukueh<br />
-                          Lhokseumawe, Aceh 24352
+                          Jl. Pelabuhan Umum, Kr. Geukuh<br />
+                          Aceh Utara, Aceh 24352
                         </p>
                       </div>
                     </div>
@@ -401,28 +435,28 @@ Mohon segera direspons. Terima kasih.`;
                 </div>
 
                 {/* Jam Operasional */}
-                <div className="bg-ywm-red text-white p-6 rounded-lg">
+                <div className="glass-card-dark text-white p-6">
                   <h3 className="text-xl font-semibold mb-4">Jam Operasional</h3>
                   <div className="space-y-2">
                     <div className="flex items-center space-x-3">
                       <Clock size={20} />
                       <div>
                         <p className="font-medium">Senin - Jumat</p>
-                        <p className="text-gray-200">08:00 - 17:00 WIB</p>
+                        <p className="text-red-200">08:00 - 17:00 WIB</p>
                       </div>
                     </div>
                     <div className="flex items-center space-x-3">
                       <Clock size={20} />
                       <div>
                         <p className="font-medium">Sabtu</p>
-                        <p className="text-gray-200">08:00 - 12:00 WIB</p>
+                        <p className="text-red-200">08:00 - 12:00 WIB</p>
                       </div>
                     </div>
                     <div className="flex items-center space-x-3">
                       <Clock size={20} />
                       <div>
                         <p className="font-medium">Minggu</p>
-                        <p className="text-gray-200">Tutup</p>
+                        <p className="text-red-200">Tutup</p>
                       </div>
                     </div>
                   </div>
@@ -459,7 +493,7 @@ Mohon segera direspons. Terima kasih.`;
       </section>
 
       {/* Emergency Contact */}
-      <section className="py-16 bg-gray-50">
+      <section className="py-16 bg-white">
         <div className="container mx-auto px-4">
           <div className="text-center">
             <h2 className="text-3xl font-bold text-ywm-dark mb-4">
@@ -480,9 +514,21 @@ Mohon segera direspons. Terima kasih.`;
                 <Mail className="text-ywm-red" size={24} />
                 <div className="text-left">
                   <p className="font-semibold text-ywm-dark">Email Darurat</p>
-                  <p className="text-gray-600">emergency@ywm.co.id</p>
+                  <p className="text-gray-600">yogawibawamandiri@gmail.com</p>
                 </div>
               </div>
+              <a
+                href="https://wa.me/6285322624038"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center space-x-3 bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-xl transition-colors shadow-lg"
+              >
+                <MessageCircle size={24} />
+                <div className="text-left">
+                  <p className="font-semibold">WhatsApp</p>
+                  <p className="text-green-100 text-sm">+62 853-2262-4038</p>
+                </div>
+              </a>
             </div>
             <div className="mt-8">
               <button

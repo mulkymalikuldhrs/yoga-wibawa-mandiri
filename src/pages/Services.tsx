@@ -8,8 +8,9 @@ const Services = () => {
   return (
     <Layout>
       {/* Hero Section */}
-      <section className="py-20 bg-gradient-to-r from-ywm-red to-red-700 text-white">
-        <div className="container mx-auto px-4 text-center">
+      <section className="py-20 bg-gradient-to-r from-ywm-red to-red-700 text-white relative overflow-hidden">
+        <div className="absolute inset-0 bg-[url('/images/hero-factory.png')] bg-cover bg-center opacity-10"></div>
+        <div className="container mx-auto px-4 text-center relative z-10">
           <h1 className="text-5xl font-bold mb-6 animate-fade-in">Layanan Kami</h1>
           <p className="text-xl max-w-3xl mx-auto animate-fade-in">
             Layanan Pengantongan Semen Padang Profesional — Kualitas Terjamin, Tepat Waktu
@@ -104,7 +105,7 @@ const Services = () => {
       </section>
 
       {/* Facilities & Capacity */}
-      <section className="py-20 bg-gray-50">
+      <section className="py-20 bg-white">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-ywm-dark mb-4">
@@ -117,7 +118,7 @@ const Services = () => {
 
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="animate-fade-in">
-              <h3 className="text-2xl font-bold text-ywm-dark mb-6">Spesifikasi Mesin & Kapasitas</h3>
+              <h3 className="text-2xl font-bold text-ywm-dark mb-6">Spesifikasi Fasilitas & Kapasitas</h3>
               
               <div className="space-y-6">
                 <div className="flex items-start space-x-4">
@@ -125,8 +126,8 @@ const Services = () => {
                     <Factory className="text-white" size={24} />
                   </div>
                   <div>
-                    <h4 className="font-semibold text-ywm-dark">Mesin Pengantongan Otomatis</h4>
-                    <p className="text-gray-600">Kapasitas 500 ton per hari dengan sistem penimbangan digital presisi tinggi</p>
+                    <h4 className="font-semibold text-ywm-dark">2 Unit Silo Penyimpanan</h4>
+                    <p className="text-gray-600">Kapasitas 500 ton per silo, total penyimpanan 1.000 ton semen curah</p>
                   </div>
                 </div>
 
@@ -136,7 +137,7 @@ const Services = () => {
                   </div>
                   <div>
                     <h4 className="font-semibold text-ywm-dark">Sistem Kontrol Kualitas</h4>
-                    <p className="text-gray-600">Laboratorium in-house dengan pengujian setiap batch produksi</p>
+                    <p className="text-gray-600">Laboratorium in-house dengan pengujian setiap batch produksi sesuai SNI 15-2049</p>
                   </div>
                 </div>
 
@@ -195,7 +196,7 @@ const Services = () => {
       </section>
 
       {/* Quality Standards */}
-      <section className="py-20 bg-white">
+      <section className="py-20 bg-gradient-to-b from-gray-50 to-white">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-ywm-dark mb-4">
@@ -311,12 +312,13 @@ const Services = () => {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 bg-ywm-red text-white">
-        <div className="container mx-auto px-4 text-center">
+      <section className="py-20 bg-gradient-to-r from-ywm-red to-red-700 text-white relative overflow-hidden">
+        <div className="absolute inset-0 bg-[url('/images/hero-factory.png')] bg-cover bg-center opacity-10"></div>
+        <div className="container mx-auto px-4 text-center relative z-10">
           <h2 className="text-4xl font-bold mb-6">
             Butuh Konsultasi Layanan?
           </h2>
-          <p className="text-xl mb-8 max-w-2xl mx-auto">
+          <p className="text-xl mb-8 max-w-2xl mx-auto text-red-50">
             Tim ahli kami siap membantu Anda memilih solusi terbaik untuk kebutuhan proyek Anda.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">

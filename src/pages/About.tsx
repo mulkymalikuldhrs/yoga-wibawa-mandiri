@@ -1,6 +1,6 @@
 
 import Layout from '@/components/Layout';
-import { Target, Eye, Users, Award } from 'lucide-react';
+import { Target, Eye, Users, Award, Phone } from 'lucide-react';
 
 const About = () => {
   return (
@@ -27,17 +27,18 @@ const About = () => {
               </h2>
               <p className="text-gray-700 text-lg leading-relaxed mb-6">
                 PT. Yoga Wibawa Mandiri didirikan sebagai perusahaan yang bergerak di bidang 
-                pengantongan Semen Padang dengan lokasi strategis di Pelabuhan Krueng Geukueh, 
-                Lhokseumawe, Aceh.
+                pengantongan Semen Padang PCC dengan lokasi strategis di Jl. Pelabuhan Umum, Kr. Geukuh,
+                Aceh Utara, Aceh.
               </p>
               <p className="text-gray-700 text-lg leading-relaxed mb-6">
-                Dengan visi menjadi perusahaan pengantongan semen terdepan di wilayah Aceh 
-                dan Sumatera Utara, kami telah melayani kebutuhan konstruksi dengan komitmen 
-                tinggi terhadap kualitas dan kepuasan pelanggan.
+                Dilengkapi dengan 2 unit silo penyimpanan berkapasitas 500 ton masing-masing dan 
+                2 unit mesin pengantongan untuk kemasan Zak 40kg, kami melayani kebutuhan konstruksi 
+                dengan standar kualitas Semen Padang yang terjaga.
               </p>
               <p className="text-gray-700 text-lg leading-relaxed">
-                Berlokasi strategis di pelabuhan, kami mampu mengoptimalkan rantai distribusi 
-                dan memberikan pelayanan yang efisien kepada seluruh mitra bisnis.
+                Berlokasi strategis di kawasan pelabuhan, kami mampu mengoptimalkan rantai distribusi 
+                dan memberikan pelayanan yang efisien kepada seluruh mitra bisnis di wilayah 
+                Aceh dan Sumatera Utara.
               </p>
             </div>
             <div className="animate-slide-in-right">
@@ -83,9 +84,9 @@ const About = () => {
               </div>
               <h3 className="text-2xl font-bold text-ywm-dark mb-6">Misi</h3>
               <ul className="text-gray-700 text-lg leading-relaxed text-left space-y-3">
-                <li>• Menyediakan produk semen berkualitas tinggi dengan standar internasional</li>
-                <li>• Mengoptimalkan teknologi modern dalam proses pengantongan</li>
-                <li>• Membangun jaringan distribusi yang luas dan efisien</li>
+                <li>• Menyediakan Semen Padang PCC berkualitas tinggi sesuai standar SNI</li>
+                <li>• Mengoptimalkan teknologi modern dalam proses pengantongan Zak 40kg dan Curah</li>
+                <li>• Membangun jaringan distribusi yang luas dan efisien di seluruh Aceh & Sumut</li>
                 <li>• Memberikan pelayanan prima kepada seluruh mitra bisnis</li>
                 <li>• Berkontribusi dalam pembangunan ekonomi daerah</li>
               </ul>
@@ -127,7 +128,7 @@ const About = () => {
               <p className="text-ywm-red font-bold mb-2">Ir. Wibawa Mandiri</p>
               <p className="text-gray-500 text-xs mb-3">Production & Quality</p>
               <p className="text-gray-600">
-                Mengelola proses pengantongan dan menjamin kualitas produk
+                Mengelola proses pengantongan Zak 40kg & Curah serta menjamin kualitas produk
               </p>
             </div>
 
@@ -147,11 +148,12 @@ const About = () => {
       </section>
 
       {/* Values */}
-      <section className="py-20 bg-ywm-red text-white">
-        <div className="container mx-auto px-4">
+      <section className="py-20 bg-gradient-to-r from-ywm-red to-red-700 text-white relative overflow-hidden">
+        <div className="absolute inset-0 bg-[url('/images/hero-factory.png')] bg-cover bg-center opacity-10"></div>
+        <div className="container mx-auto px-4 relative z-10">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold mb-4">Nilai-Nilai Perusahaan</h2>
-            <p className="text-xl max-w-2xl mx-auto">
+            <p className="text-xl max-w-2xl mx-auto text-red-50">
               Prinsip-prinsip yang menjadi landasan dalam setiap kegiatan bisnis kami
             </p>
           </div>
@@ -162,8 +164,8 @@ const About = () => {
                 <Award className="text-ywm-red" size={32} />
               </div>
               <h3 className="text-xl font-semibold mb-3">Kualitas</h3>
-              <p className="text-gray-100">
-                Komitmen terhadap standar kualitas tertinggi dalam setiap produk
+              <p className="text-red-100">
+                Komitmen terhadap standar kualitas tertinggi dalam setiap produk Semen Padang PCC
               </p>
             </div>
 
@@ -172,8 +174,8 @@ const About = () => {
                 <Users className="text-ywm-red" size={32} />
               </div>
               <h3 className="text-xl font-semibold mb-3">Integritas</h3>
-              <p className="text-gray-100">
-                Menjalankan bisnis dengan transparansi dan kejujuran
+              <p className="text-red-100">
+                Menjalankan bisnis dengan transparansi dan kejujuran di setiap transaksi
               </p>
             </div>
 
@@ -182,8 +184,8 @@ const About = () => {
                 <Target className="text-ywm-red" size={32} />
               </div>
               <h3 className="text-xl font-semibold mb-3">Inovasi</h3>
-              <p className="text-gray-100">
-                Mengadopsi teknologi terbaru untuk meningkatkan efisiensi
+              <p className="text-red-100">
+                Mengadopsi teknologi terbaru untuk meningkatkan efisiensi pengantongan
               </p>
             </div>
 
@@ -192,8 +194,8 @@ const About = () => {
                 <Eye className="text-ywm-red" size={32} />
               </div>
               <h3 className="text-xl font-semibold mb-3">Kepercayaan</h3>
-              <p className="text-gray-100">
-                Membangun hubungan jangka panjang berdasarkan kepercayaan
+              <p className="text-red-100">
+                Membangun hubungan jangka panjang berdasarkan kepercayaan mitra bisnis
               </p>
             </div>
           </div>

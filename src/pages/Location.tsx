@@ -1,6 +1,6 @@
 
 import Layout from '@/components/Layout';
-import { MapPin, Phone, Clock, Navigation } from 'lucide-react';
+import { MapPin, Phone, Clock, Navigation, MessageCircle } from 'lucide-react';
 
 const Location = () => {
   return (
@@ -25,7 +25,7 @@ const Location = () => {
               Pabrik <span className="text-ywm-red">Pengantongan</span>
             </h2>
             <p className="text-gray-600 text-lg max-w-2xl mx-auto">
-              Berlokasi strategis di Pelabuhan Krueng Geukueh, Lhokseumawe untuk kemudahan akses distribusi
+              Berlokasi strategis di Jl. Pelabuhan Umum, Kr. Geukuh, Aceh Utara untuk kemudahan akses distribusi
             </p>
           </div>
 
@@ -46,16 +46,16 @@ const Location = () => {
           {/* Location Details */}
           <div className="grid md:grid-cols-2 gap-12">
             <div className="animate-fade-in">
-              <h3 className="text-2xl font-bold text-ywm-dark mb-6">Lokasi Pabrik</h3>
+              <h3 className="text-2xl font-bold text-ywm-dark mb-6">Packing Plant (Pabrik)</h3>
               <div className="space-y-4">
                 <div className="glass-frosted flex items-start space-x-4 p-4 rounded-xl">
                   <MapPin className="text-ywm-red mt-1 flex-shrink-0" size={24} />
                   <div>
                     <h4 className="font-semibold text-ywm-dark">Alamat Lengkap</h4>
                     <p className="text-gray-600">
-                      Pelabuhan Krueng Geukueh<br />
-                      Lhokseumawe, Aceh 24352<br />
-                      Indonesia
+                      Jl. Pelabuhan Umum, Kr. Geukuh<br />
+                      Kec. Kuta Makmur, Aceh Utara<br />
+                      Aceh 24352, Indonesia
                     </p>
                   </div>
                 </div>
@@ -63,11 +63,10 @@ const Location = () => {
                 <div className="glass-frosted flex items-start space-x-4 p-4 rounded-xl">
                   <Navigation className="text-ywm-red mt-1 flex-shrink-0" size={24} />
                   <div>
-                    <h4 className="font-semibold text-ywm-dark">Akses Transportasi</h4>
+                    <h4 className="font-semibold text-ywm-dark">Koordinat</h4>
                     <p className="text-gray-600">
-                      • 15 menit dari Bandara Malikussaleh<br />
-                      • 20 menit dari pusat kota Lhokseumawe<br />
-                      • Akses langsung ke pelabuhan
+                      5.1775° N, 97.1315° E<br />
+                      Krueng Geukueh, Aceh Utara
                     </p>
                   </div>
                 </div>
@@ -94,7 +93,7 @@ const Location = () => {
                   <div>
                     <h4 className="font-semibold text-ywm-dark">Alamat Kantor</h4>
                     <p className="text-gray-600">
-                      Jl. Gatot Subroto No. 123<br />
+                      Jl. Paduan Tenaga No. 12<br />
                       Medan, Sumatera Utara 20112<br />
                       Indonesia
                     </p>
@@ -116,11 +115,10 @@ const Location = () => {
                 <div className="glass-frosted flex items-start space-x-4 p-4 rounded-xl">
                   <Clock className="text-ywm-red mt-1 flex-shrink-0" size={24} />
                   <div>
-                    <h4 className="font-semibold text-ywm-dark">Jam Kerja</h4>
+                    <h4 className="font-semibold text-ywm-dark">WhatsApp</h4>
                     <p className="text-gray-600">
-                      Senin - Jumat: 08:00 - 17:00 WIB<br />
-                      Sabtu: 08:00 - 12:00 WIB<br />
-                      Minggu: Tutup
+                      Pemesanan: +62 853-2262-4048<br />
+                      Informasi: +62 853-2262-4038
                     </p>
                   </div>
                 </div>

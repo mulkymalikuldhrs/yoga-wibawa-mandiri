@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="PT Yoga Wibawa Mandiri — Dashboard Teknis Komprehensif">
+    <meta name="theme-color" content="#0f0c29">
+    <title>YWM Dashboard — PT Yoga Wibawa Mandiri</title>
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/glassmorphic.css">
+    <link rel="stylesheet" href="css/dashboard-layout.css">
+    <link rel="stylesheet" href="css/sidebar.css">
+    <link rel="stylesheet" href="css/cards.css">
+    <link rel="stylesheet" href="css/ai-panel.css">
+    <link rel="stylesheet" href="css/responsive.css">
+
+    <!-- Puter.js SDK -->
+    <script src="https://js.puter.com/v2/"></script>
+</head>
+<body>
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- MAIN DASHBOARD LAYOUT                      -->
+    <!-- ═══════════════════════════════════════════ -->
+    <div id="dashboard-app" class="dashboard-layout">
+
+        <!-- ─── SIDEBAR ─── -->
+        <aside id="sidebar" class="sidebar glass">
+            <div class="sidebar-header">
+                <div class="logo-area">
+                    <div class="logo-icon">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2">
+                            <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+                            <path d="M2 17l10 5 10-5"/>
+                            <path d="M2 12l10 5 10-5"/>
+                        </svg>
+                    </div>
+                    <div class="logo-text">
+                        <h1>YWM</h1>
+                        <span>Dashboard</span>
+                    </div>
+                </div>
+                <button id="sidebar-toggle" class="btn-icon btn-toggle" title="Toggle Sidebar">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M15 18l-6-6 6-6"/>
+                    </svg>
+                </button>
+            </div>
+
+            <nav class="sidebar-nav">
+                <div class="nav-section">
+                    <span class="nav-section-title">UTAMA</span>
+                    <a href="#home" class="nav-item active" data-module="home">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                        <span>Beranda</span>
+                    </a>
+                    <a href="#analytics" class="nav-item" data-module="analytics">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg>
+                        <span>Analytics</span>
+                    </a>
+                </div>
+
+                <div class="nav-section">
+                    <span class="nav-section-title">OPERASIONAL</span>
+                    <a href="#spareparts" class="nav-item" data-module="spareparts">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg>
+                        <span>Spare Parts</span>
+                    </a>
+                    <a href="#production" class="nav-item" data-module="production">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/></svg>
+                        <span>Produksi</span>
+                    </a>
+                    <a href="#maintenance" class="nav-item" data-module="maintenance">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+                        <span>Maintenance</span>
+                    </a>
+                    <a href="#team" class="nav-item" data-module="team">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+                        <span>Tim & Aktivitas</span>
+                    </a>
+                    <a href="#quality" class="nav-item" data-module="quality">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                        <span>Quality Control</span>
+                    </a>
+                </div>
+
+                <div class="nav-section">
+                    <span class="nav-section-title">MANAJEMEN</span>
+                    <a href="#finance" class="nav-item" data-module="finance">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+                        <span>Keuangan</span>
+                    </a>
+                    <a href="#hr" class="nav-item" data-module="hr">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg>
+                        <span>HR & Payroll</span>
+                    </a>
+                    <a href="#purchasing" class="nav-item" data-module="purchasing">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/></svg>
+                        <span>Purchasing</span>
+                    </a>
+                    <a href="#safety" class="nav-item" data-module="safety">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                        <span>Safety / HSE</span>
+                    </a>
+                </div>
+
+                <div class="nav-section">
+                    <span class="nav-section-title">DOKUMEN & AI</span>
+                    <a href="#documents" class="nav-item" data-module="documents">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                        <span>Dokumen & OCR</span>
+                    </a>
+                    <a href="#reports" class="nav-item" data-module="reports">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                        <span>Laporan</span>
+                    </a>
+                    <a href="#notifications" class="nav-item" data-module="notifications">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+                        <span>Notifikasi</span>
+                        <span id="notif-badge" class="badge badge-error hidden">0</span>
+                    </a>
+                </div>
+            </nav>
+
+            <div class="sidebar-footer">
+                <a href="#settings" class="nav-item" data-module="settings">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+                    <span>Pengaturan</span>
+                </a>
+                <div class="user-info" id="user-info">
+                    <div class="user-avatar" id="user-avatar">?</div>
+                    <div class="user-details">
+                        <span class="user-name" id="user-name">Guest</span>
+                        <span class="user-role" id="user-role">Viewer</span>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- ─── MAIN CONTENT AREA ─── -->
+        <div class="main-wrapper">
+            <!-- HEADER -->
+            <header id="header" class="header glass">
+                <div class="header-left">
+                    <button id="mobile-menu-btn" class="btn-icon mobile-only" title="Menu">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+                    </button>
+                    <div class="breadcrumb">
+                        <span class="breadcrumb-root">Dashboard</span>
+                        <span class="breadcrumb-sep">/</span>
+                        <span id="breadcrumb-current" class="breadcrumb-current">Beranda</span>
+                    </div>
+                </div>
+                <div class="header-center">
+                    <div class="search-bar glass-light">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                        <input type="text" id="global-search" placeholder="Cari modul, data, atau tanya AI..." class="input-glass">
+                        <kbd class="search-kbd">Ctrl+K</kbd>
+                    </div>
+                </div>
+                <div class="header-right">
+                    <div class="connection-status" id="connection-status">
+                        <span id="connection-status-dot" class="status-dot online"></span>
+                        <span id="connection-status-text" class="status-text">Terhubung</span>
+                    </div>
+                    <button id="ai-toggle-btn" class="btn-icon" title="AI Assistant" data-tooltip="AI Assistant">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a2 2 0 012 2c0 .74-.4 1.39-1 1.73V7h1a7 7 0 017 7h1a1 1 0 011 1v3a1 1 0 01-1 1h-1.27A7 7 0 0112 22a7 7 0 01-6.73-5H4a1 1 0 01-1-1v-3a1 1 0 011-1h1a7 7 0 017-7h1V5.73c-.6-.34-1-.99-1-1.73a2 2 0 012-2z"/><circle cx="9" cy="14" r="1"/><circle cx="15" cy="14" r="1"/></svg>
+                    </button>
+                    <button id="notif-btn" class="btn-icon" title="Notifikasi" data-tooltip="Notifikasi">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+                        <span id="header-notif-dot" class="notif-dot hidden"></span>
+                    </button>
+                    <button id="voice-input-btn" class="btn-icon" title="Input Suara" data-tooltip="Input Suara">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+                    </button>
+                </div>
+            </header>
+
+            <!-- CONTENT AREA -->
+            <main id="content-area" class="content-area">
+                <!-- Module content will be dynamically rendered here -->
+                <div id="module-container" class="module-container">
+                    <!-- Loading State -->
+                    <div id="loading-screen" class="loading-screen flex-center">
+                        <div class="loading-content">
+                            <div class="spinner spinner-lg"></div>
+                            <p>Memuat Dashboard YWM...</p>
+                            <p class="text-muted text-sm">Menghubungkan ke Puter.js</p>
+                        </div>
+                    </div>
+                </div>
+            </main>
+
+            <!-- STATUS BAR -->
+            <footer id="statusbar" class="statusbar glass-light">
+                <div class="statusbar-left">
+                    <span class="status-item">
+                        <span id="status-dot" class="status-dot online"></span>
+                        <span id="status-connection">Online</span>
+                    </span>
+                    <span class="status-item">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                        <span id="status-time">--:--</span>
+                    </span>
+                </div>
+                <div class="statusbar-center">
+                    <span id="status-module">Beranda</span>
+                </div>
+                <div class="statusbar-right">
+                    <span class="status-item">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/></svg>
+                        Puter.js
+                    </span>
+                    <span class="status-item">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                        YWM v3.0
+                    </span>
+                </div>
+            </footer>
+        </div>
+
+        <!-- ─── AI ASSISTANT PANEL ─── -->
+        <div id="ai-panel" class="ai-panel glass hidden">
+            <div class="ai-panel-header">
+                <div class="ai-title">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><path d="M12 2a2 2 0 012 2c0 .74-.4 1.39-1 1.73V7h1a7 7 0 017 7h1a1 1 0 011 1v3a1 1 0 01-1 1h-1.27A7 7 0 0112 22a7 7 0 01-6.73-5H4a1 1 0 01-1-1v-3a1 1 0 011-1h1a7 7 0 017-7h1V5.73c-.6-.34-1-.99-1-1.73a2 2 0 012-2z"/><circle cx="9" cy="14" r="1"/><circle cx="15" cy="14" r="1"/></svg>
+                    <h3>AI Assistant</h3>
+                </div>
+                <div class="ai-header-actions">
+                    <select id="ai-model-select" class="select-glass btn-sm">
+                        <option value="gpt-4o-mini">GPT-4o-mini</option>
+                        <option value="gpt-4o">GPT-4o</option>
+                        <option value="claude-3-5-sonnet">Claude 3.5</option>
+                        <option value="gemini-1.5-flash">Gemini Flash</option>
+                        <option value="deepseek-chat">DeepSeek</option>
+                    </select>
+                    <button id="ai-close-btn" class="btn-icon btn-sm" title="Tutup">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                    </button>
+                </div>
+            </div>
+            <div class="ai-chat-messages" id="ai-chat-messages">
+                <div class="ai-welcome">
+                    <div class="ai-avatar-lg">
+                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.5"><path d="M12 2a2 2 0 012 2c0 .74-.4 1.39-1 1.73V7h1a7 7 0 017 7h1a1 1 0 011 1v3a1 1 0 01-1 1h-1.27A7 7 0 0112 22a7 7 0 01-6.73-5H4a1 1 0 01-1-1v-3a1 1 0 011-1h1a7 7 0 017-7h1V5.73c-.6-.34-1-.99-1-1.73a2 2 0 012-2z"/><circle cx="9" cy="14" r="1"/><circle cx="15" cy="14" r="1"/></svg>
+                    </div>
+                    <h4>AI Assistant YWM</h4>
+                    <p>Tanyakan apa saja tentang operasional PT Yoga Wibawa Mandiri. Saya bisa membantu input data, analisis, generate laporan, dan lainnya.</p>
+                    <div class="ai-quick-actions">
+                        <button class="btn btn-sm glass" onclick="YWM.App.quickAI('Bagaimana status produksi hari ini?')">Status Produksi</button>
+                        <button class="btn btn-sm glass" onclick="YWM.App.quickAI('Tampilkan spare part yang stoknya rendah')">Stok Rendah</button>
+                        <button class="btn btn-sm glass" onclick="YWM.App.quickAI('Generate laporan maintenance minggu ini')">Laporan Maintenance</button>
+                        <button class="btn btn-sm glass" onclick="YWM.App.quickAI('Ada work order yang overdue?')">WO Overdue</button>
+                    </div>
+                </div>
+            </div>
+            <div class="ai-input-area">
+                <div class="ai-input-wrapper">
+                    <button id="ai-voice-btn" class="btn-icon btn-sm" title="Voice Input">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2"/></svg>
+                    </button>
+                    <input type="text" id="ai-chat-input" placeholder="Ketik pesan atau tanya AI..." class="input-glass">
+                    <button id="ai-send-btn" class="btn btn-accent btn-sm" title="Kirim">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ─── MODAL OVERLAY ─── -->
+    <div id="modal-overlay" class="modal-overlay hidden">
+        <div id="modal-content" class="modal-content">
+            <div class="modal-header">
+                <h3 id="modal-title">Modal</h3>
+                <button id="modal-close-btn" class="btn-icon btn-sm" onclick="YWM.UI.closeModal()">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </button>
+            </div>
+            <div class="modal-body" id="modal-body"></div>
+            <div class="modal-footer" id="modal-footer"></div>
+        </div>
+    </div>
+
+    <!-- ─── TOAST CONTAINER ─── -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- JAVASCRIPT MODULES                         -->
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- Core -->
+    <script src="js/utils/formatters.js"></script>
+    <script src="js/utils/validators.js"></script>
+    <script src="js/puter-init.js"></script>
+    <script src="js/ai-config.js"></script>
+    <script src="js/ai-assistant.js"></script>
+    <script src="js/voice-handler.js"></script>
+    <script src="js/ocr-handler.js"></script>
+    <script src="js/smart-input.js"></script>
+    <script src="js/report-generator.js"></script>
+
+    <!-- Dashboard Modules -->
+    <script src="js/modules/app.js"></script>
+    <script src="js/modules/home.js"></script>
+    <script src="js/modules/spareparts.js"></script>
+    <script src="js/modules/production.js"></script>
+    <script src="js/modules/maintenance.js"></script>
+    <script src="js/modules/team.js"></script>
+    <script src="js/modules/quality.js"></script>
+    <script src="js/modules/finance.js"></script>
+    <script src="js/modules/hr.js"></script>
+    <script src="js/modules/purchasing.js"></script>
+    <script src="js/modules/safety.js"></script>
+    <script src="js/modules/documents.js"></script>
+    <script src="js/modules/reports.js"></script>
+    <script src="js/modules/notifications.js"></script>
+    <script src="js/modules/analytics.js"></script>
+    <script src="js/modules/settings.js"></script>
+
+    <!-- App Bootstrap -->
+    <script>
+        // Initialize dashboard when DOM is ready
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                await YWM.App.init();
+            } catch (err) {
+                console.error('[YWM] Fatal initialization error:', err);
+                document.getElementById('loading-screen').innerHTML = `
+                    <div class="loading-content">
+                        <p style="color: var(--status-error); font-size: 1.2rem;">Gagal Memuat Dashboard</p>
+                        <p class="text-muted">${err.message}</p>
+                        <button class="btn btn-accent" onclick="location.reload()">Coba Lagi</button>
+                    </div>
+                `;
+            }
+        });
+    </script>
+</body>
+</html>

@@ -34,10 +34,10 @@ const Header = () => {
               <h1 className="text-slate-800 font-bold text-lg leading-tight">PT. Yoga Wibawa Mandiri</h1>
               <p className="text-slate-500 text-sm">Pengantongan Semen Padang Lhokseumawe</p>
             </div>
-          </div>
+          </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden lg:flex space-x-8">
+          <nav className="hidden lg:flex items-center space-x-6">
             {navigationItems.map((item) => (
               <Link
                 key={item.path}
@@ -49,6 +49,15 @@ const Header = () => {
                 {item.name}
               </Link>
             ))}
+            <a
+              href="https://wa.me/6285322624048?text=Halo%2C%20saya%20ingin%20bertanya%20tentang%20produk%20Semen%20Padang"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-1.5 bg-[#25D366] hover:bg-[#1EBE5A] text-white px-4 py-2 rounded-lg font-semibold text-sm transition-all shadow-md hover:shadow-lg"
+            >
+              <MessageCircle size={16} />
+              WhatsApp
+            </a>
           </nav>
 
           {/* Right side: Mitra Resmi badge + Developer credit */}
