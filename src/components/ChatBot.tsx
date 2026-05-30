@@ -6,7 +6,8 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { MessageCircle, X, Send, Bot, User, Loader2, Phone } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { chatWithAiStream, checkAIHealth } from '@/lib/ywm-ai';
+import type { AiMessage } from '@/types/dashboard';
+import { chatWithAiStream, checkAIHealth, buildDashboardContext } from '@/lib/ywm-ai';
 
 interface Message {
   id: string;
@@ -100,6 +101,11 @@ const ChatBot = () => {
         timestamp: userMsg.timestamp.toISOString(),
       });
 
+      // Tambahkan context database untuk AI
+      const dashboardContext = await buildDashboardContext();
+      const systemMsg: AiMessage = { id: "ctx", role: "system", content: `Data YWM terkini:\n${dashboardContext}`, timestamp: new Date().toISOString() };
+      // Combine system context + user messages
+      const msgsWithContext = [systemMsg, ...chatMessages];
       await chatWithAiStream(
         aiMessages,
         (chunk) => {

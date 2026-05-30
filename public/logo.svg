@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 120" fill="none">
+  <rect width="400" height="120" rx="12" fill="url(#bg)"/>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#1e3a5f"/>
+      <stop offset="100%" stop-color="#0f2440"/>
+    </linearGradient>
+  </defs>
+  <!-- Factory icon -->
+  <g transform="translate(20, 25)">
+    <rect x="0" y="15" width="50" height="35" rx="3" fill="#e8c24a" opacity="0.9"/>
+    <rect x="8" y="5" width="6" height="10" fill="#e8c24a"/>
+    <rect x="22" y="0" width="6" height="15" fill="#e8c24a"/>
+    <rect x="36" y="8" width="6" height="7" fill="#e8c24a"/>
+    <circle cx="11" cy="40" r="3" fill="#1e3a5f"/>
+    <circle cx="25" cy="40" r="3" fill="#1e3a5f"/>
+    <circle cx="39" cy="40" r="3" fill="#1e3a5f"/>
+  </g>
+  <!-- Text -->
+  <text x="90" y="45" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#e8c24a" letter-spacing="2">PT. YOGA WIBAWA MANDIRI</text>
+  <text x="90" y="68" font-family="Arial, sans-serif" font-size="14" fill="#a0c4e8" letter-spacing="1">PENGANTONGAN SEMEN PADANG</text>
+  <line x1="90" y1="78" x2="380" y2="78" stroke="#e8c24a" stroke-opacity="0.5" stroke-width="1"/>
+  <text x="90" y="95" font-family="Arial, sans-serif" font-size="11" fill="#6a8aae">Pelabuhan Krueng Geukueh • Lhokseumawe • Aceh</text>
+  <text x="90" y="110" font-family="Arial, sans-serif" font-size="10" fill="#4a6a8e">ISO 9001:2015 • K3 • Ramah Lingkungan</text>
+</svg>
