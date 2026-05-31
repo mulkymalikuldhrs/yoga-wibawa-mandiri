@@ -28,7 +28,7 @@ export function checkAuth(req: VercelRequest): { authorized: boolean; error?: st
   // Check x-api-key header
   const providedKey = req.headers['x-api-key'] as string | undefined;
 
-  // Also check Authorization: Bearer <key>
+  // Also check Authorization: Bearer ***
   const authHeader = req.headers['authorization'] as string | undefined;
   const bearerKey = authHeader?.startsWith('Bearer ') ? authHeader.slice(7) : undefined;
 
