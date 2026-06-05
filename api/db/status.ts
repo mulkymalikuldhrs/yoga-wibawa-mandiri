@@ -61,7 +61,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   } catch (err: any) {
     return res.status(500).json({
       connected: false,
-      error: err.message,
+      error: 'Database connection failed',
       tables: [],
     });
   }

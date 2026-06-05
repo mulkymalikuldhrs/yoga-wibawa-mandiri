@@ -58,3 +58,10 @@ coverage/
 
 # Replit
 .replit
+
+# Security — never commit sensitive files
+*.pem
+*.crt
+*.key
+*.p12
+*.jks

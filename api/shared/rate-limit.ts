@@ -1,9 +1,20 @@
 // ============================================================
 // Shared rate limiter for AI endpoints
 // Simple in-memory sliding window rate limiter
+// With periodic cleanup to prevent memory leaks
 // ============================================================
 
 const rateLimitMap = new Map<string, { count: number; resetTime: number }>();
+
+// Cleanup expired entries every 5 minutes to prevent memory leaks
+setInterval(() => {
+  const now = Date.now();
+  for (const [ip, entry] of rateLimitMap.entries()) {
+    if (now > entry.resetTime) {
+      rateLimitMap.delete(ip);
+    }
+  }
+}, 5 * 60 * 1000);
 
 /**
  * Check if the given IP is within rate limits.

@@ -14,9 +14,9 @@ This project implements a multi-layer security model:
 |-------|------------|--------|
 | **Network** | HTTPS only (TLS 1.3), CORS configuration, Vercel CDN | ✅ Active |
 | **Application** | Content Security Policy, X-Frame-Options, X-XSS-Protection | ✅ Active |
-| **Data** | Input validation (Zod), Supabase RLS (ready), localStorage encryption (future) | 🚧 Partial |
-| **AI** | System prompt boundaries, user input sanitization, rate limiting (future) | 🚧 Partial |
-| **Authentication** | Supabase Auth (available), RBAC roles (defined, not enforced yet) | ⬜ Planned |
+| **Data** | Input validation (Zod), Supabase RLS (ready), field allowlists, sanitized errors | ✅ Active |
+| **AI** | System prompt boundaries, user input validation, rate limiting (in-memory with cleanup) | ✅ Active |
+| **Authentication** | API key auth (timing-safe), CORS origin validation, optional auth for dev | ✅ Active |
 
 ### 1. Supabase Row Level Security (RLS)
 
@@ -114,11 +114,11 @@ Proyek ini mengimplementasikan model keamanan berlapis:
 
 | Lapisan | Perlindungan | Status |
 |---------|-------------|--------|
-| **Jaringan** | HTTPS saja (TLS 1.3), CORS, CDN Vercel | ✅ Aktif |
+| **Jaringan** | HTTPS saja (TLS 1.3), CORS origin validation, CDN Vercel | ✅ Aktif |
 | **Aplikasi** | Content Security Policy, X-Frame-Options, X-XSS-Protection | ✅ Aktif |
-| **Data** | Validasi input (Zod), RLS Supabase (siap), enkripsi localStorage (masuk depan) | 🚧 Sebagian |
-| **AI** | Batasan system prompt, sanitasi input user, rate limiting (masuk depan) | 🚧 Sebagian |
-| **Autentikasi** | Supabase Auth (tersedia), RBAC (didefinisikan, belum diterapkan) | ⬜ Direncanakan |
+| **Data** | Validasi input (Zod), RLS Supabase (siap), field allowlists, sanitized errors | ✅ Aktif |
+| **AI** | Batasan system prompt, validasi input user, rate limiting (in-memory + cleanup) | ✅ Aktif |
+| **Autentikasi** | API key auth (timing-safe), CORS origin validation, optional auth for dev | ✅ Aktif |
 
 ### Praktik Keamanan untuk Kontributor
 

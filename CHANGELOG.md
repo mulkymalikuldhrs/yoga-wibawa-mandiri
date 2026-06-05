@@ -55,9 +55,9 @@
 
 ### Yang Perlu Disetel Manual
 1. **Vercel:** Set environment variables:
-   - `VITE_SUPABASE_URL=https://aymvpyehihbgmllcgilq.supabase.co`
-   - `VITE_SUPABASE_ANON_KEY=sb_publishable_yUsl4e5WRhQnqgXocx88hw_VX3ecjde`
-   - `SUPABASE_SERVICE_ROLE_KEY=<isi dari Supabase Dashboard>`
+   - `VITE_SUPABASE_URL` — Your Supabase project URL
+   - `VITE_SUPABASE_ANON_KEY` — Your Supabase anon/public key
+   - `SUPABASE_SERVICE_ROLE_KEY` — From Supabase Dashboard (server-side only, NEVER expose to client)
 2. **Logo:** Ganti `public/logo.svg` jika ingin logo resmi
 3. **PWA Icons:** Generate icon-192x192.png dan icon-512x512.png
 

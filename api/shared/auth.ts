@@ -6,6 +6,7 @@
 // ============================================================
 
 import type { VercelRequest, VercelResponse } from '@vercel/node';
+import crypto from 'crypto';
 
 /**
  * Checks API key authentication.
@@ -32,7 +33,19 @@ export function checkAuth(req: VercelRequest): { authorized: boolean; error?: st
   const authHeader = req.headers['authorization'] as string | undefined;
   const bearerKey = authHeader?.startsWith('Bearer ') ? authHeader.slice(7) : undefined;
 
-  if (providedKey === requiredKey || bearerKey === requiredKey) {
+  // Timing-safe comparison to prevent timing attacks
+  const requiredKeyBuf = Buffer.from(requiredKey, 'utf8');
+  const providedKeyBuf = providedKey ? Buffer.from(providedKey, 'utf8') : Buffer.alloc(0);
+  const bearerKeyBuf = bearerKey ? Buffer.from(bearerKey, 'utf8') : Buffer.alloc(0);
+
+  // Lengths must match for timing-safe comparison
+  if (providedKeyBuf.length === requiredKeyBuf.length &&
+      crypto.timingSafeEqual(providedKeyBuf, requiredKeyBuf)) {
+    return { authorized: true };
+  }
+
+  if (bearerKeyBuf.length === requiredKeyBuf.length &&
+      crypto.timingSafeEqual(bearerKeyBuf, requiredKeyBuf)) {
     return { authorized: true };
   }
 

@@ -47,9 +47,7 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
             <p className="text-slate-500 text-sm mb-4">
               Aplikasi mengalami error yang tidak terduga. Silakan muat ulang halaman.
             </p>
-            <p className="text-red-500/80 text-xs mb-6 font-mono">
-              {this.state.error?.message}
-            </p>
+            {/* Error details hidden to prevent information disclosure in production */}
             <div className="flex gap-3 justify-center">
               <button
                 onClick={this.handleReset}

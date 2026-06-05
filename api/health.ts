@@ -5,16 +5,14 @@
 
 import { createClient } from '@supabase/supabase-js';
 import type { VercelRequest, VercelResponse } from '@vercel/node';
+import { setCorsHeaders, handleCorsPreflightRequest } from '../shared/cors.js';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-  // CORS
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  // CORS — use shared helper (checks origin against allowed list)
+  setCorsHeaders(req, res);
 
-  if (req.method === 'OPTIONS') {
-    return res.status(200).end();
-  }
+  // Handle CORS preflight
+  if (handleCorsPreflightRequest(req, res)) return;
 
   // Quick DB check — no loop, just 1 table
   let db = 'not_configured';
@@ -33,7 +31,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   return res.status(200).json({
     status: 'ok',
     database: db,
-    version: '5.2.0',
+    version: '8.0.0',
     timestamp: new Date().toISOString(),
   });
 }

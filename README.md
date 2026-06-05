@@ -1,6 +1,6 @@
 # 🏗️ YWM Dashboard — PT. Yoga Wibawa Mandiri
 
-[![Version](https://img.shields.io/badge/Version-6.0.0-brightgreen)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/Version-8.0.0-brightgreen)](CHANGELOG.md)
 [![AI Powered](https://img.shields.io/badge/AI-Powered%20by%20z--ai-blue)](https://z-ai.dev)
 [![PWA Ready](https://img.shields.io/badge/PWA-Installable-orange)]()
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.5-blue)]()

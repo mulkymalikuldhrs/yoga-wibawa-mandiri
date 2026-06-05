@@ -162,7 +162,7 @@ export default defineConfig({
           } catch (err: any) {
             console.error('[YWM AI] Chat error:', err.message);
             if (!res.headersSent) {
-              sendJSON(res, 500, { error: 'Gagal mendapatkan respons AI', detail: err.message });
+              sendJSON(res, 500, { error: 'Gagal mendapatkan respons AI' });
             }
           }
         });
@@ -227,10 +227,10 @@ export default defineConfig({
           } catch (err: any) {
             console.error('[YWM AI] Stream error:', err.message);
             if (!res.headersSent) {
-              sendJSON(res, 500, { error: err.message });
+              sendJSON(res, 500, { error: 'Gagal streaming respons AI' });
             } else {
               try {
-                res.write(`data: ${JSON.stringify({ error: err.message })}\n\n`);
+                res.write(`data: ${JSON.stringify({ error: 'Stream error' })}\n\n`);
                 res.write('data: [DONE]\n\n');
                 res.end();
               } catch (e) { /* connection already closed */ }
@@ -274,7 +274,7 @@ export default defineConfig({
             sendJSON(res, 200, jsonMatch ? JSON.parse(jsonMatch[0]) : {});
           } catch (err: any) {
             console.error('[YWM AI] Parse error:', err.message);
-            sendJSON(res, 500, { error: err.message });
+            sendJSON(res, 500, { error: 'Gagal parse data' });
           }
         });
       },

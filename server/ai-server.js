@@ -31,10 +31,9 @@ async function initAI() {
     console.log('[YWM AI] z-ai-web-dev-sdk initialized successfully');
   } catch (err) {
     console.error('[YWM AI] Failed to initialize:', err.message);
-    // Retry after 5 seconds
-    console.log('[YWM AI] Retrying in 5 seconds...');
-    await new Promise(r => setTimeout(r, 5000));
-    return initAI();
+    // Do not retry infinitely — log and let the process fail gracefully
+    console.error('[YWM AI] AI will remain unavailable until server restart');
+    return null;
   }
 }
 
@@ -88,7 +87,7 @@ app.post('/api/chat', async (req, res) => {
   } catch (err) {
     console.error('[YWM AI] Chat error:', err.message);
     if (!res.headersSent) {
-      res.status(500).json({ error: 'Gagal mendapatkan respons AI', detail: err.message });
+      res.status(500).json({ error: 'Gagal mendapatkan respons AI' });
     }
   }
 });
@@ -143,10 +142,10 @@ app.post('/api/chat/stream', async (req, res) => {
   } catch (err) {
     console.error('[YWM AI] Stream error:', err.message);
     if (!res.headersSent) {
-      res.status(500).json({ error: 'Gagal streaming AI', detail: err.message });
+      res.status(500).json({ error: 'Gagal streaming AI' });
     } else {
       try {
-        res.write(`data: ${JSON.stringify({ error: err.message })}\n\n`);
+        res.write(`data: ${JSON.stringify({ error: 'Stream error' })}\n\n`);
         res.write('data: [DONE]\n\n');
         res.end();
       } catch (e) {
@@ -183,7 +182,7 @@ app.post('/api/smart-parse', async (req, res) => {
     res.json(jsonMatch ? JSON.parse(jsonMatch[0]) : {});
   } catch (err) {
     console.error('[YWM AI] Parse error:', err.message);
-    res.status(500).json({ error: 'Gagal parse', detail: err.message });
+    res.status(500).json({ error: 'Gagal parse data' });
   }
 });
 

@@ -59,6 +59,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(200).json(jsonMatch ? JSON.parse(jsonMatch[0]) : {});
   } catch (err: any) {
     console.error('[YWM AI Vercel] Parse error:', err.message);
-    return res.status(500).json({ error: err.message });
+    return res.status(500).json({ error: 'Gagal parse data' });
   }
 }
