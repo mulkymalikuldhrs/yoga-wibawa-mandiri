@@ -6,6 +6,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import GlassCard from '@/components/dashboard/GlassCard';
+import ChartTooltip from '@/components/dashboard/ChartTooltip';
 import { getData, formatRupiah } from '@/lib/supabase-data';
 import {
   KV_PREFIXES,
@@ -35,21 +36,7 @@ import {
   PieChart, Pie, Cell, LineChart, Line, Legend,
 } from 'recharts';
 
-const CustomTooltip = ({ active, payload, label }: any) => {
-  if (active && payload && payload.length) {
-    return (
-      <div className="backdrop-blur-xl bg-white/90 border border-white/60 rounded-lg px-3 py-2 text-xs shadow-lg shadow-black/[0.05]">
-        <p className="text-slate-600 mb-1">{label}</p>
-        {payload.map((entry: any, idx: number) => (
-          <p key={idx} style={{ color: entry.color }} className="font-medium">
-            {entry.name}: {typeof entry.value === 'number' && entry.value > 1000 ? formatRupiah(entry.value) : entry.value}
-          </p>
-        ))}
-      </div>
-    );
-  }
-  return null;
-};
+const CustomTooltip = ChartTooltip;
 
 const PIE_COLORS = ['#10b981', '#06b6d4', '#f87171', '#f59e0b', '#8b5cf6', '#ec4899'];
 

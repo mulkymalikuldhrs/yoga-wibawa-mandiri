@@ -7,6 +7,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { cn } from '@/lib/utils';
 import GlassCard from '@/components/dashboard/GlassCard';
+import ChartTooltip from '@/components/dashboard/ChartTooltip';
 import {
   getData, saveData, deleteData, generateId, exportToCSV,
 } from '@/lib/supabase-data';
@@ -212,21 +213,7 @@ export default function SiloCalculationModule() {
     });
   }
 
-  const CustomTooltip = ({ active, payload, label }: any) => {
-    if (active && payload && payload.length) {
-      return (
-        <div className="backdrop-blur-xl bg-white/90 border border-white/60 rounded-lg px-3 py-2 text-xs">
-          <p className="text-slate-600 mb-1">{label}</p>
-          {payload.map((entry: any, idx: number) => (
-            <p key={idx} style={{ color: entry.color }} className="font-medium">
-              {entry.name}: {entry.value.toLocaleString()} m³
-            </p>
-          ))}
-        </div>
-      );
-    }
-    return null;
-  };
+  const CustomTooltip = ChartTooltip;
 
   // ─── Update ukuran & recalculate ────────────────────
   const updateUkuran = (index: number, value: number) => {

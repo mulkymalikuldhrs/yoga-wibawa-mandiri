@@ -4,6 +4,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { cn } from '@/lib/utils';
+import ChartTooltip from '@/components/dashboard/ChartTooltip';
 import GlassCard from '@/components/dashboard/GlassCard';
 import { getData, saveData, deleteData, generateId, exportToCSV } from '@/lib/supabase-data';
 import { KV_PREFIXES, type ProductionRecord } from '@/types/dashboard';
@@ -72,19 +73,7 @@ export default function ProductionModule() {
     chartData.push({ name: dayNames[date.getDay()], target: totalTarget, aktual: totalAktual, efisiensi: totalTarget > 0 ? Math.round((totalAktual / totalTarget) * 100) : 0 });
   }
 
-  const CustomTooltip = ({ active, payload, label }: any) => {
-    if (active && payload && payload.length) {
-      return (
-        <div className="backdrop-blur-xl bg-white/90 border border-white/60 rounded-lg px-3 py-2 text-xs">
-          <p className="text-slate-600 mb-1">{label}</p>
-          {payload.map((entry: any, idx: number) => (
-            <p key={idx} style={{ color: entry.color }} className="font-medium">{entry.name}: {entry.value} {entry.name === 'Efisiensi' ? '%' : 'ton'}</p>
-          ))}
-        </div>
-      );
-    }
-    return null;
-  };
+  const CustomTooltip = ChartTooltip;
 
   const handleSave = () => {
     if (!form.tanggal || !form.mesin) return;

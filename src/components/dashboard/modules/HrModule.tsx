@@ -4,6 +4,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { cn } from '@/lib/utils';
+import ChartTooltip from '@/components/dashboard/ChartTooltip';
 import GlassCard from '@/components/dashboard/GlassCard';
 import { getData, saveData, deleteData, generateId, formatRupiah, formatTanggal, exportToCSV } from '@/lib/supabase-data';
 import { KV_PREFIXES, type Employee } from '@/types/dashboard';
@@ -70,16 +71,7 @@ export default function HrModule() {
   });
   const pieData = Object.entries(deptCounts).map(([name, value]) => ({ name, value }));
 
-  const CustomTooltip = ({ active, payload }: any) => {
-    if (active && payload && payload.length) {
-      return (
-        <div className="backdrop-blur-xl bg-white/90 border border-white/60 rounded-lg px-3 py-2 text-xs">
-          <p className="text-slate-600">{payload[0].name}: {payload[0].value} orang</p>
-        </div>
-      );
-    }
-    return null;
-  };
+  const CustomTooltip = ChartTooltip;
 
   const handleSave = () => {
     if (!form.nama || !form.nip) return;

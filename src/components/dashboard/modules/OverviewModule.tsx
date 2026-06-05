@@ -6,6 +6,7 @@
 import { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
 import GlassCard from '@/components/dashboard/GlassCard';
+import ChartTooltip from '@/components/dashboard/ChartTooltip';
 import { getData, formatRupiah } from '@/lib/supabase-data';
 import {
   KV_PREFIXES,
@@ -374,21 +375,8 @@ export default function OverviewModule() {
     fetchAllData();
   }, []);
 
-  const CustomTooltip = ({ active, payload, label }: any) => {
-    if (active && payload && payload.length) {
-      return (
-        <div className="backdrop-blur-xl bg-white/90 border border-slate-200/60 rounded-lg px-3 py-2 text-xs shadow-lg shadow-black/[0.05]">
-          <p className="text-slate-500 mb-1">{label}</p>
-          {payload.map((entry: any, idx: number) => (
-            <p key={idx} style={{ color: entry.color }} className="font-medium">
-              {entry.name}: {entry.value}
-            </p>
-          ))}
-        </div>
-      );
-    }
-    return null;
-  };
+  // Use shared typed tooltip component
+  const CustomTooltip = ChartTooltip;
 
   return (
     <div className="p-4 md:p-6 space-y-6 relative z-10">

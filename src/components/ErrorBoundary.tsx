@@ -1,4 +1,4 @@
-import React, { Component, ReactNode } from 'react';
+import React, { Component, ReactNode, ErrorInfo } from 'react';
 
 interface ErrorBoundaryProps {
   children: ReactNode;
@@ -20,7 +20,7 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
     return { hasError: true, error };
   }
 
-  componentDidCatch(error: Error, errorInfo: React.ErrorInfo): void {
+  componentDidCatch(error: Error, errorInfo: ErrorInfo): void {
     // Log error for debugging (no PII)
     if (import.meta.env.DEV) console.error('[ErrorBoundary]', error.message, errorInfo.componentStack);
   }
@@ -36,9 +36,9 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
       }
 
       return (
-        <div className="glassmorphic-bg min-h-screen flex items-center justify-center p-4">
+        <div className="glassmorphic-bg min-h-screen flex items-center justify-center p-4" role="alert" aria-label="Application error">
           <div className="glass-frosted rounded-2xl p-8 max-w-md w-full text-center">
-            <div className="w-16 h-16 bg-red-100/80 rounded-full flex items-center justify-center mx-auto mb-4">
+            <div className="w-16 h-16 bg-red-100/80 rounded-full flex items-center justify-center mx-auto mb-4" aria-hidden="true">
               <span className="text-red-600 text-2xl">!</span>
             </div>
             <h2 className="text-slate-800 text-xl font-semibold mb-2">
@@ -54,12 +54,14 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
               <button
                 onClick={this.handleReset}
                 className="px-4 py-2 bg-white/50 border border-white/60 rounded-lg text-slate-600 text-sm hover:bg-white/70 transition-all"
+                aria-label="Try again"
               >
                 Coba Lagi
               </button>
               <button
                 onClick={() => window.location.reload()}
                 className="px-4 py-2 bg-cyan-100/80 border border-cyan-200/50 rounded-lg text-cyan-600 text-sm hover:bg-cyan-100 transition-all"
+                aria-label="Reload page"
               >
                 Muat Ulang
               </button>
