@@ -25,7 +25,7 @@ export async function ensureDocsDir(): Promise<void> {
       // Directory might already exist, that's fine
     }
   } catch (err) {
-    console.error('Gagal membuat direktori dokumen:', err);
+    if (import.meta.env.DEV) console.error('Gagal membuat direktori dokumen:', err);
   }
 }
 
@@ -51,7 +51,7 @@ export async function uploadDocument(
       size: file.size,
     };
   } catch (err) {
-    console.error('Upload dokumen gagal:', err);
+    if (import.meta.env.DEV) console.error('Upload dokumen gagal:', err);
     throw new Error('Gagal mengunggah dokumen.');
   }
 }
@@ -82,7 +82,7 @@ export async function listDocuments(subPath = ''): Promise<FsItem[]> {
       modified: item.modified || new Date().toISOString(),
     }));
   } catch (err) {
-    console.error('List dokumen gagal:', err);
+    if (import.meta.env.DEV) console.error('List dokumen gagal:', err);
     return [];
   }
 }
@@ -94,7 +94,7 @@ export async function deleteDocument(path: string): Promise<void> {
     const puter = await waitForPuter();
     await puter.fs.delete(path);
   } catch (err) {
-    console.error('Hapus dokumen gagal:', err);
+    if (import.meta.env.DEV) console.error('Hapus dokumen gagal:', err);
     throw new Error('Gagal menghapus dokumen.');
   }
 }
@@ -106,7 +106,7 @@ export async function readDocument(path: string): Promise<unknown> {
     const puter = await waitForPuter();
     return await puter.fs.read(path);
   } catch (err) {
-    console.error('Baca dokumen gagal:', err);
+    if (import.meta.env.DEV) console.error('Baca dokumen gagal:', err);
     throw new Error('Gagal membaca dokumen.');
   }
 }

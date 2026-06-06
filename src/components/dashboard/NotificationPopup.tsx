@@ -4,7 +4,7 @@
 // Updated: 2026-05-29 — 8s auto-dismiss, navigate button, improved positioning
 // ============================================================
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, memo } from 'react';
 import { cn } from '@/lib/utils';
 import { useNotifications, type PopupNotification } from './NotificationProvider';
 import {
@@ -74,7 +74,7 @@ function relativeTime(dateStr: string): string {
 }
 
 // ── Single popup card ──
-function PopupCard({
+const PopupCard = memo(function PopupCard({
   popup,
   onDismiss,
   onMarkRead,
@@ -83,10 +83,10 @@ function PopupCard({
   replyLoading,
 }: {
   popup: PopupNotification;
-  onDismiss: () => void;
-  onMarkRead: () => void;
-  onReply: (text: string) => void;
-  onNavigate: () => void;
+  onDismiss: (id: string) => void;
+  onMarkRead: (id: string) => void;
+  onReply: (id: string, text: string) => void;
+  onNavigate: (modul: string, popupId: string) => void;
   replyLoading: boolean;
 }) {
   const [replyText, setReplyText] = useState('');
@@ -129,7 +129,7 @@ function PopupCard({
 
   const handleReply = () => {
     if (!replyText.trim() || replyLoading) return;
-    onReply(replyText.trim());
+    onReply(popup.id, replyText.trim());
     setReplyText('');
     setShowReply(false);
   };
@@ -198,9 +198,10 @@ function PopupCard({
                 {popup.judul}
               </h4>
               <button
-                onClick={onDismiss}
+                onClick={() => onDismiss(popup.popupId)}
                 className="p-1 rounded-lg text-slate-400 hover:text-slate-800 hover:bg-white/60 transition-all flex-shrink-0"
                 title="Tutup"
+                aria-label="Tutup"
               >
                 <X size={14} />
               </button>
@@ -229,7 +230,8 @@ function PopupCard({
         <div className="flex items-center gap-2 mt-3 ml-12">
           {!popup.dibaca && (
             <button
-              onClick={onMarkRead}
+              onClick={() => onMarkRead(popup.id)}
+              aria-label="Tandai sudah dibaca"
               className="flex items-center gap-1 px-2 py-1 rounded-lg bg-white/50 text-slate-400 text-[11px] hover:bg-white/60 hover:text-slate-500 transition-all"
             >
               <Eye size={10} />
@@ -237,7 +239,8 @@ function PopupCard({
             </button>
           )}
           <button
-            onClick={onNavigate}
+            onClick={() => onNavigate(popup.modul, popup.popupId)}
+            aria-label="Buka modul terkait"
             className="flex items-center gap-1 px-2 py-1 rounded-lg bg-white/50 text-cyan-500 text-[11px] hover:bg-cyan-50/80 hover:text-cyan-600 transition-all"
           >
             <ExternalLink size={10} />
@@ -245,6 +248,7 @@ function PopupCard({
           </button>
           <button
             onClick={handleToggleReply}
+            aria-label="Balas dengan AI"
             className={cn(
               'flex items-center gap-1 px-2 py-1 rounded-lg text-[11px] transition-all',
               showReply
@@ -256,7 +260,8 @@ function PopupCard({
             Balas AI
           </button>
           <button
-            onClick={onDismiss}
+            onClick={() => onDismiss(popup.popupId)}
+            aria-label="Tutup notifikasi"
             className="flex items-center gap-1 px-2 py-1 rounded-lg bg-white/50 text-slate-400 text-[11px] hover:bg-white/60 hover:text-slate-500 transition-all ml-auto"
           >
             Tutup
@@ -300,7 +305,7 @@ function PopupCard({
       </div>
     </div>
   );
-}
+});
 
 // ── Popup Container ──
 export default function NotificationPopup() {
@@ -318,14 +323,14 @@ export default function NotificationPopup() {
         <div key={popup.popupId} className="pointer-events-auto">
           <PopupCard
             popup={popup}
-            onDismiss={() => dismissPopup(popup.popupId)}
-            onMarkRead={() => markAsRead(popup.id)}
-            onReply={(text) => replyToNotification(popup.id, text)}
-            onNavigate={() => {
-              if (popup.modul && navigateToModule) {
-                navigateToModule(popup.modul as import('@/types/dashboard').DashboardModule);
+            onDismiss={dismissPopup}
+            onMarkRead={markAsRead}
+            onReply={replyToNotification}
+            onNavigate={(modul, popupId) => {
+              if (modul && navigateToModule) {
+                navigateToModule(modul as import('@/types/dashboard').DashboardModule);
               }
-              dismissPopup(popup.popupId);
+              dismissPopup(popupId);
             }}
             replyLoading={!!replyLoading[popup.id]}
           />

@@ -180,7 +180,7 @@ export function NotificationProvider({
   const toggleBeepMuted = useCallback(() => {
     setBeepMuted((prev) => {
       const next = !prev;
-      try { localStorage.setItem('ywm_beep_muted', String(next)); } catch {}
+      try { localStorage.setItem('ywm_beep_muted', String(next)); } catch (e) { /* ignore localStorage error */ }
       return next;
     });
   }, []);
