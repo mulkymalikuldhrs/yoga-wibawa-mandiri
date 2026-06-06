@@ -541,6 +541,7 @@ export default function FloatingChatBot() {
             isMobile ? 'bottom-20 right-4' : 'bottom-6 right-6'
           )}
           aria-label="Buka Chat AI"
+          title="Chat dengan AI YWM"
         >
           {/* Pulse ring */}
           <div className="absolute inset-0 rounded-full bg-cyan-500/30 animate-ping" />

@@ -52,7 +52,7 @@ export async function chatWithAi(
       usage: response?.usage,
     };
   } catch (err) {
-    console.error('AI Chat gagal:', err);
+    if (import.meta.env.DEV) console.error('AI Chat gagal:', err);
     throw new Error('Gagal menghubungi AI. Silakan coba lagi.');
   }
 }
@@ -88,7 +88,7 @@ export async function chatWithAiStream(
 
     onDone();
   } catch (err) {
-    console.error('AI Chat Stream gagal:', err);
+    if (import.meta.env.DEV) console.error('AI Chat Stream gagal:', err);
     onChunk('\n\n⚠️ Gagal menghubungi AI. Silakan coba lagi.');
     onDone();
   }
@@ -132,7 +132,7 @@ Isi field yang bisa disimpulkan dari input. Biarkan field yang tidak diketahui k
     }
     return {};
   } catch (err) {
-    console.error('AI Smart Parse gagal:', err);
+    if (import.meta.env.DEV) console.error('AI Smart Parse gagal:', err);
     return {};
   }
 }
@@ -163,7 +163,7 @@ export async function ocrFromImage(file: File): Promise<string> {
 
     return response?.message?.content || '';
   } catch (err) {
-    console.error('OCR gagal:', err);
+    if (import.meta.env.DEV) console.error('OCR gagal:', err);
     throw new Error('Gagal melakukan OCR pada dokumen.');
   }
 }
