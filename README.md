@@ -394,7 +394,7 @@ Kontribusi dipersilakan! Lihat [CONTRIBUTING.md](CONTRIBUTING.md) untuk panduan.
 
 ⚡ **Tim Teknik | Mulky Malikul Dhaher** ⚡  
 WhatsApp: +6285322624038  
-Email: mulkymalikuldhaher@email.com  
+Email: mulkymalikudhr@mail.com  
 GitHub: [https://github.com/mulkymalikuldhrs](https://github.com/mulkymalikuldhrs)
 
 ---
