@@ -180,7 +180,11 @@ export function NotificationProvider({
   const toggleBeepMuted = useCallback(() => {
     setBeepMuted((prev) => {
       const next = !prev;
-      try { localStorage.setItem('ywm_beep_muted', String(next)); } catch (e) { /* ignore localStorage error */ }
+      try {
+        localStorage.setItem('ywm_beep_muted', String(next));
+      } catch (err) {
+        if (import.meta.env.DEV) console.error('Failed to save beep muted state:', err);
+      }
       return next;
     });
   }, []);

@@ -622,12 +622,15 @@ export default function FloatingChatBot() {
                     : 'text-slate-300 hover:bg-white/60'
                 )}
                 title={chatEnabled ? 'Nonaktifkan Chatbot' : 'Aktifkan Chatbot'}
+                aria-label={chatEnabled ? 'Nonaktifkan Chatbot' : 'Aktifkan Chatbot'}
               >
                 {chatEnabled ? <Power size={14} /> : <PowerOff size={14} />}
               </button>
               <button
                 onClick={() => setIsOpen(false)}
                 className="p-1.5 rounded-lg text-slate-400 hover:text-slate-800 hover:bg-white/60 transition-all"
+                title="Tutup Chat"
+                aria-label="Tutup Chat"
               >
                 <X size={16} />
               </button>
@@ -782,6 +785,7 @@ export default function FloatingChatBot() {
                     : 'text-slate-400 hover:text-slate-500 hover:bg-white/50'
                 )}
                 title={isRecording ? 'Berhenti merekam' : 'Input suara'}
+                aria-label={isRecording ? 'Berhenti merekam' : 'Input suara'}
               >
                 {isRecording ? <MicOff size={16} /> : <Mic size={16} />}
               </button>
@@ -792,6 +796,7 @@ export default function FloatingChatBot() {
                   text-cyan-600 hover:from-cyan-200/60 hover:to-blue-200/60 
                   transition-all disabled:opacity-30 disabled:cursor-not-allowed flex-shrink-0"
                 title="Kirim"
+                aria-label="Kirim pesan"
               >
                 <Send size={16} />
               </button>
