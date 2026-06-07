@@ -295,10 +295,20 @@ export default function SparePartsModule() {
                     <td className="px-4 py-3 text-slate-500">{item.pemasok}</td>
                     <td className="px-4 py-3 text-right">
                       <div className="flex items-center justify-end gap-1">
-                        <button onClick={() => handleEdit(item)} className="p-1.5 rounded-lg hover:bg-white/50 text-slate-400 hover:text-cyan-600 transition-all" title="Edit">
+                        <button
+                          onClick={() => handleEdit(item)}
+                          className="p-1.5 rounded-lg hover:bg-white/50 text-slate-400 hover:text-cyan-600 transition-all"
+                          title="Edit"
+                          aria-label="Edit suku cadang"
+                        >
                           <Edit2 size={14} />
                         </button>
-                        <button onClick={() => setDeleteConfirm(item.id)} className="p-1.5 rounded-lg hover:bg-white/50 text-slate-400 hover:text-red-600 transition-all" title="Hapus">
+                        <button
+                          onClick={() => setDeleteConfirm(item.id)}
+                          className="p-1.5 rounded-lg hover:bg-white/50 text-slate-400 hover:text-red-600 transition-all"
+                          title="Hapus"
+                          aria-label="Hapus suku cadang"
+                        >
                           <Trash2 size={14} />
                         </button>
                       </div>

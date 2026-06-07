@@ -201,6 +201,7 @@ function PopupCard({
                 onClick={onDismiss}
                 className="p-1 rounded-lg text-slate-400 hover:text-slate-800 hover:bg-white/60 transition-all flex-shrink-0"
                 title="Tutup"
+                aria-label="Tutup notifikasi"
               >
                 <X size={14} />
               </button>
@@ -282,6 +283,7 @@ function PopupCard({
                 disabled={!replyText.trim() || replyLoading}
                 className="p-1.5 rounded-lg bg-cyan-100/80 text-cyan-600 hover:bg-cyan-500/30 transition-all disabled:opacity-30 disabled:cursor-not-allowed flex-shrink-0"
                 title="Kirim balasan"
+                aria-label="Kirim balasan"
               >
                 {replyLoading ? (
                   <Loader2 size={12} className="animate-spin" />
