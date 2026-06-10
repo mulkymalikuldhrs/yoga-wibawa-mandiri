@@ -1,23 +1,22 @@
 ---
 name: Feature Request
-about: Suggest a feature for yoga-wibawa-mandiri
-title: '[FEATURE] '
+about: Suggest a feature or enhancement
+title: 'feat: '
 labels: enhancement
 assignees: ''
 ---
 
-## Feature Description
-A clear description of the feature you'd like.
-
 ## Problem Statement
-What problem does this feature solve?
+What problem does this feature solve? What are you trying to accomplish?
 
 ## Proposed Solution
-How do you envision this feature working?
+How would you like this feature to work?
 
 ## Alternatives Considered
-Any alternative solutions you've considered.
+What other approaches have you considered?
 
----
+## Additional Context
+Any screenshots, examples from other projects, or links that help explain your idea.
 
-**⚠️ For Education Purpose Only — No responsibility or liability is assumed.**
+## Would you be willing to implement this?
+[ ] Yes, I'd like to submit a PR for this feature
