@@ -100,6 +100,123 @@ yoga-wibawa-mandiri/
 └── public/               # Static assets & images
 ```
 
+## Visual Architecture
+
+### Corporate Site Architecture
+
+```mermaid
+graph TB
+    subgraph "Frontend - Vite React SPA"
+        UI["React 18 + TypeScript"]
+        Router["React Router DOM"]
+        Shadcn["shadcn/ui + Radix UI"]
+        RQ["TanStack React Query"]
+        TW["Tailwind CSS"]
+    end
+
+    subgraph "Backend - Express 5"
+        API["REST API Routes"]
+        ContactAPI["Contact Form Endpoint"]
+        ContentAPI["Content Delivery API"]
+    end
+
+    subgraph "Data Layer - Supabase"
+        SupaClient["Supabase JS Client"]
+        PG["PostgreSQL Database"]
+        Auth2["Supabase Auth"]
+        Storage["Supabase Storage"]
+    end
+
+    subgraph "External Services"
+        EmailJS["EmailJS - Email Delivery"]
+        Vercel["Vercel Deployment"]
+    end
+
+    UI --> Router
+    UI --> Shadcn
+    UI --> RQ
+    UI --> TW
+    UI --> API
+    API --> ContactAPI
+    API --> ContentAPI
+    ContactAPI --> EmailJS
+    ContentAPI --> SupaClient
+    SupaClient --> PG
+    SupaClient --> Auth2
+    SupaClient --> Storage
+    API --> Vercel
+
+    style UI fill:#61DAFB,color:#000
+    style API fill:#000,color:#fff
+    style SupaClient fill:#3ECF8E,color:#000
+    style PG fill:#336791,color:#fff
+    style EmailJS fill:#00BCD4,color:#fff
+```
+
+### Content Management Flow
+
+```mermaid
+flowchart TB
+    subgraph "Page Structure"
+        Pages["Site Pages"] --> Home["Home"]
+        Pages --> About["About Us"]
+        Pages --> Services["Services"]
+        Pages --> Team["Team"]
+        Pages --> Portfolio["Portfolio"]
+        Pages --> Contact["Contact"]
+    end
+
+    subgraph "Section Composition"
+        Home --> HeroSection["Hero Section"]
+        Home --> CTASection["Call-to-Action"]
+        About --> Timeline["Company Timeline"]
+        About --> Values["Mission & Values"]
+        Services --> ServiceCards["Service Cards"]
+        Team --> TeamGrid["Team Member Grid"]
+        Portfolio --> ProjectShowcase["Project Showcase"]
+    end
+
+    subgraph "Content Source"
+        Timeline --> StaticData["Static Content Data"]
+        ServiceCards --> StaticData
+        TeamGrid --> SupabaseData["Supabase Content"]
+        ProjectShowcase --> SupabaseData
+    end
+
+    style Pages fill:#0d2b4a,color:#60a5fa
+    style StaticData fill:#143d5e,color:#34d399
+    style SupabaseData fill:#3ECF8E,color:#000
+```
+
+### Contact Form Pipeline
+
+```mermaid
+sequenceDiagram
+    participant U as User
+    participant F as Contact Form
+    participant V as Client Validation
+    participant E as EmailJS API
+    participant N as Notification Email
+    participant S as Supabase Log
+
+    U->>F: Fill out contact form
+    F->>V: Validate name, email, message
+    alt Validation fails
+        V-->>F: Show error messages
+        F-->>U: Highlight invalid fields
+    else Validation passes
+        V->>E: Send via EmailJS SDK
+        E->>N: Deliver notification email
+        N-->>U: Auto-reply confirmation
+        V->>S: Log submission to database
+        S-->>V: Store success
+    end
+```
+
+> **Stack Note**: Yoga Wibawa Mandiri uses Vite + React 18 with Express backend and Supabase for PostgreSQL data. Contact forms are delivered via EmailJS without requiring a dedicated mail server. The site is designed as a corporate profile/CMS with server-side rendering capabilities.
+
+---
+
 ## Contributing
 
 1. Fork the repository
