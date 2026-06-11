@@ -1,4 +1,3 @@
-<img src="docs/banner.png" width="100%">
 
 <!-- CAPSULE-RENDER HEADER -->
 <img width="100%" src="https://capsule-render.vercel.app/api?type=waving&color=0:0a1a2e,50:0d2b4a,100:143d5e&fontColor=60a5fa&descColor=34d399&height=220&section=header&text=Yoga%20Wibawa%20Mandiri&fontSize=55&desc=Company%20Profile%20Website&animation=fadeIn" />
