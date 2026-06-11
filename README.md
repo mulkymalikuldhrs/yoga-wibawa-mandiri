@@ -24,6 +24,11 @@
 
 ---
 
+
+<!-- AUTO-PACKAGE-BADGES:START -->
+
+<!-- AUTO-PACKAGE-BADGES:END -->
+
 ## Overview
 
 **Yoga Wibawa Mandiri** is a professional company profile website built with TypeScript and Next.js. It presents the company's services, team, history, and values in a clean, modern design that builds trust and credibility. Optimized for SEO with server-side rendering, the site ensures strong search visibility while delivering a fast, professional user experience.
