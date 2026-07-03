@@ -1,0 +1,7 @@
+image: alpine:latest
+stages:
+  - check
+check:
+  stage: check
+  script:
+    - echo "CI pipeline active - DHAHER LABS production"
