@@ -3,7 +3,9 @@
 // ============================================================
 
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
+import { signOut } from '@/lib/auth';
 import type { DashboardModule } from '@/types/dashboard';
 import {
   LayoutDashboard,
@@ -23,6 +25,7 @@ import {
   Wallet,
   ShieldCheck,
   UserCog,
+  LogOut,
 } from 'lucide-react';
 
 const MODULES: { id: DashboardModule; label: string; icon: React.ReactNode }[] = [
@@ -59,6 +62,7 @@ export default function DashboardSidebar({
   unreadCount,
   onNotificationClick,
 }: DashboardSidebarProps) {
+  const navigate = useNavigate();
   return (
     <aside
       className={cn(
@@ -144,6 +148,21 @@ export default function DashboardSidebar({
         >
           {collapsed ? <ChevronRight size={18} /> : <ChevronLeft size={18} />}
           {!collapsed && <span>Perkecil</span>}
+        </button>
+        <button
+          onClick={async () => {
+            try {
+              await signOut();
+            } finally {
+              navigate('/login', { replace: true });
+            }
+          }}
+          className="flex items-center gap-3 px-3 py-2 rounded-xl text-slate-400 hover:text-red-600 hover:bg-red-50 transition-all text-sm"
+          title="Keluar"
+          aria-label="Keluar"
+        >
+          <LogOut size={18} />
+          {!collapsed && <span>Keluar</span>}
         </button>
       </div>
     </aside>

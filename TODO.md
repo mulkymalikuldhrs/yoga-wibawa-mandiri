@@ -180,10 +180,12 @@ _Developer: ⚡ Tim Teknik | Mulky Malikul Dhaher ⚡_
 ## Bug Tracker
 
 ### Known Issues
-- [ ] **PRODUCTION DB LOCKED (v8.1.0 audit):** 13/13 tabel Supabase produksi
-  (`aymvpyehihbgmllcgilq`) menolak request anon — RLS aktif tanpa policy untuk
-  anon/authenticated. Dashboard produksi berjalan 100% fallback localStorage.
-  Butuh keputusan: policy permissive per tabel ATAU implementasi Supabase Auth dulu.
+- [x] ~~**PRODUCTION DB LOCKED**~~ **DISELESAIKAN v8.1.0:** Migrasi ke Supabase
+  Dhaher Labs (`jcdjwprehfgtaswqletb`) — 13 tabel + policy `authenticated_all`
+  (fail-closed, anon tanpa akses) + seed data. Auth login wajib untuk dashboard.
+  Kredensial admin dikirim terpisah; ganti password setelah login pertama.
+- [ ] Project Supabase lama `aymvpyehihbgmllcgilq` tidak lagi dipakai — semua API
+  key-nya ditolak server (401 global). Bisa di-pause/delete oleh pemiliknya.
 
 ### Fixed in v6.0.0
 - [x] Infinite AI init retry loop yang menyebabkan Vercel build timeout
