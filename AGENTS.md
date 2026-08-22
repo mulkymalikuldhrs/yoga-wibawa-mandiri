@@ -1,9 +1,9 @@
 # Yoga Wibawa Mandiri — AI-Engineering-OS Constitution
 
 ## Project State: D (Complete docs)
-- **Purpose:** Yoga Wibawa Mandiri — Web application platform. Next.js project.
+- **Purpose:** Yoga Wibawa Mandiri — Web application platform. Vite + React 18 + TypeScript SPA with Supabase data layer, Puter.js/z-ai AI assistant, PWA support.
 - **Language:** TypeScript
-- **Entry points:** package.json, next.config.ts
+- **Entry points:** package.json, vite.config.ts
 
 ## Key Files
 - `ARCHITECTURE.md`
@@ -21,7 +21,7 @@
 - `components.json`
 - `eslint.config.js`
 - `index.html`
-- *...and 13 more files*
+- *...and more*
 
 ## Commands
 ```bash
@@ -29,10 +29,13 @@
 npm install
 
 # Dev
-vite
+npm run dev
 
-# Test
-npm test
+# Build
+npm run build
+
+# Lint
+npm run lint
 ```
 
 ## Quick Start
