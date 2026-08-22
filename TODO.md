@@ -136,10 +136,17 @@ _Developer: ⚡ Tim Teknik | Mulky Malikul Dhaher ⚡_
 - [x] Vercel deployment config (vercel.json)
 - [x] Vercel serverless functions (api/)
 - [x] Build optimization (manual chunks)
-- [x] GitHub Actions CI/CD (planned)
+- [x] GitHub Actions CI/CD riil: lint → typecheck → test → build (v8.1.0)
+- [x] Multi-remote mirror automation: scripts/sync-all.ps1 fail-closed → 4 remote (v8.1.0)
 - [ ] Staging environment
 - [ ] Production monitoring
 - [ ] Error tracking (Sentry or similar)
+
+### Quality / Testing (v8.1.0)
+- [x] Vitest infra + 20 unit tests Silo Calculation Engine
+- [x] Script `typecheck` (tsc --noEmit) sebagai gate CI
+- [x] Script `db:check` smoke test 13 tabel Supabase
+- [x] Script `verify` = lint + typecheck + test + build
 
 ---
 
@@ -173,7 +180,10 @@ _Developer: ⚡ Tim Teknik | Mulky Malikul Dhaher ⚡_
 ## Bug Tracker
 
 ### Known Issues
-- [ ] None currently tracked
+- [ ] **PRODUCTION DB LOCKED (v8.1.0 audit):** 13/13 tabel Supabase produksi
+  (`aymvpyehihbgmllcgilq`) menolak request anon — RLS aktif tanpa policy untuk
+  anon/authenticated. Dashboard produksi berjalan 100% fallback localStorage.
+  Butuh keputusan: policy permissive per tabel ATAU implementasi Supabase Auth dulu.
 
 ### Fixed in v6.0.0
 - [x] Infinite AI init retry loop yang menyebabkan Vercel build timeout

@@ -36,6 +36,17 @@ npm run build
 
 # Lint
 npm run lint
+
+# Typecheck / Test / Full gate
+npm run typecheck
+npm test
+npm run verify
+
+# DB smoke test (perlu env Supabase)
+npm run db:check
+
+# Sync canonical lokal -> 4 remote (Codeberg, GH org, GH user, GitLab)
+powershell -ExecutionPolicy Bypass -File scripts\sync-all.ps1
 ```
 
 ## Quick Start

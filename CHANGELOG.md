@@ -1,5 +1,29 @@
 # CHANGELOG — YWM Dashboard
 
+## v8.1.0 — 2026-08-23 — Repository Consolidation & Quality Infrastructure
+### Repo Consolidation (multi-source audit & merge)
+- Konsolidasi 5 sumber repo (lokal + Codeberg + GitHub org + GitHub user + GitLab)
+  yang divergen sejak v8.0.0 → satu canonical `main` lokal, mirror ke semua remote
+- Merge `fix/production-readiness` (auto-harden, LICENSE, test.sh) + branch CI
+  configs dari GitHub org (Dependabot, CodeRabbit)
+- Cherry-pick 2 commit unik yang tertahan di branch lama: ARIA accessibility
+  labels + micro-improvements UX/security/perf
+- Cleanup: hapus CircleCI config (redundan), renovate.json (duplikat Dependabot),
+  trim Dependabot ke npm+github-actions saja
+
+### Quality Infrastructure (baru)
+- **Vitest** + 20 unit tests untuk Silo Calculation Engine (opname, kekosongan,
+  discharge, fill level, formatters) — verifikasi rumus Excel sumber
+- **CI GitHub Actions riil**: lint → typecheck → test → build (pengganti placeholder)
+- Script baru: `typecheck`, `test`, `test:watch`, `db:check`, `verify`
+- `scripts/sync-all.ps1`: sinkronisasi fail-closed lokal → 4 remote
+- `scripts/db-check.mjs`: smoke test konektivitas 13 tabel Supabase
+
+### Maintenance
+- npm audit fix non-breaking: 21 → 9 vulnerabilities
+- Hapus 8 env var mati di Vercel (NEXT_PUBLIC_*, DIRECT_URL, DATABASE_URL)
+- Fix docs drift: AGENTS.md kini mencerminkan stack Vite (bukan Next.js)
+
 ## v8.0.0 — 2026-05-30 — Multi-Agent Audit & Massive Upgrade
 ### Perubahan Utama
 - **Database Foundation:** Migrasi dari localStorage → Supabase dual-write (13 tables)

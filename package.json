@@ -1,7 +1,7 @@
 {
   "name": "yoga-wibawa-mandiri",
   "private": true,
-  "version": "8.0.0",
+  "version": "8.1.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -11,6 +11,7 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
+    "db:check": "node scripts/db-check.mjs",
     "verify": "npm run lint && npm run typecheck && npm test && npm run build",
     "preview": "vite preview"
   },
