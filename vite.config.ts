@@ -2,7 +2,7 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
 import ZAI from "z-ai-web-dev-sdk";
-import { YWM_SYSTEM_PROMPT } from "./api/_shared/system-prompt.ts";
+import { YWM_SYSTEM_PROMPT } from "./server/shared/system-prompt.ts";
 
 // ============================================================
 // Vite config with integrated AI middleware

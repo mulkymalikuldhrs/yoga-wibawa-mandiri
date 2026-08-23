@@ -6,10 +6,10 @@
 
 import { createClient } from '@supabase/supabase-js';
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { sanitizeData, validateData } from '../_shared/validation.js';
-import { setCorsHeaders, handleCorsPreflightRequest } from '../_shared/cors.js';
-import { requireAuth } from '../_shared/auth.js';
-import { checkRateLimit, getClientIp } from '../_shared/rate-limit.js';
+import { sanitizeData, validateData } from '../../server/shared/validation.js';
+import { setCorsHeaders, handleCorsPreflightRequest } from '../../server/shared/cors.js';
+import { requireAuth } from '../../server/shared/auth.js';
+import { checkRateLimit, getClientIp } from '../../server/shared/rate-limit.js';
 
 const VALID_TABLES = [
   'spare_parts', 'production', 'maintenance',

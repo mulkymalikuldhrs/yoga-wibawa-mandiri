@@ -5,9 +5,9 @@
 
 import ZAI from 'z-ai-web-dev-sdk';
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { setCorsHeaders, handleCorsPreflightRequest } from '../_shared/cors.js';
-import { requireAuth } from '../_shared/auth.js';
-import { checkRateLimit, getClientIp } from '../_shared/rate-limit.js';
+import { setCorsHeaders, handleCorsPreflightRequest } from '../../server/shared/cors.js';
+import { requireAuth } from '../../server/shared/auth.js';
+import { checkRateLimit, getClientIp } from '../../server/shared/rate-limit.js';
 
 let zaiInstance: any = null;
 
