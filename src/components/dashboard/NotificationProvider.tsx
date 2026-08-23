@@ -85,6 +85,23 @@ function showBrowserNotification(title: string, body: string, url?: string) {
   }
 }
 
+// ── Text-to-speech (Web Speech API, id-ID) ──
+function speakNotification(title: string, body: string) {
+  if (!('speechSynthesis' in window)) return;
+  try {
+    window.speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(`${title}. ${body}`);
+    utterance.lang = 'id-ID';
+    utterance.rate = 1.05;
+    utterance.pitch = 1;
+    const voice = window.speechSynthesis.getVoices().find((v) => v.lang.startsWith('id'));
+    if (voice) utterance.voice = voice;
+    window.speechSynthesis.speak(utterance);
+  } catch {
+    // speech synthesis not available
+  }
+}
+
 // ── Popup notification (ephemeral, shown in toast) ──
 export interface PopupNotification extends Notification {
   popupId: string; // unique ID for the popup instance
@@ -101,6 +118,8 @@ interface NotificationContextValue {
   notifications: Notification[];
   unreadCount: number;
   popups: PopupNotification[];
+  ttsEnabled: boolean;
+  toggleTts: () => void;
   addNotification: (
     partial: Omit<Notification, 'id' | 'createdAt' | 'updatedAt' | 'dibaca'>,
     options?: { suppressBeep?: boolean; suppressPopup?: boolean }
@@ -173,6 +192,11 @@ export function NotificationProvider({
       return localStorage.getItem('ywm_beep_muted') === 'true';
     } catch { return false; }
   });
+  const [ttsEnabled, setTtsEnabled] = useState(() => {
+    try {
+      return localStorage.getItem('ywm_tts_enabled') === 'true';
+    } catch { return false; }
+  });
   const initializedRef = useRef(false);
   const isInitialLoadRef = useRef(true);
   const autoTimerRef = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
@@ -184,6 +208,19 @@ export function NotificationProvider({
         localStorage.setItem('ywm_beep_muted', String(next));
       } catch (err) {
         if (import.meta.env.DEV) console.error('Failed to save beep muted state:', err);
+      }
+      return next;
+    });
+  }, []);
+
+  const toggleTts = useCallback(() => {
+    setTtsEnabled((prev) => {
+      const next = !prev;
+      if (!next) window.speechSynthesis?.cancel();
+      try {
+        localStorage.setItem('ywm_tts_enabled', String(next));
+      } catch (err) {
+        if (import.meta.env.DEV) console.error('Failed to save tts state:', err);
       }
       return next;
     });
@@ -293,6 +330,11 @@ export function NotificationProvider({
       const shouldPlayBeep = !options?.suppressBeep && !isInitialLoadRef.current && !beepMuted;
       if (shouldPlayBeep) {
         playNotificationBeep();
+      }
+
+      // Speak the notification when TTS is enabled
+      if (shouldPlayBeep && ttsEnabled) {
+        speakNotification(notification.judul, notification.pesan);
       }
 
       // Show browser push notification only for genuine new notifications
@@ -565,6 +607,8 @@ export function NotificationProvider({
     navigateToModule,
     beepMuted,
     toggleBeepMuted,
+    ttsEnabled,
+    toggleTts,
   };
 
   return (

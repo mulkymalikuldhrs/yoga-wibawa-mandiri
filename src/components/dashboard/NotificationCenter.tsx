@@ -42,6 +42,8 @@ import {
   Users,
   Volume2,
   VolumeX,
+  Mic,
+  MicOff,
 } from 'lucide-react';
 
 // ── Tipe config ──
@@ -321,6 +323,8 @@ export default function NotificationCenter() {
     navigateToModule,
     beepMuted,
     toggleBeepMuted,
+    ttsEnabled,
+    toggleTts,
   } = useNotifications();
 
   const [search, setSearch] = useState('');
@@ -402,6 +406,19 @@ export default function NotificationCenter() {
               )}
             >
               {beepMuted ? <VolumeX size={16} /> : <Volume2 size={16} />}
+            </button>
+            {/* TTS on/off toggle */}
+            <button
+              onClick={toggleTts}
+              title={ttsEnabled ? 'Matikan bacakan notifikasi (TTS)' : 'Bacakan notifikasi saat masuk (TTS)'}
+              className={cn(
+                'p-2 rounded-xl transition-all',
+                ttsEnabled
+                  ? 'bg-emerald-100/80 text-emerald-600 hover:bg-emerald-200/80'
+                  : 'bg-slate-100/80 text-slate-400 hover:text-slate-600 hover:bg-slate-200/80'
+              )}
+            >
+              {ttsEnabled ? <Mic size={16} /> : <MicOff size={16} />}
             </button>
           </div>
 

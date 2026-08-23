@@ -7,6 +7,7 @@ import { cn } from '@/lib/utils';
 import GlassCard from '@/components/dashboard/GlassCard';
 import { getData, saveData, deleteData, generateId } from '@/lib/supabase-data';
 import { uploadDocumentFile, getDocumentSignedUrl, deleteDocumentFile, isStorageUrl } from '@/lib/document-storage';
+import { runOcrFromFile } from '@/lib/ocr';
 import { KV_PREFIXES, type Document } from '@/types/dashboard';
 import {
   Plus, Search, FileText, Upload, File, FileCheck, FileWarning, Trash2, Eye, ScanLine,
@@ -156,8 +157,44 @@ export default function DocumentsModule() {
     }
   };
 
-  const handleOcr = () => {
-    toast({ title: 'Fitur OCR akan segera tersedia', description: 'Pemrosesan OCR memerlukan layanan server-side yang sedang dalam pengembangan.' });
+  const [ocrBusy, setOcrBusy] = useState<string | null>(null);
+
+  const handleOcr = async (item: Document) => {
+    if (ocrBusy) return;
+    const ext = item.nama.split('.').pop()?.toLowerCase() ?? '';
+    if (['pdf', 'doc', 'docx', 'xls', 'xlsx', 'csv'].includes(ext)) {
+      toast({ title: 'OCR belum mendukung format ini', description: 'Konversi dulu ke gambar (PNG/JPG), lalu jalankan OCR. Saat ini OCR mendukung PNG/JPG/WEBP/GIF.' });
+      return;
+    }
+    setOcrBusy(item.id);
+    try {
+      // Resolve a File: freshly dropped (blob:) or stored in Supabase (signed URL)
+      let source: File | Blob | null = null;
+      const localUrl = localObjectUrls[item.id];
+      if (localUrl) {
+        source = await fetch(localUrl).then((r) => r.blob());
+      } else if (isStorageUrl(item.url)) {
+        const signed = await getDocumentSignedUrl(item.url);
+        if (signed) source = await fetch(signed).then((r) => r.blob());
+      }
+      if (!source) {
+        toast({ title: 'File tidak tersedia', description: 'Unggah ulang dokumen untuk menjalankan OCR.' });
+        return;
+      }
+      const file = source instanceof File ? source : new File([source], item.nama, { type: item.tipeFile || 'image/png' });
+      const text = await runOcrFromFile(file);
+      if (!text.trim()) {
+        toast({ title: 'OCR selesai', description: 'Tidak ada teks yang terbaca dari gambar ini.' });
+        return;
+      }
+      saveData(KV_PREFIXES.document, { ...item, ocrText: text, updatedAt: new Date().toISOString() });
+      setData((prev) => prev.map((d) => (d.id === item.id ? { ...d, ocrText: text } : d)));
+      toast({ title: 'OCR selesai', description: `${text.length} karakter teks berhasil diekstrak.` });
+    } catch (err) {
+      toast({ title: 'OCR gagal', description: err instanceof Error ? err.message : 'Terjadi kesalahan.' });
+    } finally {
+      setOcrBusy(null);
+    }
   };
 
   /** Process a FileList (from drop or input) and populate the form */
@@ -316,8 +353,8 @@ export default function DocumentsModule() {
                   <button onClick={() => handleViewDocument(item)} className="flex items-center gap-1 px-2 py-1 rounded-lg bg-white/40 text-slate-400 text-xs hover:bg-white/50 hover:text-slate-500 transition-all">
                     <Eye size={12} /> Lihat
                   </button>
-                  <button onClick={handleOcr} className="flex items-center gap-1 px-2 py-1 rounded-lg bg-white/40 text-slate-400 text-xs hover:bg-white/50 hover:text-cyan-600 transition-all">
-                    <ScanLine size={12} /> OCR
+                  <button onClick={() => handleOcr(item)} disabled={ocrBusy === item.id} className="flex items-center gap-1 px-2 py-1 rounded-lg bg-white/40 text-slate-400 text-xs hover:bg-white/50 hover:text-cyan-600 transition-all disabled:opacity-50">
+                    <ScanLine size={12} /> {ocrBusy === item.id ? 'Memproses...' : 'OCR'}
                   </button>
                   <button onClick={() => handleEdit(item)} className="flex items-center gap-1 px-2 py-1 rounded-lg bg-white/40 text-slate-400 text-xs hover:bg-white/50 hover:text-amber-600 transition-all">
                     Edit
