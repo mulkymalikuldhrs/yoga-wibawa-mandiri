@@ -9,6 +9,7 @@ import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { sanitizeData, validateData } from '../shared/validation.js';
 import { setCorsHeaders, handleCorsPreflightRequest } from '../shared/cors.js';
 import { requireAuth } from '../shared/auth.js';
+import { checkRateLimit, getClientIp } from '../shared/rate-limit.js';
 
 const VALID_TABLES = [
   'spare_parts', 'production', 'maintenance',
@@ -47,6 +48,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   // Auth check
   if (!requireAuth(req, res)) return;
+
+  // Rate limiting (mutations get a tighter window than reads)
+  const isMutation = req.method !== 'GET';
+  if (!checkRateLimit(getClientIp(req), isMutation ? 40 : 120)) {
+    return res.status(429).json({ error: 'Rate limit exceeded. Please try again shortly.' });
+  }
 
   const supabase = getSupabase();
   if (!supabase) {

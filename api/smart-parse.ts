@@ -7,6 +7,7 @@ import ZAI from 'z-ai-web-dev-sdk';
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { setCorsHeaders, handleCorsPreflightRequest } from '../shared/cors.js';
 import { requireAuth } from '../shared/auth.js';
+import { checkRateLimit, getClientIp } from '../shared/rate-limit.js';
 
 let zaiInstance: any = null;
 
@@ -30,6 +31,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   // Auth check
   if (!requireAuth(req, res)) return;
 
+  // Rate limiting (AI endpoint — cost protection)
+  if (!checkRateLimit(getClientIp(req), 30)) {
+    return res.status(429).json({ error: 'Rate limit exceeded. Please try again in a minute.' });
+  }
+
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
@@ -41,8 +47,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     const { input, context } = req.body;
-    if (!input) {
+    if (!input || typeof input !== 'string') {
       return res.status(400).json({ error: 'Input required' });
+    }
+    if (input.length > 2000) {
+      return res.status(400).json({ error: 'Input too long. Maximum 2000 characters.' });
     }
 
     const completion = await ai.chat.completions.create({
