@@ -2,10 +2,12 @@
 // DashboardSidebar — Bright glassmorphic frosted glass sidebar
 // ============================================================
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { signOut } from '@/lib/auth';
+import { enablePush } from '@/lib/push';
+import { toast } from '@/hooks/use-toast';
 import type { DashboardModule } from '@/types/dashboard';
 import {
   LayoutDashboard,
@@ -63,6 +65,18 @@ export default function DashboardSidebar({
   onNotificationClick,
 }: DashboardSidebarProps) {
   const navigate = useNavigate();
+  const [pushLoading, setPushLoading] = useState(false);
+
+  async function handleEnablePush() {
+    if (pushLoading) return;
+    setPushLoading(true);
+    try {
+      const message = await enablePush();
+      toast({ title: 'Push Notification', description: message });
+    } finally {
+      setPushLoading(false);
+    }
+  }
   return (
     <aside
       className={cn(
@@ -131,6 +145,16 @@ export default function DashboardSidebar({
 
       {/* Bottom Actions */}
       <div className="border-t border-slate-200/40 p-3 flex flex-col gap-1">
+        <button
+          onClick={handleEnablePush}
+          disabled={pushLoading}
+          className="flex items-center gap-3 px-3 py-2 rounded-xl text-slate-400 hover:text-cyan-600 hover:bg-cyan-50/60 transition-all text-sm disabled:opacity-50"
+          title="Aktifkan Push Notification"
+          aria-label="Aktifkan Push Notification"
+        >
+          <Bell size={18} />
+          {!collapsed && <span>{pushLoading ? 'Mengaktifkan...' : 'Aktifkan Notifikasi'}</span>}
+        </button>
         <button
           onClick={() => window.open('/', '_blank')}
           className="flex items-center gap-3 px-3 py-2 rounded-xl text-slate-400 hover:text-slate-600 hover:bg-white/40 transition-all text-sm"
