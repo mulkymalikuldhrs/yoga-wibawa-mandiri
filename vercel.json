@@ -30,6 +30,9 @@
     }
   ],
   "functions": {
+    "api/system-status.ts": {
+      "maxDuration": 30
+    },
     "api/chat/**/*.ts": {
       "maxDuration": 60,
       "includeFiles": "api/_shared/**"
