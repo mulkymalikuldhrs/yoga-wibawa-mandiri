@@ -27,7 +27,7 @@ async function safeFetchJson(url: string, headers?: Record<string, string>): Pro
     // Gitea branch shape vs commit API shapes
     const directSha = typeof json.sha === 'string' ? json.sha : undefined;
     const nestedCommit = json.commit as { sha?: string; author?: { date?: string }; committer?: { date?: string } } | undefined;
-    const sha = directSha ?? nestedCommit?.sha ?? (typeof json.id === 'string' ? json.id : undefined);
+    const sha = directSha ?? nestedCommit?.sha ?? nestedCommit?.id ?? (typeof json.id === 'string' ? json.id : undefined);
     const date =
       nestedCommit?.author?.date ??
       nestedCommit?.committer?.date ??
@@ -81,16 +81,20 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
+  const ghHeaders: Record<string, string> | undefined = process.env.SYSTEM_GITHUB_TOKEN
+    ? { Authorization: `Bearer ${process.env.SYSTEM_GITHUB_TOKEN}`, 'X-GitHub-Api-Version': '2022-11-28' }
+    : undefined;
+
   const remoteTargets = [
-    { name: 'CODEBERG/PRIMARY', url: 'https://codeberg.org/Dhaher-Labs/yoga-wibawa-mandiri', apiUrl: 'https://codeberg.org/api/v1/repos/Dhaher-Labs/yoga-wibawa-mandiri/branches/main' },
-    { name: 'GITHUB/ORG', url: 'https://github.com/dhaher-labs/Yoga-Wibawa-Mandiri', apiUrl: 'https://api.github.com/repos/dhaher-labs/Yoga-Wibawa-Mandiri/commits/main' },
-    { name: 'GITHUB/USER', url: 'https://github.com/mulkymalikuldhrs/yoga-wibawa-mandiri', apiUrl: 'https://api.github.com/repos/mulkymalikuldhrs/yoga-wibawa-mandiri/commits/main' },
-    { name: 'GITLAB/MIRROR', url: 'https://gitlab.com/mulkymalikuldhr/yoga-wibawa-mandiri', apiUrl: 'https://gitlab.com/api/v4/projects/mulkymalikuldhr%2Fyoga-wibawa-mandiri/repository/commits/main' },
+    { name: 'CODEBERG/PRIMARY', url: 'https://codeberg.org/Dhaher-Labs/yoga-wibawa-mandiri', apiUrl: 'https://codeberg.org/api/v1/repos/Dhaher-Labs/yoga-wibawa-mandiri/branches/main', headers: undefined },
+    { name: 'GITHUB/ORG', url: 'https://github.com/dhaher-labs/Yoga-Wibawa-Mandiri', apiUrl: 'https://api.github.com/repos/dhaher-labs/Yoga-Wibawa-Mandiri/commits/main', headers: ghHeaders },
+    { name: 'GITHUB/USER', url: 'https://github.com/mulkymalikuldhrs/yoga-wibawa-mandiri', apiUrl: 'https://api.github.com/repos/mulkymalikuldhrs/yoga-wibawa-mandiri/commits/main', headers: ghHeaders },
+    { name: 'GITLAB/MIRROR', url: 'https://gitlab.com/mulkymalikuldhr/yoga-wibawa-mandiri', apiUrl: 'https://gitlab.com/api/v4/projects/mulkymalikuldhr%2Fyoga-wibawa-mandiri/repository/commits/main', headers: undefined },
   ];
 
   const [vercel, ...remoteResults] = await Promise.all([
     getVercelDeployments(),
-    ...remoteTargets.map((t) => safeFetchJson(t.apiUrl)),
+    ...remoteTargets.map((t) => safeFetchJson(t.apiUrl, t.headers)),
   ]);
 
   const remotes = remoteTargets.map((t, i) => ({ name: t.name, url: t.url, ...remoteResults[i] }));
