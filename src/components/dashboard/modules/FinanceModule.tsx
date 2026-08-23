@@ -7,9 +7,10 @@ import { cn } from '@/lib/utils';
 import ChartTooltip from '@/components/dashboard/ChartTooltip';
 import GlassCard from '@/components/dashboard/GlassCard';
 import { getData, saveData, deleteData, generateId, formatRupiah, formatTanggal, exportToCSV } from '@/lib/supabase-data';
+import { printTableReport } from '@/lib/dashboard-storage';
 import { KV_PREFIXES, type FinanceRecord } from '@/types/dashboard';
 import {
-  Plus, Download, Search, Wallet, TrendingUp, TrendingDown, DollarSign, Edit2, Trash2,
+  Plus, Download, Search, Wallet, TrendingUp, TrendingDown, DollarSign, Edit2, Trash2, Printer,
 } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
@@ -126,6 +127,7 @@ export default function FinanceModule() {
           <p className="text-slate-400 text-sm mt-1">Pencatatan pemasukan dan pengeluaran perusahaan</p>
         </div>
         <div className="flex gap-2">
+          <button onClick={() => printTableReport('Laporan Keuangan', ['Tanggal','Jenis','Kategori','Deskripsi','Jumlah (Rp)','Metode'], filtered.map((f) => [f.tanggal, f.jenis, f.kategori, f.deskripsi, f.jumlah, f.metodePembayaran]))} className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/[0.07] border border-white/[0.12] text-slate-600 hover:bg-white/50 text-sm transition-all"><Printer size={16} /> PDF</button>
           <button onClick={() => exportToCSV(filtered.map(({ id, createdAt, updatedAt, ...rest }) => rest), 'keuangan-ywm')} className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/[0.07] border border-white/[0.12] text-slate-600 hover:bg-white/50 text-sm transition-all"><Download size={16} /> Ekspor</button>
           <button onClick={() => { setEditingItem(null); setForm(EMPTY_FORM); setDialogOpen(true); }} className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-white text-sm hover:opacity-90 transition-all"><Plus size={16} /> Tambah</button>
         </div>

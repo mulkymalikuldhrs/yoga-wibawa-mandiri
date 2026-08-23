@@ -6,10 +6,12 @@ import { useState, useEffect, useCallback } from 'react';
 import { cn } from '@/lib/utils';
 import GlassCard from '@/components/dashboard/GlassCard';
 import { getData, saveData, deleteData, generateId, formatRupiah, exportToCSV } from '@/lib/supabase-data';
+import { printTableReport } from '@/lib/dashboard-storage';
 import { KV_PREFIXES, type SparePart } from '@/types/dashboard';
 import {
   Plus,
   Download,
+  Printer,
   Search,
   Package,
   AlertTriangle,
@@ -129,6 +131,14 @@ export default function SparePartsModule() {
     );
   };
 
+  const handlePrintPdf = () => {
+    printTableReport(
+      'Laporan Stok Suku Cadang',
+      ['Nama', 'Kode', 'Kategori', 'Stok', 'Min', 'Satuan', 'Lokasi', 'Harga (Rp)'],
+      filtered.map((i) => [i.nama, i.kode, i.kategori, i.stok, i.stokMinimum, i.satuan, i.lokasi, i.harga])
+    );
+  };
+
   const getStockColor = (stok: number, min: number) => {
     if (stok <= min * 0.5) return 'text-red-600';
     if (stok <= min) return 'text-red-600';
@@ -168,6 +178,9 @@ export default function SparePartsModule() {
           <p className="text-slate-400 text-sm mt-1">Kelola stok suku cadang pabrik pengantongan semen</p>
         </div>
         <div className="flex gap-2">
+          <button onClick={handlePrintPdf} className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/[0.07] border border-white/[0.12] text-slate-600 hover:bg-white/50 text-sm transition-all">
+            <Printer size={16} /> PDF
+          </button>
           <button onClick={handleExport} className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/[0.07] border border-white/[0.12] text-slate-600 hover:bg-white/50 text-sm transition-all">
             <Download size={16} /> Ekspor
           </button>

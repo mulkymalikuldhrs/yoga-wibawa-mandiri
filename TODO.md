@@ -160,9 +160,10 @@ _Developer: ⚡ Tim Teknik | Mulky Malikul Dhaher ⚡_
 - [ ] DocumentsModule: "Lihat" (View) button functionality
 
 ### Medium Priority
-- [ ] Document OCR via AI
-- [ ] Text-to-speech for notifications
-- [ ] Report generation (PDF, Excel)
+- [x] Document OCR via AI (v8.1.0 - z-ai vision, PNG/JPG/WEBP/GIF)
+- [x] Text-to-speech for notifications (v8.1.0 - Web Speech API id-ID)
+- [ ] PDF export via print dialog untuk modul lain selain Suku Cadang & Keuangan
+- [x] Report generation Excel/CSV (sudah ada sejak v6: exportToCSV 10 modul)
 - [ ] Background sync for offline data
 - [ ] Puppeteer browser testing
 

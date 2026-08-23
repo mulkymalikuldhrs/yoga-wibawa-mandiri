@@ -103,6 +103,39 @@ export function exportToCSV(data: Record<string, unknown>[], filename: string): 
   URL.revokeObjectURL(url);
 }
 
+/**
+ * Print-friendly PDF report via browser print dialog (zero dependencies).
+ * Opens a styled table in a popup window and triggers print.
+ */
+export function printTableReport(
+  title: string,
+  headers: string[],
+  rows: Array<Array<unknown>>,
+): void {
+  if (rows.length === 0) return;
+  const esc = (v: unknown) =>
+    String(v ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c] ?? c);
+  const today = new Date().toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+  const win = window.open('', '_blank', 'width=900,height=650');
+  if (!win) return;
+  win.document.write(`<!doctype html><html lang="id"><head><meta charset="utf-8"><title>${esc(title)}</title>
+<style>
+  body{font-family:Georgia,'Times New Roman',serif;margin:32px;color:#1e293b}
+  h1{font-size:18px;margin:0}
+  .meta{color:#64748b;font-size:12px;margin:4px 0 20px}
+  table{width:100%;border-collapse:collapse;font-size:11px;font-family:'Segoe UI',Arial,sans-serif}
+  th{background:#1e3a5f;color:#fff;text-align:left;padding:7px 9px}
+  td{padding:6px 9px;border-bottom:1px solid #e2e8f0}
+  tr:nth-child(even) td{background:#f8fafc}
+  @media print{body{margin:12mm}}
+</style></head><body>
+<h1>${esc(title)}</h1><p class="meta">PT Yoga Wibawa Mandiri &mdash; ${esc(today)} &mdash; ${rows.length} data</p>
+<table><thead><tr>${headers.map((h) => `<th>${esc(h)}</th>`).join('')}</tr></thead>
+<tbody>${rows.map((r) => `<tr>${r.map((c) => `<td>${esc(c)}</td>`).join('')}</tr>`).join('')}</tbody></table>
+<script>window.onload=function(){window.print()}</script></body></html>`);
+  win.document.close();
+}
+
 // Initialize sample data if localStorage is empty
 export function initializeSampleData(): void {
   const prefixes = Object.values(KV_PREFIXES);
