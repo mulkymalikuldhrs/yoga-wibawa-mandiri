@@ -6,9 +6,9 @@
 
 import ZAI from 'z-ai-web-dev-sdk';
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { YWM_SYSTEM_PROMPT } from '../../server/shared/system-prompt.js';
-import { checkRateLimit, getClientIp } from '../../server/shared/rate-limit.js';
-import { setCorsHeaders, handleCorsPreflightRequest } from '../../server/shared/cors.js';
+import { YWM_SYSTEM_PROMPT } from '../server/shared/system-prompt.js';
+import { checkRateLimit, getClientIp } from '../server/shared/rate-limit.js';
+import { setCorsHeaders, handleCorsPreflightRequest } from '../server/shared/cors.js';
 
 // Keep AI instance warm across invocations
 let zaiInstance: any = null;

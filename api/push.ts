@@ -6,9 +6,9 @@
 import { createClient } from '@supabase/supabase-js';
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import webpush from 'web-push';
-import { setCorsHeaders, handleCorsPreflightRequest } from '../../server/shared/cors.js';
-import { requireAuth } from '../../server/shared/auth.js';
-import { checkRateLimit, getClientIp } from '../../server/shared/rate-limit.js';
+import { setCorsHeaders, handleCorsPreflightRequest } from '../server/shared/cors.js';
+import { requireAuth } from '../server/shared/auth.js';
+import { checkRateLimit, getClientIp } from '../server/shared/rate-limit.js';
 
 function getSupabase() {
   const url = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL || '';

@@ -8,8 +8,8 @@
 // ============================================================
 
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { setCorsHeaders, handleCorsPreflightRequest } from '../../server/shared/cors.js';
-import { checkRateLimit, getClientIp } from '../../server/shared/rate-limit.js';
+import { setCorsHeaders, handleCorsPreflightRequest } from '../server/shared/cors.js';
+import { checkRateLimit, getClientIp } from '../server/shared/rate-limit.js';
 
 const TIMEOUT_MS = 6000;
 
