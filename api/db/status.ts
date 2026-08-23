@@ -5,8 +5,8 @@
 
 import { createClient } from '@supabase/supabase-js';
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { setCorsHeaders, handleCorsPreflightRequest } from '../shared/cors.js';
-import { requireAuth } from '../shared/auth.js';
+import { setCorsHeaders, handleCorsPreflightRequest } from '../_shared/cors.js';
+import { requireAuth } from '../_shared/auth.js';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   // CORS headers (uses configurable origin instead of wildcard)

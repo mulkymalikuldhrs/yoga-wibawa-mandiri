@@ -32,19 +32,19 @@
   "functions": {
     "api/chat/**/*.ts": {
       "maxDuration": 60,
-      "includeFiles": "api/shared/**"
+      "includeFiles": "api/_shared/**"
     },
     "api/smart-parse.ts": {
       "maxDuration": 30,
-      "includeFiles": "api/shared/**"
+      "includeFiles": "api/_shared/**"
     },
     "api/db/**/*.ts": {
       "maxDuration": 10,
-      "includeFiles": "api/shared/**"
+      "includeFiles": "api/_shared/**"
     },
     "api/health.ts": {
       "maxDuration": 5,
-      "includeFiles": "api/shared/**"
+      "includeFiles": "api/_shared/**"
     }
   }
 }
