@@ -6,6 +6,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { cn } from '@/lib/utils';
 import GlassCard from '@/components/dashboard/GlassCard';
 import { getData, saveData, deleteData, generateId } from '@/lib/supabase-data';
+import { uploadDocumentFile, getDocumentSignedUrl, deleteDocumentFile, isStorageUrl } from '@/lib/document-storage';
 import { KV_PREFIXES, type Document } from '@/types/dashboard';
 import {
   Plus, Search, FileText, Upload, File, FileCheck, FileWarning, Trash2, Eye, ScanLine,
@@ -92,32 +93,66 @@ export default function DocumentsModule() {
   const totalDocs = data.length;
   const totalSize = data.reduce((s, d) => s + d.ukuran, 0);
 
-  const handleSave = () => {
-    if (!form.nama) return;
-    if (editingItem) {
-      saveData(KV_PREFIXES.document, { ...editingItem, ...form, updatedAt: new Date().toISOString() });
-    } else {
-      const newId = generateId();
-      // If we have a local object URL, store it for this document
-      if (form.url && form.url.startsWith('blob:')) {
-        setLocalObjectUrls((prev) => ({ ...prev, [newId]: form.url }));
+  const [saving, setSaving] = useState(false);
+
+  const handleSave = async () => {
+    if (!form.nama || saving) return;
+    setSaving(true);
+    try {
+      if (editingItem) {
+        saveData(KV_PREFIXES.document, { ...editingItem, ...form, updatedAt: new Date().toISOString() });
+      } else {
+        const newId = generateId();
+        let url = form.url;
+        // Real upload to Supabase Storage when a fresh file is attached (blob: URL)
+        if (url && url.startsWith('blob:')) {
+          const file = fileInputRef.current?.files?.[0]
+            ?? (await fetch(url).then((r) => r.blob()).then((b) => new File([b], form.nama || 'dokumen', { type: form.tipeFile || 'application/octet-stream' })));
+          const uploaded = await uploadDocumentFile(file, newId);
+          if (uploaded) {
+            url = uploaded;
+            URL.revokeObjectURL(form.url);
+          }
+          // else: keep blob/local fallback when Storage unavailable
+        }
+        saveData(KV_PREFIXES.document, { ...form, url, id: newId, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() });
       }
-      saveData(KV_PREFIXES.document, { ...form, id: newId, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() });
+      setDialogOpen(false); setEditingItem(null); setForm(EMPTY_FORM); loadData();
+    } finally {
+      setSaving(false);
     }
-    setDialogOpen(false); setEditingItem(null); setForm(EMPTY_FORM); loadData();
   };
 
-  const handleDelete = (id: string) => { deleteData(KV_PREFIXES.document, id); setDeleteConfirm(null); loadData(); };
+  const handleDelete = async (id: string) => {
+    const item = data.find((d) => d.id === id);
+    if (item && isStorageUrl(item.url)) {
+      await deleteDocumentFile(item.url);
+    }
+    deleteData(KV_PREFIXES.document, id);
+    setDeleteConfirm(null);
+    loadData();
+  };
   const handleEdit = (item: Document) => {
     setEditingItem(item);
     setForm({ nama: item.nama, jenis: item.jenis, kategori: item.kategori, ukuran: item.ukuran, tipeFile: item.tipeFile, url: item.url, ocrText: item.ocrText, diunggahOleh: item.diunggahOleh, catatan: item.catatan });
     setDialogOpen(true);
   };
 
-  const handleViewDocument = (item: Document) => {
+  const handleViewDocument = async (item: Document) => {
+    if (isStorageUrl(item.url)) {
+      const signed = await getDocumentSignedUrl(item.url);
+      if (signed) {
+        window.open(signed, '_blank', 'noopener,noreferrer');
+        return;
+      }
+      toast({ title: 'Gagal membuka dokumen', description: 'Tidak dapat membuat tautan akses file.' });
+      return;
+    }
     const viewUrl = localObjectUrls[item.id] || item.url;
     if (viewUrl && viewUrl !== '#') {
       window.open(viewUrl, '_blank', 'noopener,noreferrer');
+    } else {
+      toast({ title: 'File tidak tersedia', description: 'Dokumen ini belum memiliki file terunggah.' });
     }
   };
 
@@ -357,7 +392,7 @@ export default function DocumentsModule() {
           </div>
           <DialogFooter>
             <button onClick={() => setDialogOpen(false)} className="px-4 py-2 rounded-xl bg-white/[0.07] border border-white/[0.12] text-slate-600 text-sm hover:bg-white/50 transition-all">Batal</button>
-            <button onClick={handleSave} className="px-4 py-2 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-white text-sm hover:opacity-90 transition-all">Simpan</button>
+            <button onClick={handleSave} disabled={saving} className="px-4 py-2 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-white text-sm hover:opacity-90 transition-all disabled:opacity-60">{saving ? 'Mengunggah...' : 'Simpan'}</button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
